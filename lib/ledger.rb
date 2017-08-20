@@ -2,7 +2,7 @@
 # entities: all the accounts and the transactions. It can also be queried to
 # retrieve information regarding those entities.
 class Ledger
-  ENCRYPTION_ALGORITHM = 'AES-128-CBC'.freeze
+  ENCRYPTION_ALGORITHM = 'AES-256-CBC'.freeze
 
   attr_accessor :accounts, :transactions
 
