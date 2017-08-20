@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+
+require 'pry'
+require 'csv'
+require 'bigdecimal'
+require 'date'
+require 'readline'
+require 'optparse'
+require 'optparse/date'
+
+require_relative 'ui'
+require_relative 'utils'
+require_relative 'defaults'
+require_relative 'account'
+require_relative 'transaction'
+require_relative 'transaction_builder'
+require_relative 'trip'
+require_relative 'ledger'
+require_relative 'printer'
+
+ledger = ENV['LEDGER']
+
+fail ArgumentError, 'Environment variable LEDGER with the location of the ledger file must be specified' unless ledger
+
+LEDGER = File.new(File.expand_path(ledger))
+
+options = UI.new.tap(&:run).options
+
+ledger = Ledger.new.load!
+printer = Printer.new(ledger)
+
+ledger.add! if options[:add]
+printer.balance if options[:balance]
+printer.categories if options[:categories]
+printer.transactions if options[:transactions]
+printer.travels(options[:travels]) if options[:travels]
+printer.report(options[:report]) if options[:report]
