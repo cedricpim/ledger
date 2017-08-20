@@ -7,6 +7,8 @@ require 'date'
 require 'readline'
 require 'optparse'
 require 'optparse/date'
+require 'openssl'
+require 'io/console'
 
 dir = File.expand_path(File.dirname(__FILE__))
 Dir.glob(File.join(dir, 'lib', '*.rb')).each { |file| require_relative file }
@@ -19,7 +21,12 @@ LEDGER = File.new(File.expand_path(ledger))
 
 options = UI.new.tap(&:run).options
 
-ledger = Ledger.new.load!
+ledger = Ledger.new
+
+ledger.encrypt! and exit if options[:encrypt]
+ledger.decrypt! and exit if options[:decrypt]
+
+ledger.load!
 printer = Printer.new(ledger)
 
 ledger.add! if options[:add]

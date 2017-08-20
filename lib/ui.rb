@@ -23,6 +23,16 @@ class UI
         options[:categories] = categories
       end
 
+      if ENCRYPTION
+        opts.on("-d", "--decrypt", "Decrypt ledger") do |decrypt|
+          options[:decrypt] = decrypt
+        end
+
+        opts.on("-e", "--encrypt", "Encrypt ledger") do |encrypt|
+          options[:encrypt] = encrypt
+        end
+      end
+
       opts.on("-o", "--open", "Open CSV file") do
         exec("$EDITOR #{FILE.path}")
       end
@@ -31,19 +41,6 @@ class UI
         options[:transactions] = transactions
       end
 
-      report(opts)
-
-      travel(opts)
-
-      opts.on('-h', '--help', 'Display this screen' ) do
-        puts opts
-        exit
-      end
-    end.parse!
-
-    private
-
-    def report(opts)
       opts.on("-r", "--report", "Generate a report") do
         options[:report] = {summary: true}
 
@@ -64,9 +61,7 @@ class UI
           options[:report][:summary] = false
         end
       end
-    end
 
-    def travel(opts)
       opts.on("-T", "--travels", "List travel expenses") do |travels|
         options[:travels] = {summary: true}
 
@@ -75,6 +70,11 @@ class UI
           options[:travels][:summary] = false
         end
       end
-    end
+
+      opts.on('-h', '--help', 'Display this screen' ) do
+        puts opts
+        exit
+      end
+    end.parse!
   end
 end
