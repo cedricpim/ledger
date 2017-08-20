@@ -83,11 +83,11 @@ class Ledger
   end
 
   def credentials
-    [DEFAULT_PASSWORD || ask_for_password, DEFAULT_SALT || Readline.readline('Salt: ', false)]
+    [DEFAULT_PASSWORD || ask_for(:password), DEFAULT_SALT || ask_for(:salt)]
   end
 
-  def ask_for_password
-    print 'Password: '
+  def ask_for(title)
+    print "#{title.to_s.capitalize}: "
     STDIN.noecho(&:gets).chomp
   end
 
