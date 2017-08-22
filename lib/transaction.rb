@@ -43,7 +43,8 @@ Transaction = Struct.new(:account, :date, :category, :description, :amount, :cur
   end
 
   def to_s(display_travel: true)
-    message = "[#{ledger_format(:account)}] Date: #{ledger_format(:date)}, #{category} (#{description}), #{ledger_format(:amount)}#{currency}"
+    amount = expense? ? ledger_format(:amount) : "+#{ledger_format(:amount)}"
+    message = "[#{ledger_format(:account)}] Date: #{ledger_format(:date)}, #{category} (#{description}), #{amount}#{currency}"
     display_travel && travel ? "#{message}, Travel: #{travel}" : message
   end
 end

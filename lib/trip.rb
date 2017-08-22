@@ -12,7 +12,7 @@ class Trip
 
   def totals
     totals = total_amounts.map { |k, v| "[#{k.code}] #{v.to_f}#{k.currency}" }
-    "[#{travel.upcase}] Total: #{totals.join(' | ')}"
+    "Total: #{totals.join(' | ')}"
   end
 
   def to_s(options)
@@ -45,6 +45,8 @@ class Trip
   end
 
   def percentage(amount, total_amount)
-    ((amount / total_amount) * 100).to_f.round(2)
+    return 100.0 if total_amount.zero?
+
+    ((amount.abs / total_amount.abs) * 100).to_f.round(2)
   end
 end

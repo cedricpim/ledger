@@ -61,6 +61,17 @@ class Ledger
     transactions.select { |t| t.travel && t.expense? }.group_by(&:travel).map { |t, trs| Trip.new(t, trs) }
   end
 
+  def report(options)
+    filters = []
+    filters << ->(transaction) { transaction.date >= options[:from] } if options[:from]
+    filters << ->(transaction) { transaction.date <= options[:till] } if options[:till]
+    filters << ->(transaction) { !options[:exclude].include?(transaction.category) } if options[:exclude]
+    filters << ->(transaction) { transaction.date.month == options[:monthly] } if options[:monthly]
+    filters << ->(transaction) { transaction.date.cwyear == options[:annual] } if options[:annual]
+
+    transactions.select { |t| filters.all? { |f| f.call(t) } }.group_by(&:account).map { |a, trs| Report.new(a, trs) }
+  end
+
   def decrypt!
     encryption { |cipher| cipher.decrypt }
   end

@@ -21,22 +21,22 @@ class Printer
   end
 
   def travels(options)
-    trips = ledger.travels
-
-    trips.each { |trip| print(trip.travel) { trip.to_s(options).join("\n") } }
-
-    print('Totals') { trips.map(&:totals).join("\n") }
+    ledger.travels.each do |trip|
+      print(trip.travel) { trip.to_s(options).push(trip.totals).join("\n") }
+    end
   end
 
   def report(options)
-
+    ledger.report(options).each do |report|
+      print(report.account.name) { report.to_s(options).push(report.total_text).join("\n") }
+    end
   end
 
   private
 
   def print(title)
     puts "####### #{title} #######"
-    puts yield
+    puts yield if block_given?
     puts ''
   end
 end

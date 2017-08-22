@@ -34,7 +34,7 @@ class UI
       end
 
       opts.on("-o", "--open", "Open CSV file") do
-        exec("$EDITOR #{FILE.path}")
+        Ledger.new.open
       end
 
       opts.on("-t", "--transactions", "List Transactions") do |transactions|
@@ -43,6 +43,14 @@ class UI
 
       opts.on("-r", "--report", "Generate a report") do
         options[:report] = {summary: true}
+
+        opts.on("-a [INTEGER]", "--annual", Integer, "From year provided") do |annual|
+          options[:report][:annual] = annual || Date.today.cwyear
+        end
+
+        opts.on("-m [INTEGER]", "--monthly", Integer, "From month provided") do |month|
+          options[:report][:monthly] = month || Date.today.month
+        end
 
         opts.on("-f [DATE]", Date, "Since date provided") do |from|
           options[:report][:from] = from
