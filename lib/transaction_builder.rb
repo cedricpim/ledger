@@ -7,7 +7,7 @@ class TransactionBuilder
 
   def initialize(ledger)
     @ledger = ledger
-    @transaction = transaction
+    @transaction = default_transaction
   end
 
   def build!
@@ -20,29 +20,26 @@ class TransactionBuilder
     read(:travel)
     read(:processed, default: transaction.ledger_format(:processed))
 
+    exchange_money
+
     transaction
   end
 
   private
 
-  def transaction
-    Transaction.new(
-      DEFAULT_ACCOUNT,
-      DEFAULT_DATE,
-      DEFAULT_CATEGORY,
-      DEFAULT_DESCRIPTION,
-      DEFAULT_AMOUNT,
-      DEFAULT_CURRENCY,
-      DEFAULT_TRAVEL,
-      DEFAULT_PROCESSED
-    )
+  def exchange_money
+    account_currency = ledger.currency_per_account[transaction.account]
+
+    return unless account_currency
+
+    transaction.money = transaction.money.exchange_to(account_currency)
   end
 
   def read(key, default: transaction.public_send(key), presence: false)
     title = key.to_s.capitalize
 
     prepare_readline_completion(key)
-    value = Readline.readline("#{title} [#{default}] ", true)
+    value = Readline.readline("#{title} [#{default}] ", true).strip
 
     fail ArgumentError, "#{title} must be present" if presence && value.empty?
 
@@ -60,6 +57,19 @@ class TransactionBuilder
       when :processed   then [FALSE_VALUE, TRUE_VALUE]
       end
 
-    Readline.completion_proc = completion_list && proc { |s| completion_list.grep(/^#{Regexp.escape(s)}/) }
+    Readline.completion_proc = completion_list && proc { |s| completion_list.grep(/^#{Regexp.escape(s)}/i) }
+  end
+
+  def default_transaction
+    Transaction.new(
+      DEFAULT_ACCOUNT,
+      DEFAULT_DATE,
+      DEFAULT_CATEGORY,
+      DEFAULT_DESCRIPTION,
+      DEFAULT_AMOUNT,
+      DEFAULT_CURRENCY,
+      DEFAULT_TRAVEL,
+      DEFAULT_PROCESSED
+    )
   end
 end

@@ -4,7 +4,8 @@
 class Ledger
   extend Forwardable
 
-  def_delegators :content, :accounts, :categories, :currencies, :descriptions, :travels, :trips, :report
+  def_delegators :content, :accounts, :categories, :currencies,
+    :descriptions, :travels, :trips, :report, :currency_per_account
 
   attr_accessor :transactions
 

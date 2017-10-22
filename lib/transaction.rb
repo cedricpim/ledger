@@ -12,6 +12,8 @@
 Transaction = Struct.new(:account, :date, :category, :description, :amount, :currency, :travel, :processed) do
   alias_method :processed?, :processed
 
+  attr_writer :money
+
   def initialize(*)
     super
     self.date = date

@@ -41,4 +41,10 @@ class Content
 
     transactions.select { |t| filters.all? { |f| f.call(t) } }.group_by(&:account).map { |a, trs| Report.new(a, trs) }
   end
+
+  def currency_per_account
+    @currency_per_account ||= accounts.each_with_object({}) do |account, result|
+      result[account] = transactions.find { |t| t.account == account }&.currency
+    end
+  end
 end

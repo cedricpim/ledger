@@ -8,10 +8,12 @@ require 'readline'
 require 'optparse'
 require 'optparse/date'
 require 'openssl'
-require 'money'
 require 'tempfile'
+require 'money'
+require 'money/bank/google_currency'
 
 I18n.enforce_available_locales = false
+Money.default_bank = Money::Bank::GoogleCurrency.new
 
 Dir.glob(File.join(File.expand_path(File.dirname(__FILE__)), 'lib', '*.rb')).each { |file| require_relative file }
 
