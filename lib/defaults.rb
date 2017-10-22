@@ -1,5 +1,5 @@
 # Default values of a transaction
-DEFAULT_ACCOUNT_CODE = ENV['LEDGER_DEFAULT_ACCOUNT_CODE'].freeze
+DEFAULT_ACCOUNT = ENV['LEDGER_DEFAULT_ACCOUNT'].freeze
 DEFAULT_DATE = Date.today.freeze
 DEFAULT_CATEGORY = ENV['LEDGER_DEFAULT_CATEGORY'].freeze
 DEFAULT_DESCRIPTION = ENV['LEDGER_DEFAULT_DESCRIPTION'].freeze
@@ -11,10 +11,6 @@ DEFAULT_PROCESSED = ENV['LEDGER_DEFAULT_PROCESSED'].freeze
 # Default list of values for auto complete
 DEFAULT_CURRENCIES_LIST = ENV['LEDGER_DEFAULT_CURRENCIES_LIST'].to_s.split(',').sort.freeze
 DEFAULT_CATEGORIES_LIST = ENV['LEDGER_DEFAULT_CATEGORIES_LIST'].to_s.split(',').sort.freeze
-
-# Default variables to encrypt/decrypt ledger
-DEFAULT_SALT = ENV['LEDGER_DEFAULT_SALT'].freeze
-DEFAULT_PASSWORD = ENV['LEDGER_DEFAULT_PASSWORD'].freeze
 
 # Define if the ledger file must be encrypted after each operation
 # ENCRYPTION = ENV['LEDGER_ENCRYPTION'] == 'true' ? true : false

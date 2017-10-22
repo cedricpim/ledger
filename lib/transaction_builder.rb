@@ -27,7 +27,7 @@ class TransactionBuilder
 
   def transaction
     Transaction.new(
-      DEFAULT_ACCOUNT_CODE,
+      DEFAULT_ACCOUNT,
       DEFAULT_DATE,
       DEFAULT_CATEGORY,
       DEFAULT_DESCRIPTION,
@@ -41,14 +41,14 @@ class TransactionBuilder
   private
 
   def read(key, default: transaction.public_send(key), presence: false)
-    title = key.to_s.sub('_', ' ').capitalize
+    title = key.to_s.capitalize
 
     prepare_readline_completion(key)
     value = Readline.readline("#{title} [#{default}] ", true)
 
     fail ArgumentError, "#{title} must be present" if presence && value.empty?
 
-    transaction.public_send(:"#{key}=", value) unless (value.respond_to?(:empty?) && value.empty?) || value.nil?
+    transaction.public_send(:"#{key}=", value.empty? ? default : value)
   end
 
   def prepare_readline_completion(key)

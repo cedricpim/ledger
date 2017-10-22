@@ -74,12 +74,7 @@ class Ledger
   end
 
   def credentials
-    [DEFAULT_PASSWORD || ask_for(:password), DEFAULT_SALT || ask_for(:salt)]
-  end
-
-  def ask_for(title)
-    print "#{title.to_s.capitalize}: "
-    STDIN.noecho(&:gets).chomp
+    [`#{ENV['LEDGER_PASSWORD']}`, `#{ENV['LEDGER_SALT']}`]
   end
 
   def content
