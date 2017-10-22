@@ -11,8 +11,7 @@ class Trip
   end
 
   def totals
-    totals = total_amounts.map { |k, v| "[#{k.code}] #{v.to_f}#{k.currency}" }
-    "Total: #{totals.join(' | ')}"
+    "Total: #{total_amounts.map { |account, money| "[#{account}] #{money.format(MONEY_DISPLAY_FORMAT)}" }.join(' | ')}"
   end
 
   def to_s(options)
@@ -22,7 +21,7 @@ class Trip
   private
 
   def total_amounts
-    @total_amounts ||= transactions.group_by(&:account).map { |k, v| [k, v.sum(&:amount)] }.to_h
+    @total_amounts ||= transactions.group_by(&:account).map { |k, v| [k, v.sum(&:money)] }.to_h
   end
 
   def summary
@@ -37,16 +36,16 @@ class Trip
 
   def display_categories(account, transactions)
     transactions.group_by(&:category).map do |category, cts|
-      amount = cts.sum(&:amount)
-      percentage = percentage(amount, total_amounts[account])
+      money = cts.sum(&:money)
+      percentage = percentage(money, total_amounts[account])
 
-      "[#{account.code}] #{category}: #{amount.to_f}#{account.currency} (#{percentage}%)"
+      "[#{account}] #{category}: #{money.format(MONEY_DISPLAY_FORMAT)} (#{percentage}%)"
     end
   end
 
-  def percentage(amount, total_amount)
-    return 100.0 if total_amount.zero?
+  def percentage(money, total)
+    return 100.0 if total.zero?
 
-    ((amount.abs / total_amount.abs) * 100).to_f.round(2)
+    ((money.abs / total.abs) * 100).to_f.round(2)
   end
 end

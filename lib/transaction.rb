@@ -8,32 +8,40 @@
 # amount: value of the transaction (marked with -/+ to identify an expense vs an income)
 # currency: currency on which the transaction was made
 # travel: string identifying a transaction made on the context of a trip
-Transaction = Struct.new(:account, :date, :category, :description, :amount, :currency, :travel) do
+# processed: string identifying if a transaction has been processed or not
+Transaction = Struct.new(:account, :date, :category, :description, :amount, :currency, :travel, :processed) do
+  alias_method :processed?, :processed
+
   def initialize(*)
     super
     self.date = date
-    self.amount = amount
+    self.processed = processed
   end
 
   def date=(date)
-    self['date'] = Utils.cast(date, Date)
+    self['date'] = date.is_a?(String) ? Date.parse(date) : date
   end
 
-  def amount=(amount)
-    self['amount'] = Utils.cast(amount, BigDecimal)
+  def processed=(processed)
+    self['processed'] = !processed.nil? && processed.to_sym == TRUE_VALUE
   end
 
   def expense?
-    amount.negative?
+    money.negative?
+  end
+
+  def money
+    @money ||= Money.new(BigDecimal(amount) * currency_info.subunit_to_unit, currency_info)
   end
 
   def ledger_format(member)
     value = public_send(member)
 
     case member
-    when :date then value.strftime('%d-%m-%Y')
-    when :amount then value.to_f
-    when :account then value.code
+    when :date      then value.strftime(DATE_FORMAT)
+    when :amount    then money.format(MONEY_LEDGER_FORMAT)
+    when :currency  then money.currency.iso_code
+    when :processed then (processed? ? TRUE_VALUE : FALSE_VALUE)
     else value
     end
   end
@@ -43,8 +51,15 @@ Transaction = Struct.new(:account, :date, :category, :description, :amount, :cur
   end
 
   def to_s(display_travel: true)
-    amount = expense? ? ledger_format(:amount) : "+#{ledger_format(:amount)}"
-    message = "[#{ledger_format(:account)}] Date: #{ledger_format(:date)}, #{category} (#{description}), #{amount}#{currency}"
+    amount = money.format(MONEY_DISPLAY_FORMAT)
+    processed = processed? ? '✓' : '×'
+    message = "#{processed} [#{account}] Date: #{ledger_format(:date)}, #{category} (#{description}), #{amount}"
     display_travel && travel ? "#{message}, Travel: #{travel}" : message
+  end
+
+  private
+
+  def currency_info
+    @currency_info ||= Money::Currency.new(currency)
   end
 end

@@ -9,44 +9,38 @@ class TransactionBuilder
 
   def initialize(ledger)
     @ledger = ledger
-    @transaction = default_transaction
+    @transaction = transaction
   end
 
   def build!
-    read_account
+    read(:account)
     read(:date, default: transaction.ledger_format(:date))
     read(:category, presence: true)
     read(:description)
-    read(:amount, presence: true) { |value| value =~ WITH_SIGN ? value : "-#{value}" }
+    read(:amount, presence: true)
     read(:currency)
     read(:travel)
+    read(:processed, default: transaction.ledger_format(:processed))
 
     transaction
   end
 
   private
 
-  def default_transaction
+  def transaction
     Transaction.new(
-      ledger.accounts[DEFAULT_ACCOUNT_CODE],
+      DEFAULT_ACCOUNT_CODE,
       DEFAULT_DATE,
       DEFAULT_CATEGORY,
       DEFAULT_DESCRIPTION,
       DEFAULT_AMOUNT,
       DEFAULT_CURRENCY,
-      DEFAULT_TRAVEL
+      DEFAULT_TRAVEL,
+      DEFAULT_PROCESSED
     )
   end
 
   private
-
-  def read_account
-    read(:account, default: transaction.ledger_format(:account)) do |value|
-      ledger.accounts[value].tap do |account|
-        fail ArgumentError, "Account must be present" if account.nil? && !value.empty?
-      end
-    end
-  end
 
   def read(key, default: transaction.public_send(key), presence: false)
     title = key.to_s.sub('_', ' ').capitalize
@@ -56,19 +50,18 @@ class TransactionBuilder
 
     fail ArgumentError, "#{title} must be present" if presence && value.empty?
 
-    value = yield(value) if block_given?
-
     transaction.public_send(:"#{key}=", value) unless (value.respond_to?(:empty?) && value.empty?) || value.nil?
   end
 
   def prepare_readline_completion(key)
     completion_list =
       case key
-      when :account     then ledger.accounts.keys
-      when :category    then (DEFAULT_CATEGORIES_LIST + ledger.existing_categories).uniq.sort
-      when :description then ledger.existing_descriptions
-      when :currency    then (DEFAULT_CURRENCIES_LIST + ledger.existing_currencies).uniq.sort
-      when :travel      then ledger.existing_travels
+      when :account     then ledger.accounts
+      when :category    then (DEFAULT_CATEGORIES_LIST + ledger.categories).uniq.sort
+      when :description then ledger.descriptions
+      when :currency    then (DEFAULT_CURRENCIES_LIST + ledger.currencies).uniq.sort
+      when :travel      then ledger.travels
+      when :processed   then [FALSE_VALUE, TRUE_VALUE]
       end
 
     Readline.completion_proc = completion_list && proc { |s| completion_list.grep(/^#{Regexp.escape(s)}/) }

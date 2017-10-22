@@ -9,9 +9,11 @@ require 'optparse'
 require 'optparse/date'
 require 'openssl'
 require 'io/console'
+require 'money'
 
-dir = File.expand_path(File.dirname(__FILE__))
-Dir.glob(File.join(dir, 'lib', '*.rb')).each { |file| require_relative file }
+I18n.enforce_available_locales = false
+
+Dir.glob(File.join(File.expand_path(File.dirname(__FILE__)), 'lib', '*.rb')).each { |file| require_relative file }
 
 ledger = ENV['LEDGER']
 
@@ -23,15 +25,20 @@ options = UI.new.tap(&:run).options
 
 ledger = Ledger.new
 
-ledger.encrypt! and exit if options[:encrypt]
-ledger.decrypt! and exit if options[:decrypt]
+case
+when options[:add]     then ledger.add!
+when options[:open]    then ledger.open!
+when options[:decrypt] then ledger.decrypt!
+when options[:encrypt] then ledger.encrypt!
+end
 
 ledger.load!
 printer = Printer.new(ledger)
 
-ledger.add! if options[:add]
-printer.balance if options[:balance]
-printer.categories if options[:categories]
-printer.transactions if options[:transactions]
-printer.travels(options[:travels]) if options[:travels]
-printer.report(options[:report]) if options[:report]
+case
+when options[:balance]      then printer.balance
+when options[:categories]   then printer.categories
+when options[:transactions] then printer.transactions
+when options[:trips]        then printer.trips(options[:trips])
+when options[:report]       then printer.report(options[:report])
+end

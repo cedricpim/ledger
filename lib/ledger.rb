@@ -1,35 +1,25 @@
-# Class responsible for loading the ledger file into memory. It keeps two main
-# entities: all the accounts and the transactions. It can also be queried to
-# retrieve information regarding those entities.
+# Class responsible for loading the ledger file into memory and storing all the
+# transactions. It can also be queried to retrieve information regarding these
+# transactions in several different ways.
 class Ledger
+  extend Forwardable
+
   ENCRYPTION_ALGORITHM = 'AES-256-CBC'.freeze
 
-  attr_accessor :accounts, :transactions
+  def_delegators :content, :accounts, :categories, :currencies, :descriptions, :travels, :trips, :report
+
+  attr_accessor :transactions
 
   def initialize
-    @accounts = {}
     @transactions = []
   end
 
   def load!
     handle_encryption do
-      transaction_section = false
-      CSV.foreach(LEDGER) do |row|
-        next if row.first == 'Code'
-        transaction_section = true and next if row.first == 'Account Code'
-
-        process(row, transaction_section)
+      CSV.foreach(LEDGER, headers: true) do |row|
+        self.transactions << Transaction.new(*row.fields)
       end
     end
-  end
-
-  def handle_encryption
-    decrypt!
-    yield
-    encrypt!
-  rescue OpenSSL::Cipher::CipherError
-    yield
-    encrypt!
   end
 
   def add!
@@ -37,39 +27,12 @@ class Ledger
 
     handle_encryption do
       File.open(LEDGER, 'a') { |file| file.write("#{transaction.to_ledger}\n") }
-      File.write(LEDGER, File.read(LEDGER).gsub(/\n+/,"\n")) # Clean empty lines
+      File.write(LEDGER, File.read(LEDGER).gsub(/\n+/,"\n"))
     end
   end
 
-  def existing_categories
-    transactions.map(&:category).uniq.sort
-  end
-
-  def existing_descriptions
-    transactions.map(&:description).uniq.compact.sort
-  end
-
-  def existing_currencies
-    transactions.map(&:currency).uniq.sort
-  end
-
-  def existing_travels
-    transactions.map(&:travel).uniq.compact.sort
-  end
-
-  def travels
-    transactions.select { |t| t.travel && t.expense? }.group_by(&:travel).map { |t, trs| Trip.new(t, trs) }
-  end
-
-  def report(options)
-    filters = []
-    filters << ->(transaction) { transaction.date >= options[:from] } if options[:from]
-    filters << ->(transaction) { transaction.date <= options[:till] } if options[:till]
-    filters << ->(transaction) { !options[:exclude].include?(transaction.category) } if options[:exclude]
-    filters << ->(transaction) { transaction.date.month == options[:monthly] } if options[:monthly]
-    filters << ->(transaction) { transaction.date.cwyear == options[:annual] } if options[:annual]
-
-    transactions.select { |t| filters.all? { |f| f.call(t) } }.group_by(&:account).map { |a, trs| Report.new(a, trs) }
+  def open!
+    handle_encryption { system("#{ENV['EDITOR']} #{LEDGER.path}") }
   end
 
   def decrypt!
@@ -81,6 +44,15 @@ class Ledger
   end
 
   private
+
+  def handle_encryption
+    decrypt!
+    yield
+    encrypt!
+  rescue OpenSSL::Cipher::CipherError
+    yield
+    encrypt!
+  end
 
   def encryption
     return unless ENCRYPTION
@@ -102,15 +74,7 @@ class Ledger
     STDIN.noecho(&:gets).chomp
   end
 
-  def process(row, transaction_section)
-    if transaction_section
-      account = accounts[row.shift]
-      transaction = Transaction.new(account, *row)
-      self.transactions << transaction
-      account.amount += transaction.amount
-    else
-      self.accounts[row.first] = Account.new(*row)
-    end
+  def content
+    @content ||= Content.new(transactions)
   end
 end
-

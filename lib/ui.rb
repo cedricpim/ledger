@@ -33,11 +33,11 @@ class UI
         end
       end
 
-      opts.on("-o", "--open", "Open CSV file") do
-        Ledger.new.open
+      opts.on("-o", "--open", "Open CSV file") do |open|
+        options[:open] = open
       end
 
-      opts.on("-t", "--transactions", "List Transactions") do |transactions|
+      opts.on("-l", "--list", "List Transactions") do |transactions|
         options[:transactions] = transactions
       end
 
@@ -70,12 +70,12 @@ class UI
         end
       end
 
-      opts.on("-T", "--travels", "List travel expenses") do |travels|
-        options[:travels] = {summary: true}
+      opts.on("-t", "--trips", "List trip expenses") do |trips|
+        options[:trips] = {summary: true}
 
         opts.on("-d", "Detailing each transaction") do |detailed|
-          options[:travels][:detailed] = detailed
-          options[:travels][:summary] = false
+          options[:trips][:detailed] = detailed
+          options[:trips][:summary] = false
         end
       end
 
