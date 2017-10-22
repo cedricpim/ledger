@@ -9,6 +9,7 @@ require 'optparse'
 require 'optparse/date'
 require 'openssl'
 require 'money'
+require 'tempfile'
 
 I18n.enforce_available_locales = false
 
@@ -16,26 +17,16 @@ Dir.glob(File.join(File.expand_path(File.dirname(__FILE__)), 'lib', '*.rb')).eac
 
 fail ArgumentError, 'Environment variable LEDGER with the location of the ledger file must be specified' unless ENV['LEDGER']
 
-ledger = Ledger.new
-
-ledger.create! and exit if ARGV[0] == 'create'
+Ledger.new.create! and exit if ARGV[0] == 'create'
 
 options = UI.new.tap(&:run).options
 
 case
-when options[:add]     then ledger.add!
-when options[:open]    then ledger.open!
-when options[:decrypt] then ledger.decrypt!
-when options[:encrypt] then ledger.encrypt!
-end
-
-ledger.load!
-printer = Printer.new(ledger)
-
-case
-when options[:balance]      then printer.balance
-when options[:categories]   then printer.categories
-when options[:transactions] then printer.transactions
-when options[:trips]        then printer.trips(options[:trips])
-when options[:report]       then printer.report(options[:report])
+when options[:add]          then Ledger.new.add!
+when options[:open]         then Ledger.new.open!
+when options[:balance]      then Printer.new.balance
+when options[:categories]   then Printer.new.categories
+when options[:transactions] then Printer.new.transactions
+when options[:trips]        then Printer.new.trips(options[:trips])
+when options[:report]       then Printer.new.report(options[:report])
 end

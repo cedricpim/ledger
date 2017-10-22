@@ -23,16 +23,6 @@ class UI
         options[:categories] = categories
       end
 
-      if ENCRYPTION
-        opts.on("-d", "--decrypt", "Decrypt ledger") do |decrypt|
-          options[:decrypt] = decrypt
-        end
-
-        opts.on("-e", "--encrypt", "Encrypt ledger") do |encrypt|
-          options[:encrypt] = encrypt
-        end
-      end
-
       opts.on("-o", "--open", "Open CSV file") do |open|
         options[:open] = open
       end

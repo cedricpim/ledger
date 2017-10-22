@@ -38,8 +38,6 @@ class TransactionBuilder
     )
   end
 
-  private
-
   def read(key, default: transaction.public_send(key), presence: false)
     title = key.to_s.capitalize
 

@@ -4,8 +4,8 @@
 class Printer
   attr_reader :ledger
 
-  def initialize(ledger)
-    @ledger = ledger
+  def initialize
+    @ledger = Ledger.new
   end
 
   def balance

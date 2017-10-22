@@ -22,3 +22,8 @@ MONEY_DISPLAY_FORMAT = {sign_positive: true, decimal_mark: '.', symbol_after_wit
 MONEY_LEDGER_FORMAT = {symbol: false, thousands_separator: nil}.merge(MONEY_DISPLAY_FORMAT).freeze
 TRUE_VALUE = :yes
 FALSE_VALUE = :no
+
+# Other settings
+ENCRYPTION_ALGORITHM = 'AES-256-CBC'.freeze
+
+FIELDS = %w[Account Date Category Description Amount Currency Travel Processed].freeze
