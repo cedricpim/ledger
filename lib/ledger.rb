@@ -6,6 +6,8 @@ class Ledger
 
   ENCRYPTION_ALGORITHM = 'AES-256-CBC'.freeze
 
+  FIELDS = %w[Account Date Category Description Amount Currency Travel Processed].freeze
+
   def_delegators :content, :accounts, :categories, :currencies, :descriptions, :travels, :trips, :report
 
   attr_accessor :transactions
@@ -16,7 +18,7 @@ class Ledger
 
   def load!
     handle_encryption do
-      CSV.foreach(LEDGER, headers: true) do |row|
+      CSV.foreach(file, headers: true) do |row|
         self.transactions << Transaction.new(*row.fields)
       end
     end
@@ -26,13 +28,19 @@ class Ledger
     transaction = TransactionBuilder.new(self).build!
 
     handle_encryption do
-      File.open(LEDGER, 'a') { |file| file.write("#{transaction.to_ledger}\n") }
-      File.write(LEDGER, File.read(LEDGER).gsub(/\n+/,"\n"))
+      File.open(file, 'a') { |file| file.write("#{transaction.to_ledger}\n") }
+      File.write(file, File.read(file).gsub(/\n+/,"\n"))
     end
   end
 
+  def create!
+    return if File.exist?(filepath)
+
+    CSV.open(filepath, 'wb') { |csv| csv << FIELDS }
+  end
+
   def open!
-    handle_encryption { system("#{ENV['EDITOR']} #{LEDGER.path}") }
+    handle_encryption { system("#{ENV['EDITOR']} #{file.path}") }
   end
 
   def decrypt!
@@ -60,9 +68,9 @@ class Ledger
     cipher = OpenSSL::Cipher.new(ENCRYPTION_ALGORITHM)
     yield cipher
     cipher.pkcs5_keyivgen(*credentials)
-    result = cipher.update(File.read(LEDGER))
+    result = cipher.update(File.read(file))
     result << cipher.final
-    File.open(LEDGER, 'w') { |file| file.write(result) }
+    File.open(file, 'w') { |file| file.write(result) }
   end
 
   def credentials
@@ -76,5 +84,13 @@ class Ledger
 
   def content
     @content ||= Content.new(transactions)
+  end
+
+  def file
+    @file ||= File.new(filepath)
+  end
+
+  def filepath
+    @filepath ||= File.expand_path(ENV['LEDGER'])
   end
 end

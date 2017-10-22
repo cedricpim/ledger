@@ -3,8 +3,6 @@
 # inputs and build the transaction. A couple of improvements have been added
 # such as default attributes and auto-complete.
 class TransactionBuilder
-  WITH_SIGN = /^(-|\+)/.freeze
-
   attr_reader :ledger, :transaction
 
   def initialize(ledger)
@@ -17,8 +15,8 @@ class TransactionBuilder
     read(:date, default: transaction.ledger_format(:date))
     read(:category, presence: true)
     read(:description)
-    read(:amount, presence: true)
     read(:currency)
+    read(:amount, presence: true)
     read(:travel)
     read(:processed, default: transaction.ledger_format(:processed))
 
