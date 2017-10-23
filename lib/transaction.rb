@@ -1,25 +1,11 @@
 # Class representing a single transaction, it contains also some methods
 # related to printing the information to different sources.
-#
-# account: account where this transaction was made
-# date: date of the transaction
-# category: category of the transaction
-# description: description of the transaction
-# amount: value of the transaction (marked with -/+ to identify an expense vs an income)
-# currency: currency on which the transaction was made
-# travel: string identifying a transaction made on the context of a trip
-# processed: string identifying if a transaction has been processed or not
+# The class is modeled by the fields defined on the configuration file.
 Transaction = Struct.new(*CONFIGS[:fields].keys) do
   attr_writer :money
 
-  def initialize(*)
-    super
-    self.date = date
-  end
-
-  # Remove this and add date_parsed
-  def date=(date)
-    self['date'] = date.is_a?(String) ? Date.parse(date) : date
+  def parsed_date
+    @parsed_date ||= date.is_a?(String) ? Date.parse(date) : date
   end
 
   def expense?
@@ -38,7 +24,6 @@ Transaction = Struct.new(*CONFIGS[:fields].keys) do
     value = public_send(member)
 
     case member
-    when :date      then value.strftime(CONFIGS[:date][:format])
     when :amount    then money.format(CONFIGS[:money][:ledger])
     when :currency  then money.currency.iso_code
     else value
@@ -53,7 +38,7 @@ Transaction = Struct.new(*CONFIGS[:fields].keys) do
   def to_s(display_travel: true)
     amount = money.format(CONFIGS[:money][:display])
     processed = processed? ? '✓' : '×'
-    message = "#{processed} [#{account}] Date: #{ledger_format(:date)}, #{category} (#{description}), #{amount}"
+    message = "#{processed} [#{account}] Date: #{date}, #{category} (#{description}), #{amount}"
     display_travel && travel ? "#{message}, Travel: #{travel}" : message
   end
 

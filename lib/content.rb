@@ -33,11 +33,11 @@ class Content
 
   def report(options)
     filters = []
-    filters << ->(transaction) { transaction.date >= options[:from] } if options[:from]
-    filters << ->(transaction) { transaction.date <= options[:till] } if options[:till]
+    filters << ->(transaction) { transaction.parsed_date >= options[:from] } if options[:from]
+    filters << ->(transaction) { transaction.parsed_date <= options[:till] } if options[:till]
     filters << ->(transaction) { !options[:exclude].include?(transaction.category) } if options[:exclude]
-    filters << ->(transaction) { transaction.date.month == options[:monthly] } if options[:monthly]
-    filters << ->(transaction) { transaction.date.cwyear == options[:annual] } if options[:annual]
+    filters << ->(transaction) { transaction.parsed_date.month == options[:monthly] } if options[:monthly]
+    filters << ->(transaction) { transaction.parsed_date.cwyear == options[:annual] } if options[:annual]
 
     transactions.select { |t| filters.all? { |f| f.call(t) } }.group_by(&:account).map { |a, trs| Report.new(a, trs) }
   end
