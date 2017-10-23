@@ -21,7 +21,8 @@ Money.default_bank = Money::Bank::GoogleCurrency.new
 
 # Configurations
 opts = UI.new.tap(&:run).options
-puts 'Configuration file not found' or exit unless File.exists?(opts[:config])
+
+puts 'Configuration file not found' or exit unless File.exist?(opts[:config])
 
 CONFIGS = YAML.load(ERB.new(File.read(opts[:config])).result).freeze
 
