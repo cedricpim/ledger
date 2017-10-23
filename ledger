@@ -13,22 +13,22 @@ require 'money'
 require 'money/bank/google_currency'
 require 'yaml'
 require 'erb'
-
-# Configurations
 require_relative 'lib/ui'
-opts = UI.new.tap(&:run).options
-
-CONFIGS = YAML.load(ERB.new(File.read(opts[:config])).result).freeze
-
-Dir.glob(File.join(File.expand_path(File.dirname(__FILE__)), 'lib', '*.rb')).each { |file| require_relative file }
 
 # Money configurations
 I18n.enforce_available_locales = false
 Money.default_bank = Money::Bank::GoogleCurrency.new
 
-Ledger.new.create! and exit if ARGV[0] == 'create'
+# Configurations
+opts = UI.new.tap(&:run).options
+puts 'Configuration file not found' or exit unless File.exists?(opts[:config])
+
+CONFIGS = YAML.load(ERB.new(File.read(opts[:config])).result).freeze
+
+Dir.glob(File.join('lib', '*.rb')).each { |file| require_relative file }
 
 case
+when ARGV[0] == 'create' then Ledger.new.create!
 when opts[:add]          then Ledger.new.add!
 when opts[:open]         then Ledger.new.open!
 when opts[:balance]      then Printer.new.balance

@@ -1,6 +1,5 @@
 # Class responsible for loading the ledger file into memory and storing all the
-# transactions. It can also be queried to retrieve information regarding these
-# transactions in several different ways.
+# transactions, creating the ledger file or adding a new transaction.
 class Ledger
   extend Forwardable
 
@@ -33,7 +32,6 @@ class Ledger
   def create!
     return if File.exist?(filepath)
 
-    # Copy default config file
     CSV.open(filepath, 'wb') { |csv| csv << CONFIGS[:fields].keys.map(&:capitalize) }
     apply_cipher { |cipher| cipher.encrypt }
   end

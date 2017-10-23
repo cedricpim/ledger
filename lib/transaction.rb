@@ -9,7 +9,7 @@
 # currency: currency on which the transaction was made
 # travel: string identifying a transaction made on the context of a trip
 # processed: string identifying if a transaction has been processed or not
-Transaction = Struct.new(:account, :date, :category, :description, :amount, :currency, :travel, :processed) do
+Transaction = Struct.new(*CONFIGS[:fields].keys) do
   attr_writer :money
 
   def initialize(*)
