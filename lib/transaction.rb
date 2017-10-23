@@ -10,26 +10,24 @@
 # travel: string identifying a transaction made on the context of a trip
 # processed: string identifying if a transaction has been processed or not
 Transaction = Struct.new(:account, :date, :category, :description, :amount, :currency, :travel, :processed) do
-  alias_method :processed?, :processed
-
   attr_writer :money
 
   def initialize(*)
     super
     self.date = date
-    self.processed = processed
   end
 
+  # Remove this and add date_parsed
   def date=(date)
     self['date'] = date.is_a?(String) ? Date.parse(date) : date
   end
 
-  def processed=(processed)
-    self['processed'] = !processed.nil? && processed.to_sym == CONFIGS[:values][:true]
-  end
-
   def expense?
     money.negative?
+  end
+
+  def processed?
+    processed == 'yes'
   end
 
   def money
@@ -43,7 +41,6 @@ Transaction = Struct.new(:account, :date, :category, :description, :amount, :cur
     when :date      then value.strftime(CONFIGS[:date][:format])
     when :amount    then money.format(CONFIGS[:money][:ledger])
     when :currency  then money.currency.iso_code
-    when :processed then (processed? ? CONFIGS[:values][:true] : CONFIGS[:values][:false])
     else value
     end
   end
@@ -52,6 +49,7 @@ Transaction = Struct.new(:account, :date, :category, :description, :amount, :cur
     members.map { |member| ledger_format(member) }.join(',') + "\n"
   end
 
+  # Move format to configuration?
   def to_s(display_travel: true)
     amount = money.format(CONFIGS[:money][:display])
     processed = processed? ? '✓' : '×'

@@ -33,7 +33,8 @@ class Ledger
   def create!
     return if File.exist?(filepath)
 
-    CSV.open(filepath, 'wb') { |csv| csv << CONFIGS[:fields].keys }
+    # Copy default config file
+    CSV.open(filepath, 'wb') { |csv| csv << CONFIGS[:fields].keys.map(&:capitalize) }
     apply_cipher { |cipher| cipher.encrypt }
   end
 

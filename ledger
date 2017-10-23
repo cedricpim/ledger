@@ -14,15 +14,17 @@ require 'money/bank/google_currency'
 require 'yaml'
 require 'erb'
 
+# Configurations
+require_relative 'lib/ui'
+opts = UI.new.tap(&:run).options
+
+CONFIGS = YAML.load(ERB.new(File.read(opts[:config])).result).freeze
+
 Dir.glob(File.join(File.expand_path(File.dirname(__FILE__)), 'lib', '*.rb')).each { |file| require_relative file }
 
 # Money configurations
 I18n.enforce_available_locales = false
 Money.default_bank = Money::Bank::GoogleCurrency.new
-
-# Configurations
-opts = UI.new.tap(&:run).options
-CONFIGS = YAML.load(ERB.new(File.read(opts[:config])).result).freeze
 
 Ledger.new.create! and exit if ARGV[0] == 'create'
 
