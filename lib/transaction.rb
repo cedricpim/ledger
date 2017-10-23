@@ -25,7 +25,7 @@ Transaction = Struct.new(:account, :date, :category, :description, :amount, :cur
   end
 
   def processed=(processed)
-    self['processed'] = !processed.nil? && processed.to_sym == TRUE_VALUE
+    self['processed'] = !processed.nil? && processed.to_sym == CONFIGS[:values][:true]
   end
 
   def expense?
@@ -40,10 +40,10 @@ Transaction = Struct.new(:account, :date, :category, :description, :amount, :cur
     value = public_send(member)
 
     case member
-    when :date      then value.strftime(DATE_FORMAT)
-    when :amount    then money.format(MONEY_LEDGER_FORMAT)
+    when :date      then value.strftime(CONFIGS[:date][:format])
+    when :amount    then money.format(CONFIGS[:money][:ledger])
     when :currency  then money.currency.iso_code
-    when :processed then (processed? ? TRUE_VALUE : FALSE_VALUE)
+    when :processed then (processed? ? CONFIGS[:values][:true] : CONFIGS[:values][:false])
     else value
     end
   end
@@ -53,7 +53,7 @@ Transaction = Struct.new(:account, :date, :category, :description, :amount, :cur
   end
 
   def to_s(display_travel: true)
-    amount = money.format(MONEY_DISPLAY_FORMAT)
+    amount = money.format(CONFIGS[:money][:display])
     processed = processed? ? '✓' : '×'
     message = "#{processed} [#{account}] Date: #{ledger_format(:date)}, #{category} (#{description}), #{amount}"
     display_travel && travel ? "#{message}, Travel: #{travel}" : message

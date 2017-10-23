@@ -11,7 +11,7 @@ class Trip
   end
 
   def totals
-    "Total: #{total_amounts.map { |account, money| "[#{account}] #{money.format(MONEY_DISPLAY_FORMAT)}" }.join(' | ')}"
+    "Total: #{total_amounts.map { |account, money| "[#{account}] #{money.format(CONFIGS[:money][:display])}" }.join(' | ')}"
   end
 
   def to_s(options)
@@ -39,7 +39,7 @@ class Trip
       money = cts.sum(&:money)
       percentage = percentage(money, total_amounts[account])
 
-      "[#{account}] #{category}: #{money.format(MONEY_DISPLAY_FORMAT)} (#{percentage}%)"
+      "[#{account}] #{category}: #{money.format(CONFIGS[:money][:display])} (#{percentage}%)"
     end
   end
 

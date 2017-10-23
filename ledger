@@ -11,24 +11,27 @@ require 'openssl'
 require 'tempfile'
 require 'money'
 require 'money/bank/google_currency'
-
-I18n.enforce_available_locales = false
-Money.default_bank = Money::Bank::GoogleCurrency.new
+require 'yaml'
+require 'erb'
 
 Dir.glob(File.join(File.expand_path(File.dirname(__FILE__)), 'lib', '*.rb')).each { |file| require_relative file }
 
-fail ArgumentError, 'Environment variable LEDGER with the location of the ledger file must be specified' unless ENV['LEDGER']
+# Money configurations
+I18n.enforce_available_locales = false
+Money.default_bank = Money::Bank::GoogleCurrency.new
+
+# Configurations
+opts = UI.new.tap(&:run).options
+CONFIGS = YAML.load(ERB.new(File.read(opts[:config])).result).freeze
 
 Ledger.new.create! and exit if ARGV[0] == 'create'
 
-options = UI.new.tap(&:run).options
-
 case
-when options[:add]          then Ledger.new.add!
-when options[:open]         then Ledger.new.open!
-when options[:balance]      then Printer.new.balance
-when options[:categories]   then Printer.new.categories
-when options[:transactions] then Printer.new.transactions
-when options[:trips]        then Printer.new.trips(options[:trips])
-when options[:report]       then Printer.new.report(options[:report])
+when opts[:add]          then Ledger.new.add!
+when opts[:open]         then Ledger.new.open!
+when opts[:balance]      then Printer.new.balance
+when opts[:categories]   then Printer.new.categories
+when opts[:transactions] then Printer.new.transactions
+when opts[:trips]        then Printer.new.trips(opts[:trips])
+when opts[:report]       then Printer.new.report(opts[:report])
 end

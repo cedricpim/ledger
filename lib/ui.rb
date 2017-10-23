@@ -4,7 +4,7 @@ class UI
   attr_reader :options
 
   def initialize
-    @options = {}
+    @options = {config: File.expand_path('~/.config/ledger/config')}
   end
 
   def run
@@ -21,6 +21,10 @@ class UI
 
       opts.on("-c", "--categories", "List Categories") do |categories|
         options[:categories] = categories
+      end
+
+      opts.on("-C [STRING]", "--config", "Configuration file") do |config|
+        options[:config] = config
       end
 
       opts.on("-o", "--open", "Open CSV file") do |open|

@@ -15,8 +15,8 @@ class TransactionBuilder
     read(:date, default: transaction.ledger_format(:date))
     read(:category, presence: true)
     read(:description)
-    read(:currency)
     read(:amount, presence: true)
+    read(:currency)
     read(:travel)
     read(:processed, default: transaction.ledger_format(:processed))
 
@@ -50,26 +50,17 @@ class TransactionBuilder
     completion_list =
       case key
       when :account     then ledger.accounts
-      when :category    then (DEFAULT_CATEGORIES_LIST + ledger.categories).uniq.sort
+      when :category    then (CONFIGS[:currencies] + ledger.categories).uniq.sort
       when :description then ledger.descriptions
-      when :currency    then (DEFAULT_CURRENCIES_LIST + ledger.currencies).uniq.sort
+      when :currency    then (CONFIGS[:categories] + ledger.currencies).uniq.sort
       when :travel      then ledger.travels
-      when :processed   then [FALSE_VALUE, TRUE_VALUE]
+      when :processed   then CONFIGS[:values].values
       end
 
     Readline.completion_proc = completion_list && proc { |s| completion_list.grep(/^#{Regexp.escape(s)}/i) }
   end
 
   def default_transaction
-    Transaction.new(
-      DEFAULT_ACCOUNT,
-      DEFAULT_DATE,
-      DEFAULT_CATEGORY,
-      DEFAULT_DESCRIPTION,
-      DEFAULT_AMOUNT,
-      DEFAULT_CURRENCY,
-      DEFAULT_TRAVEL,
-      DEFAULT_PROCESSED
-    )
+    Transaction.new(*CONFIGS[:fields].values)
   end
 end

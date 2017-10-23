@@ -9,7 +9,7 @@ class Report
   end
 
   def total_text
-    text('Total', transactions) { |expense| expense.format(MONEY_DISPLAY_FORMAT) }
+    text('Total', transactions) { |expense| expense.format(CONFIGS[:money][:display]) }
   end
 
   def to_s(options)
@@ -20,7 +20,7 @@ class Report
 
   def summary
     transactions.group_by(&:category).map do |category, cts|
-      text(category.upcase, cts) { |expense| "#{expense.format(MONEY_DISPLAY_FORMAT)} (#{percentage(expense)}%)" }
+      text(category.upcase, cts) { |expense| "#{expense.format(CONFIGS[:money][:display])} (#{percentage(expense)}%)" }
     end
   end
 
@@ -28,7 +28,7 @@ class Report
     expense = transactions.select(&:expense?).sum(&:money)
     income = transactions.reject(&:expense?).sum(&:money)
     expense_text = yield(expense) unless expense.zero?
-    income_text = income.format(MONEY_DISPLAY_FORMAT) unless income.zero?
+    income_text = income.format(CONFIGS[:money][:display]) unless income.zero?
     "#{category.upcase}: #{[expense_text, income_text].compact.join(' | ')}"
   end
 

@@ -33,8 +33,8 @@ class Ledger
   def create!
     return if File.exist?(filepath)
 
-    CSV.open(filepath, 'wb') { |csv| csv << FIELDS }
-    encryption { |cipher| cipher.encrypt }
+    CSV.open(filepath, 'wb') { |csv| csv << CONFIGS[:fields].keys }
+    apply_cipher { |cipher| cipher.encrypt }
   end
 
   def open!
@@ -46,18 +46,18 @@ class Ledger
   # Rescue from OpenSSL::Cipher::CipherError when trying to decrypt an already
   # decrypted file.
   def handle_encryption
-    encryption(file, tempfile) { |cipher| cipher.decrypt }
+    apply_cipher(file, tempfile) { |cipher| cipher.decrypt }
     yield(tempfile)
-    encryption(tempfile, file) { |cipher| cipher.encrypt }
+    apply_cipher(tempfile, file) { |cipher| cipher.encrypt }
   rescue OpenSSL::Cipher::CipherError
     yield(file)
-    encryption { |cipher| cipher.encrypt }
+    apply_cipher { |cipher| cipher.encrypt }
   end
 
-  def encryption(source = file, target = file)
-    return unless ENCRYPTION
+  def apply_cipher(source = file, target = file)
+    return unless encryption[:enabled]
 
-    cipher = OpenSSL::Cipher.new(ENCRYPTION_ALGORITHM)
+    cipher = OpenSSL::Cipher.new(encryption[:algorithm])
     yield cipher
     cipher.pkcs5_keyivgen(*credentials)
     result = cipher.update(File.read(source))
@@ -65,16 +65,12 @@ class Ledger
     File.open(target, 'w') { |file| file.write(result) }
   end
 
-  def credentials
-    [`#{ENV['LEDGER_PASSWORD']}`, `#{ENV['LEDGER_SALT']}`].map(&:chomp)
-  end
-
   def content
-    @content ||=
-      begin
-        load!
-        Content.new(transactions)
-      end
+    return @content if @content
+
+    load!
+
+    @content = Content.new(transactions)
   end
 
   def file
@@ -82,10 +78,18 @@ class Ledger
   end
 
   def filepath
-    File.expand_path(ENV['LEDGER'])
+    File.expand_path(CONFIGS[:ledger])
   end
 
   def tempfile
-    @tempfile ||= ENCRYPTION ? Tempfile.new : file
+    @tempfile ||= encryption[:enabled] ? Tempfile.new : file
+  end
+
+  def credentials
+    [`#{encryption[:credentials][:password]}`, `#{encryption[:credentials][:salt]}`].compact.map(&:chomp)
+  end
+
+  def encryption
+    CONFIGS[:encryption]
   end
 end

@@ -9,26 +9,26 @@ class Printer
   end
 
   def balance
-    print('Balance') { ledger.accounts.join("\n") }
+    print('Balance') { ledger.accounts }
   end
 
   def categories
-    print('Categories') { ledger.categories.join("\n") }
+    print('Categories') { ledger.categories }
   end
 
   def transactions
-    print('Transactions') { ledger.transactions.join("\n") }
+    print('Transactions') { ledger.transactions }
   end
 
   def trips(options)
     ledger.trips.each do |trip|
-      print(trip.travel) { trip.to_s(options).push(trip.totals).join("\n") }
+      print(trip.travel) { trip.to_s(options).push(trip.totals) }
     end
   end
 
   def report(options)
     ledger.report(options).each do |report|
-      print(report.account) { report.to_s(options).push(report.total_text).join("\n") }
+      print(report.account) { report.to_s(options).push(report.total_text) }
     end
   end
 
@@ -36,7 +36,7 @@ class Printer
 
   def print(title)
     puts "####### #{title} #######"
-    puts yield
+    puts yield.join("\n")
     puts ''
   end
 end
