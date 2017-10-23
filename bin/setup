@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+mkdir -p $HOME/.config/ledger
+cp -n config/default $HOME/.config/ledger/config
+
+echo "Installation successful!"
