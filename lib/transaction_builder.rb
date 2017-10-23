@@ -3,22 +3,14 @@
 # inputs and build the transaction. A couple of improvements have been added
 # such as default attributes and auto-complete.
 class TransactionBuilder
-  attr_reader :ledger, :transaction
+  attr_reader :ledger
 
   def initialize(ledger)
     @ledger = ledger
-    @transaction = default_transaction
   end
 
   def build!
-    read(:account)
-    read(:date, default: transaction.ledger_format(:date))
-    read(:category, presence: true)
-    read(:description)
-    read(:amount, presence: true)
-    read(:currency)
-    read(:travel)
-    read(:processed, default: transaction.ledger_format(:processed))
+    CONFIGS[:fields].each { |field, options| read(field, options) }
 
     exchange_money
 
@@ -26,6 +18,10 @@ class TransactionBuilder
   end
 
   private
+
+  def transaction
+    @transaction ||= Transaction.new
+  end
 
   def exchange_money
     account_currency = ledger.currency_per_account[transaction.account]
@@ -35,32 +31,39 @@ class TransactionBuilder
     transaction.money = transaction.money.exchange_to(account_currency)
   end
 
-  def read(key, default: transaction.public_send(key), presence: false)
+  def read(key, default: '', presence: false, values: [])
     title = key.to_s.capitalize
 
-    prepare_readline_completion(key)
+    prepare_readline_completion(key, values)
+    value = treat_input(title, default)
+
+    puts "#{title} must be present" or exit if presence && value.empty?
+
+    transaction.public_send(:"#{key}=", value)
+  end
+
+  def treat_input(title, default)
     value = Readline.readline("#{title} [#{default}] ", true).strip
-
-    fail ArgumentError, "#{title} must be present" if presence && value.empty?
-
-    transaction.public_send(:"#{key}=", value.empty? ? default : value)
+    value.empty? ? default : value
   end
 
-  def prepare_readline_completion(key)
-    completion_list =
-      case key
-      when :account     then ledger.accounts
-      when :category    then (CONFIGS[:currencies] + ledger.categories).uniq.sort
-      when :description then ledger.descriptions
-      when :currency    then (CONFIGS[:categories] + ledger.currencies).uniq.sort
-      when :travel      then ledger.travels
-      when :processed   then CONFIGS[:values].values
-      end
+  # Include values on the list
+  def prepare_readline_completion(key, values)
+    completion_list = recommendations(key).concat(values).uniq.sort
 
-    Readline.completion_proc = completion_list && proc { |s| completion_list.grep(/^#{Regexp.escape(s)}/i) }
+    Readline.completion_proc = completion_list && proc do |s|
+      completion_list.grep(/^#{Regexp.escape(s)}/i)
+    end
   end
 
-  def default_transaction
-    Transaction.new(*CONFIGS[:fields].values)
+  def recommendations(key)
+    case key
+    when :account     then ledger.accounts
+    when :category    then ledger.categories
+    when :description then ledger.descriptions
+    when :currency    then ledger.currencies
+    when :travel      then ledger.travels
+    else []
+    end
   end
 end
