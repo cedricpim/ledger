@@ -8,23 +8,23 @@ class Content
   end
 
   def accounts
-    transactions.map(&:account).uniq.sort
+    collect_values(:account)
   end
 
   def categories
-    transactions.map(&:category).uniq.sort
+    collect_values(:category)
   end
 
   def descriptions
-    transactions.map(&:description).uniq.compact.sort
+    collect_values(:description)
   end
 
   def currencies
-    transactions.map(&:currency).uniq.sort
+    collect_values(:currency)
   end
 
   def travels
-    transactions.map(&:travel).uniq.compact.sort
+    collect_values(:travel)
   end
 
   def trips
@@ -47,13 +47,17 @@ class Content
     end
   end
 
-  def currency_per_account
-    @currency_per_account ||= accounts.each_with_object({}) do |account, result|
+  def accounts_currency
+    @accounts_currency ||= accounts.each_with_object({}) do |account, result|
       result[account] = transactions.find { |t| t.account == account }&.currency
     end
   end
 
   private
+
+  def collect_values(key)
+    transactions.map(&key).uniq.compact.sort
+  end
 
   def from(options)
     return unless options[:from]

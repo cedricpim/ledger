@@ -24,7 +24,7 @@ opts = UI.new.tap(&:run).options
 
 puts 'Configuration file not found' or exit unless File.exist?(opts[:config])
 
-CONFIGS = YAML.safe_load(ERB.new(File.read(opts[:config])).result).freeze
+CONFIGS = YAML.safe_load(ERB.new(File.read(opts[:config])).result, [Symbol]).freeze
 
 Dir.glob(File.join('lib', '*.rb')).each { |file| require_relative file }
 

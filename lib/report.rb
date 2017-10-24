@@ -20,7 +20,9 @@ class Report
 
   def summary
     transactions.group_by(&:category).map do |category, cts|
-      text(category.upcase, cts) { |expense| "#{expense.format(CONFIGS[:money][:display])} (#{percentage(expense)}%)" }
+      text(category.upcase, cts) do |expense|
+        "#{expense.format(CONFIGS[:money][:display])} (#{percentage(expense)}%)"
+      end
     end
   end
 

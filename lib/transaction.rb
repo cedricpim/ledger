@@ -8,6 +8,10 @@ Transaction = Struct.new(*CONFIGS[:fields].keys) do # rubocop:disable Metrics/Bl
     @parsed_date ||= date.is_a?(String) ? Date.parse(date) : date
   end
 
+  def money
+    @money ||= Money.new(BigDecimal(amount) * currency_info.subunit_to_unit, currency_info)
+  end
+
   def expense?
     money.negative?
   end
@@ -16,9 +20,18 @@ Transaction = Struct.new(*CONFIGS[:fields].keys) do # rubocop:disable Metrics/Bl
     processed == 'yes'
   end
 
-  def money
-    @money ||= Money.new(BigDecimal(amount) * currency_info.subunit_to_unit, currency_info)
+  def to_ledger
+    members.map { |member| ledger_format(member) }.join(',') + "\n"
   end
+
+  def to_s(display_travel: true)
+    amount = money.format(CONFIGS[:money][:display])
+    processed = processed? ? '✓' : '×'
+    message = "#{processed} [#{account}] Date: #{date}, #{category} (#{description}), #{amount}"
+    display_travel && travel ? "#{message}, Travel: #{travel}" : message
+  end
+
+  private
 
   def ledger_format(member)
     value = public_send(member)
@@ -29,20 +42,6 @@ Transaction = Struct.new(*CONFIGS[:fields].keys) do # rubocop:disable Metrics/Bl
     else value
     end
   end
-
-  def to_ledger
-    members.map { |member| ledger_format(member) }.join(',') + "\n"
-  end
-
-  # Move format to configuration?
-  def to_s(display_travel: true)
-    amount = money.format(CONFIGS[:money][:display])
-    processed = processed? ? '✓' : '×'
-    message = "#{processed} [#{account}] Date: #{date}, #{category} (#{description}), #{amount}"
-    display_travel && travel ? "#{message}, Travel: #{travel}" : message
-  end
-
-  private
 
   def currency_info
     @currency_info ||= Money::Currency.new(currency)

@@ -24,7 +24,7 @@ class TransactionBuilder
   end
 
   def exchange_money
-    account_currency = ledger.currency_per_account[transaction.account]
+    account_currency = ledger.accounts_currency[transaction.account]
 
     return unless account_currency
 

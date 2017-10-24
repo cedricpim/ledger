@@ -22,12 +22,14 @@ class Trip
   private
 
   def total_amounts
-    @total_amounts ||= transactions.group_by(&:account).map { |k, v| [k, v.sum(&:money)] }.to_h
+    @total_amounts ||= transactions.group_by(&:account).each_with_object({}) do |(account, ats), result|
+      result[account] = ats.sum(&:money)
+    end
   end
 
   def summary
     transactions.group_by(&:account).flat_map do |account, gts|
-      display_categories(account, gts)
+      display_per_category(account, gts)
     end
   end
 
@@ -35,7 +37,7 @@ class Trip
     transactions.map { |transaction| transaction.to_s(display_travel: false) }
   end
 
-  def display_categories(account, transactions)
+  def display_per_category(account, transactions)
     transactions.group_by(&:category).map do |category, cts|
       money = cts.sum(&:money)
       percentage = percentage(money, total_amounts[account])
