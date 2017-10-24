@@ -30,11 +30,11 @@ class Ledger
   end
 
   def create!
-    filepath = File.expand_path(CONFIGS[:ledger])
+    filepath = File.expand_path(CONFIGS.fetch(:ledger))
 
     return if File.exist?(filepath)
 
-    CSV.open(filepath, 'wb') { |csv| csv << CONFIGS[:fields].keys.map(&:capitalize) }
+    CSV.open(filepath, 'wb') { |csv| csv << CONFIGS.fetch(:fields).keys.map(&:capitalize) }
 
     encryption.encrypt!
   end

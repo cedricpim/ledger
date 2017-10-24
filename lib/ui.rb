@@ -58,7 +58,7 @@ class UI
 
       group_reports(opts)
       date_reports(opts)
-      exclude_categories(opts)
+      categories_excluded(opts)
       detailed_reports(opts)
     end
   end
@@ -83,7 +83,7 @@ class UI
     end
   end
 
-  def excluding_categories(opts)
+  def categories_excluded(opts)
     opts.on('-e x,y,z', Array, 'Excluding categories provided') do |categories|
       options[:report][:exclude] = categories
     end

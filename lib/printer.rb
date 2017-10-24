@@ -22,21 +22,21 @@ class Printer
 
   def trips(options)
     ledger.trips.each do |trip|
-      print(trip.travel) { trip.to_s(options).push(trip.totals) }
+      print(trip.travel) { trip.to_s(options).push(trip.footer) }
     end
   end
 
   def report(options)
     ledger.report(options).each do |report|
-      print(report.account) { report.to_s(options).push(report.total_text) }
+      print(report.account) { report.to_s(options).push(report.footer) }
     end
   end
 
   private
 
   def print(title)
-    puts "####### #{title} #######"
+    puts format(CONFIGS.dig(:format, :title), title: title)
     puts yield.join("\n")
-    puts ''
+    puts
   end
 end

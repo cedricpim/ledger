@@ -10,7 +10,7 @@ class TransactionBuilder
   end
 
   def build!
-    CONFIGS[:fields].each { |field, options| read(field, options) }
+    CONFIGS.fetch(:fields).each { |field, options| read(field, options) }
 
     exchange_money
 

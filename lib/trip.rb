@@ -10,21 +10,18 @@ class Trip
     @transactions = transactions
   end
 
-  def totals
-    total = total_amounts.map { |account, money| "[#{account}] #{money.format(CONFIGS[:money][:display])}" }
-    "Total: #{total.join(' | ')}"
-  end
-
   def to_s(options)
     options[:summary] ? summary : details
   end
 
+  def footer
+    format(templates[:totals], totals: totals)
+  end
+
   private
 
-  def total_amounts
-    @total_amounts ||= transactions.group_by(&:account).each_with_object({}) do |(account, ats), result|
-      result[account] = ats.sum(&:money)
-    end
+  def details
+    transactions.map { |transaction| format(templates[:detailed], transaction.attributes) }
   end
 
   def summary
@@ -33,16 +30,13 @@ class Trip
     end
   end
 
-  def details
-    transactions.map { |transaction| transaction.to_s(display_travel: false) }
-  end
-
   def display_per_category(account, transactions)
     transactions.group_by(&:category).map do |category, cts|
       money = cts.sum(&:money)
       percentage = percentage(money, total_amounts[account])
+      money = money.format(CONFIGS.dig(:format, :fields, :money, :display))
 
-      "[#{account}] #{category}: #{money.format(CONFIGS[:money][:display])} (#{percentage}%)"
+      format(templates[:summary], account: account, category: category, money: money, percentage: percentage)
     end
   end
 
@@ -50,5 +44,23 @@ class Trip
     return 100.0 if total.zero?
 
     ((money.abs / total.abs) * 100).to_f.round(2)
+  end
+
+  def total_amounts
+    @total_amounts ||= transactions.group_by(&:account).each_with_object({}) do |(account, ats), result|
+      result[account] = ats.sum(&:money)
+    end
+  end
+
+  def totals
+    total_amounts.map do |account, money|
+      money = money.format(CONFIGS.dig(:format, :fields, :money, :display))
+
+      format(templates[:account_total], account: account, money: money)
+    end.join(' | ')
+  end
+
+  def templates
+    @templates ||= CONFIGS.dig(:format, :trip)
   end
 end

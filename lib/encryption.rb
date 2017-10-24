@@ -34,7 +34,7 @@ class Encryption
   end
 
   def file
-    @file ||= File.new(File.expand_path(CONFIGS[:ledger]))
+    @file ||= File.new(File.expand_path(CONFIGS.fetch(:ledger)))
   end
 
   def tempfile
@@ -49,6 +49,6 @@ class Encryption
   end
 
   def encryption
-    CONFIGS[:encryption]
+    CONFIGS.fetch(:encryption, {})
   end
 end
