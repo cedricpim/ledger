@@ -47,8 +47,8 @@ class UI
       options[:categories] = categories
     end
 
-    opts.on('-l', '--list', 'List Transactions') do |transactions|
-      options[:transactions] = transactions
+    opts.on('-l', '--list', 'List Transactions') do |list|
+      options[:list] = list
     end
   end
 

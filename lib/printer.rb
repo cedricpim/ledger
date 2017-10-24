@@ -16,8 +16,8 @@ class Printer
     print('Categories') { ledger.categories }
   end
 
-  def transactions
-    print('Transactions') { ledger.transactions }
+  def list
+    print('Transactions') { ledger.list }
   end
 
   def trips(options)

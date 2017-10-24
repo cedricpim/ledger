@@ -3,10 +3,10 @@
 class Ledger
   extend Forwardable
 
-  def_delegators :content, :accounts, :categories, :currencies,
+  def_delegators :content, :list, :accounts, :categories, :currencies,
                  :descriptions, :travels, :trips, :report, :accounts_currency
 
-  attr_accessor :transactions
+  attr_reader :transactions
 
   def initialize
     @transactions = []

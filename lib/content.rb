@@ -3,6 +3,8 @@
 class Content
   attr_reader :transactions
 
+  alias list transactions
+
   def initialize(transactions)
     @transactions = transactions
   end

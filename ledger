@@ -28,13 +28,14 @@ CONFIGS = YAML.safe_load(ERB.new(File.read(opts[:config])).result, [Symbol]).fre
 
 Dir.glob(File.join('lib', '*.rb')).each { |file| require_relative file }
 
+Ledger.new.create! or exit if ARGV[0] == 'create'
+
 case
-when ARGV[0] == 'create' then Ledger.new.create!
-when opts[:add]          then Ledger.new.add!
-when opts[:open]         then Ledger.new.open!
-when opts[:balance]      then Printer.new.balance
-when opts[:categories]   then Printer.new.categories
-when opts[:transactions] then Printer.new.transactions
-when opts[:trips]        then Printer.new.trips(opts[:trips])
-when opts[:report]       then Printer.new.report(opts[:report])
+when opts[:add]        then Ledger.new.add!
+when opts[:open]       then Ledger.new.open!
+when opts[:balance]    then Printer.new.balance
+when opts[:categories] then Printer.new.categories
+when opts[:list]       then Printer.new.list
+when opts[:trips]      then Printer.new.trips(opts[:trips])
+when opts[:report]     then Printer.new.report(opts[:report])
 end
