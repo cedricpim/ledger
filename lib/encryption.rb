@@ -13,11 +13,11 @@ class Encryption
   end
 
   def encrypt!(source = file, target = file)
-    cipher(source, target) { |cipher| cipher.encrypt }
+    cipher(source, target, &:encrypt)
   end
 
   def decrypt!(source = file, target = file)
-    cipher(source, target) { |cipher| cipher.decrypt }
+    cipher(source, target, &:decrypt)
   end
 
   private
@@ -42,7 +42,10 @@ class Encryption
   end
 
   def credentials
-    [`#{encryption[:credentials][:password]}`, `#{encryption[:credentials][:salt]}`].compact.map(&:chomp)
+    [
+      `#{encryption[:credentials][:password]}`,
+      `#{encryption[:credentials][:salt]}`
+    ].compact.map(&:chomp)
   end
 
   def encryption

@@ -4,7 +4,7 @@ class Ledger
   extend Forwardable
 
   def_delegators :content, :accounts, :categories, :currencies,
-    :descriptions, :travels, :trips, :report, :currency_per_account
+                 :descriptions, :travels, :trips, :report, :currency_per_account
 
   attr_accessor :transactions
 
@@ -15,7 +15,7 @@ class Ledger
   def load!
     encryption.wrap do |file|
       CSV.foreach(file, headers: true) do |row|
-        self.transactions << Transaction.new(*row.fields)
+        transactions << Transaction.new(*row.fields)
       end
     end
   end
@@ -25,7 +25,7 @@ class Ledger
 
     encryption.wrap do |file|
       File.open(file, 'a') { |f| f.write("#{transaction.to_ledger}\n") }
-      File.write(file, File.read(file).gsub(/\n+/,"\n"))
+      File.write(file, File.read(file).gsub(/\n+/, "\n"))
     end
   end
 

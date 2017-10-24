@@ -11,7 +11,8 @@ class Trip
   end
 
   def totals
-    "Total: #{total_amounts.map { |account, money| "[#{account}] #{money.format(CONFIGS[:money][:display])}" }.join(' | ')}"
+    total = total_amounts.map { |account, money| "[#{account}] #{money.format(CONFIGS[:money][:display])}" }
+    "Total: #{total.join(' | ')}"
   end
 
   def to_s(options)
