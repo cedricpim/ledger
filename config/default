@@ -77,7 +77,7 @@
         :symbol_after_without_space: true
         :symbol_position: :after
         :symbol: false
-        thousands_separator: ''
+        :thousands_separator: ''
     # Symbols to be used when displaying if a field has been processed or not
     :processed:
       'yes': '✓'
