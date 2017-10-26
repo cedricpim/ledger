@@ -4,7 +4,7 @@ class UI
   attr_reader :options
 
   def initialize
-    @options = {config: File.expand_path('~/.config/ledger/config')}
+    @options = {config: File.expand_path('~/.config/ledger/config'), transaction: []}
   end
 
   def run
@@ -23,46 +23,24 @@ class UI
   private
 
   def configuration_file(opts)
-    opts.on('-C [STRING]', '--config', 'Configuration file') do |config|
-      options[:config] = config
-    end
+    opts.on('-C [STRING]', '--config', 'Configuration file') { |config| options[:config] = config }
   end
 
   def transaction_operations(opts)
-    create(opts)
-    open(opts)
-  end
+    opts.on('-a', '--add', 'Add Transaction') { options[:add] = true }
 
-  def create(opts)
-    opts.on('-a', '--add', 'Add Transaction') do
-      options[:add] = true
-      options[:transaction] = []
-    end
-
-    opts.on('-A x,y,z', Array, 'Add Transaction with arguments provided') do |transaction|
+    opts.on('-A x,y,z', Array, 'Add Transaction with parameters provided') do |transaction|
       options[:add] = true
       options[:transaction] = transaction
     end
-  end
 
-  def open(opts)
-    opts.on('-o', '--open', 'Open CSV file') do |open|
-      options[:open] = open
-    end
+    opts.on('-o', '--open', 'Open CSV file') { |open| options[:open] = open }
   end
 
   def listings(opts)
-    opts.on('-b', '--balance', 'List current balance of accounts') do |balance|
-      options[:balance] = balance
-    end
-
-    opts.on('-c', '--categories', 'List Categories') do |categories|
-      options[:categories] = categories
-    end
-
-    opts.on('-l', '--list', 'List Transactions') do |list|
-      options[:list] = list
-    end
+    opts.on('-l', '--list', 'List Transactions') { options[:list] = true }
+    opts.on('-c', '--categories', 'List Categories') { options[:categories] = true }
+    opts.on('-b', '--balance', 'List current balance of accounts') { options[:balance] = true }
   end
 
   def reports(opts)
