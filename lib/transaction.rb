@@ -4,6 +4,12 @@
 Transaction = Struct.new(*CONFIGS.fetch(:fields).keys) do # rubocop:disable Metrics/BlockLength
   attr_writer :money
 
+  WITH_SIGNAL = /\+|\-/
+
+  def amount=(amount)
+    self['amount'] = amount.nil? || amount.match?(WITH_SIGNAL) ? amount : "-#{amount}"
+  end
+
   def parsed_date
     @parsed_date ||= date.is_a?(String) ? Date.parse(date) : date
   end

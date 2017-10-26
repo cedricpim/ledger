@@ -21,8 +21,8 @@ class TransactionBuilder
     exchange_money
 
     transaction
-  rescue StandardError
-    exit
+  rescue Exception => e # rubocop:disable Lint/RescueException
+    puts e.message or exit
   end
 
   private
