@@ -26,7 +26,7 @@ puts 'Configuration file not found' or exit unless File.exist?(opts[:config])
 
 CONFIGS = YAML.safe_load(ERB.new(File.read(opts[:config])).result, [Symbol]).freeze
 
-Dir.glob(File.join('lib', '*.rb')).each { |file| require_relative file }
+Dir.glob(File.join(__dir__, 'lib', '*.rb')).each { |file| require file }
 
 Ledger.new.create! or exit if ARGV[0] == 'create'
 
