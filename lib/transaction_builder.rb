@@ -3,18 +3,26 @@
 # inputs and build the transaction. A couple of improvements have been added
 # such as default attributes and auto-complete.
 class TransactionBuilder
+  DEFAULT = ''.freeze
+
   attr_reader :ledger
 
   def initialize(ledger)
     @ledger = ledger
   end
 
-  def build!
-    CONFIGS.fetch(:fields).each { |field, options| read(field, options) }
+  def build!(params)
+    provided_value = DEFAULT unless params.count.zero?
+
+    CONFIGS.fetch(:fields).each_with_index do |(field, options), index|
+      read(field, params[index] || provided_value, options)
+    end
 
     exchange_money
 
     transaction
+  rescue StandardError
+    exit
   end
 
   private
@@ -31,18 +39,19 @@ class TransactionBuilder
     transaction.money = transaction.money.exchange_to(account_currency)
   end
 
-  def read(key, default: '', presence: false, values: [])
+  def read(key, value, default: DEFAULT, presence: false, values: [])
     title = key.to_s.capitalize
 
-    prepare_readline_completion(key, values)
-    value = treat_input(title, default)
+    value ||= handle_input(key, title, default, values)
 
     puts "#{title} must be present" or exit if presence && value.empty?
 
     transaction.public_send(:"#{key}=", value)
   end
 
-  def treat_input(title, default)
+  def handle_input(key, title, default, values)
+    prepare_readline_completion(key, values)
+
     value = Readline.readline("#{title} [#{default}] ", true).strip
     value.empty? ? default : value
   end

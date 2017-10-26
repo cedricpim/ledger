@@ -29,10 +29,23 @@ class UI
   end
 
   def transaction_operations(opts)
-    opts.on('-a', '--add', 'Add Transaction') do |add|
-      options[:add] = add
+    create(opts)
+    open(opts)
+  end
+
+  def create(opts)
+    opts.on('-a', '--add', 'Add Transaction') do
+      options[:add] = true
+      options[:transaction] = []
     end
 
+    opts.on('-A x,y,z', Array, 'Add Transaction with arguments provided') do |transaction|
+      options[:add] = true
+      options[:transaction] = transaction
+    end
+  end
+
+  def open(opts)
     opts.on('-o', '--open', 'Open CSV file') do |open|
       options[:open] = open
     end

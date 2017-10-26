@@ -20,8 +20,8 @@ class Ledger
     end
   end
 
-  def add!
-    transaction = TransactionBuilder.new(self).build!
+  def add!(params)
+    transaction = TransactionBuilder.new(self).build!(params)
 
     encryption.wrap do |file|
       File.open(file, 'a') { |f| f.write("#{transaction.to_ledger}\n") }
