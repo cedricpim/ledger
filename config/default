@@ -84,6 +84,8 @@
       'no': '×'
   # Title format used when displaying information
   :title: '******* %{title} *******'
+  # Default format for displaying a transaction
+  :transaction: '%{processed} [%{account}] Date: %{date}, %{category} (%{description}), %{money}%{travel}'
   :trip:
     # Part of the string format that composes the footer
     :account_total: '[%{account}] %{money}'
@@ -96,12 +98,16 @@
   :report:
     # String format for displaying the transactions of a given query in a short version
     :summary: '%{category}: %{money}'
-    # String format that is set at the end of each account
-    :totals: 'Total: %{totals}'
     # String format for displaying an expense in the report
     :expense: '%{display} (%{percentage}%%)'
-  # Default format for displaying a transaction
-  :transaction: '%{processed} [%{account}] Date: %{date}, %{category} (%{description}), %{money}%{travel}'
+    # String format that is set at the end of each account
+    :totals: 'Total: %{totals}'
+  :accounts:
+    :balance: 'Monthly: %{money}'
+    # String format for displaying the transactions of a given query in a short version
+    :summary: '%{category}: %{money}'
+    # String format for displaying an expense in the report
+    :expense: '%{display} (%{percentage}%%)'
 
 # Values for configuring encryption on the ledger file
 :encryption:

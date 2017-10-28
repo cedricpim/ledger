@@ -67,7 +67,7 @@ class TransactionBuilder
 
   def recommendations(key)
     case key
-    when :account     then ledger.accounts
+    when :account     then ledger.accounts.map(&:name)
     when :category    then ledger.categories
     when :description then ledger.descriptions
     when :currency    then ledger.currencies

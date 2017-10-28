@@ -9,7 +9,11 @@ class Printer
   end
 
   def balance
-    print('Balance') { ledger.accounts }
+    accounts = ledger.accounts
+
+    accounts.each { |account| account_details(account) }
+
+    print('Totals') { account_totals(accounts) }
   end
 
   def categories
@@ -36,7 +40,20 @@ class Printer
 
   def print(title)
     puts format(CONFIGS.dig(:format, :title), title: title)
-    puts yield.join("\n")
+    result = yield
+    puts result.respond_to?(:join) ? result.join("\n") : result
     puts
+  end
+
+  def account_details(account)
+    print("#{account.name} [#{MoneyHelper.display(account.current)}]") do
+      [account.balance].concat(account.categories)
+    end
+  end
+
+  def account_totals(accounts)
+    accounts.map(&:currency).uniq.map do |currency|
+      MoneyHelper.display(ledger.transactions.sum { |t| t.money.exchange_to(currency) })
+    end.join(' | ')
   end
 end

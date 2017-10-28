@@ -10,7 +10,7 @@ class Content
   end
 
   def accounts
-    collect_values(:account)
+    transactions.group_by(&:account).map { |account, ats| Account.new(account, ats) }
   end
 
   def categories
