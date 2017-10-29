@@ -11,7 +11,7 @@ require 'openssl'
 require 'pry'
 require 'readline'
 require 'terminal-table'
-require_relative 'lib/ui'
+require_relative 'lib/ledger/ui'
 
 # Money configurations
 I18n.enforce_available_locales = false
@@ -24,13 +24,13 @@ puts 'Configuration file not found' or exit unless File.exist?(opts[:config])
 
 CONFIGS = YAML.safe_load(ERB.new(File.read(opts[:config])).result, [Symbol]).freeze
 
-Dir.glob(File.join(__dir__, 'lib', '*.rb')).each { |file| require file }
+Dir.glob(File.join(__dir__, 'lib', 'ledger', '*.rb')).each { |file| require file }
 
-Ledger.new.create! or exit if ARGV[0] == 'create'
+Ledger::Ledger.new.create! or exit if ARGV[0] == 'create'
 
 case
-when opts[:add]        then Ledger.new.add!(opts[:transaction])
-when opts[:open]       then Ledger.new.open!
+when opts[:add]        then Ledger::Ledger.new.add!(opts[:transaction])
+when opts[:open]       then Ledger::Ledger.new.open!
 when opts[:list]       then Printer.new.list
 when opts[:trips]      then Printer.new(opts[:trip]).trips
 when opts[:report]     then Printer.new(opts[:report]).report
