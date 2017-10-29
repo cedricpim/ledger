@@ -1,59 +1,29 @@
-# Class responsible for loading the ledger file into memory and storing all the
-# transactions, creating the ledger file or adding a new transaction.
-class Ledger
-  extend Forwardable
+require 'colorize'
+require 'csv'
+require 'erb'
+require 'money'
+require 'money/bank/google_currency'
+require 'optparse'
+require 'optparse/date'
+require 'openssl'
+require 'pry'
+require 'readline'
+require 'terminal-table'
 
-  def_delegators :content, :list, :accounts, :categories, :currencies,
-                 :descriptions, :travels, :trips, :report, :accounts_currency
+require_relative 'lib/ui'
 
-  attr_reader :transactions
+# Money configurations
+I18n.enforce_available_locales = false
+Money.default_bank = Money::Bank::GoogleCurrency.new
 
-  def initialize
-    @transactions = []
-  end
+# Configurations
+opts = UI.new.tap(&:run).options
 
-  def load!
-    encryption.wrap do |file|
-      CSV.foreach(file, headers: true) do |row|
-        transactions << Transaction.new(*row.fields)
-      end
-    end
-  end
+puts 'Configuration file not found' or exit unless File.exist?(opts[:config])
 
-  def add!(params)
-    transaction = TransactionBuilder.new(self).build!(params)
+CONFIGS = YAML.safe_load(ERB.new(File.read(opts[:config])).result, [Symbol]).freeze
 
-    encryption.wrap do |file|
-      File.open(file, 'a') { |f| f.write("#{transaction.to_ledger}\n") }
-      File.write(file, File.read(file).gsub(/\n+/, "\n"))
-    end
-  end
+Dir.glob(File.join(__dir__, 'lib', 'ledger', '*.rb')).each { |file| require file }
 
-  def create!
-    filepath = File.expand_path(CONFIGS.fetch(:ledger))
-
-    return if File.exist?(filepath)
-
-    CSV.open(filepath, 'wb') { |csv| csv << CONFIGS.fetch(:fields).keys.map(&:capitalize) }
-
-    encryption.encrypt!
-  end
-
-  def open!
-    encryption.wrap { |file| system("#{ENV['EDITOR']} #{file.path}") }
-  end
-
-  private
-
-  def encryption
-    @encryption ||= Encryption.new
-  end
-
-  def content
-    return @content if @content
-
-    load!
-
-    @content = Content.new(transactions)
-  end
+module Ledger
 end

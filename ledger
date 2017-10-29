@@ -10,6 +10,7 @@ require 'optparse/date'
 require 'openssl'
 require 'pry'
 require 'readline'
+require 'terminal-table'
 require_relative 'lib/ui'
 
 # Money configurations
