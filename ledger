@@ -33,9 +33,7 @@ Ledger.new.create! or exit if ARGV[0] == 'create'
 case
 when opts[:add]        then Ledger.new.add!(opts[:transaction])
 when opts[:open]       then Ledger.new.open!
-when opts[:balance]    then Printer.new.balance
-when opts[:categories] then Printer.new.categories
 when opts[:list]       then Printer.new.list
-when opts[:trips]      then Printer.new.trips(opts[:trips])
-when opts[:report]     then Printer.new.report(opts[:report])
+when opts[:trips]      then Printer.new(opts[:trip]).trips
+when opts[:report]     then Printer.new(opts[:report]).report
 end

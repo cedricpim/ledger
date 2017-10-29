@@ -9,26 +9,6 @@ class Content
     @transactions = transactions
   end
 
-  def accounts
-    transactions.group_by(&:account).map { |account, ats| Account.new(account, ats) }
-  end
-
-  def categories
-    collect_values(:category)
-  end
-
-  def descriptions
-    collect_values(:description)
-  end
-
-  def currencies
-    collect_values(:currency)
-  end
-
-  def travels
-    collect_values(:travel)
-  end
-
   def trips
     transactions.select(&:travel).group_by(&:travel).map do |t, trs|
       Trip.new(t, trs)
@@ -36,16 +16,8 @@ class Content
   end
 
   def report(options)
-    filters = [
-      from(options),
-      till(options),
-      exclude(options),
-      monthly(options),
-      annual(options)
-    ].compact
-
-    transactions.select { |t| filters.all? { |f| f.call(t) } }.group_by(&:account).map do |a, trs|
-      Report.new(a, trs)
+    transactions.select { |t| filters(options).all? { |f| f.call(t) } }.group_by(&:account).map do |a, trs|
+      Report.new(a, trs, transactions)
     end
   end
 
@@ -57,8 +29,21 @@ class Content
 
   private
 
-  def collect_values(key)
-    transactions.map(&key).uniq.compact.sort
+  def filters(options)
+    [
+      include_accounts(options),
+      from(options),
+      till(options),
+      exclude(options),
+      monthly(options),
+      annual(options)
+    ].compact
+  end
+
+  def include_accounts(options)
+    return unless options[:accounts]
+
+    ->(transaction) { options[:accounts].include?(transaction.account) }
   end
 
   def from(options)

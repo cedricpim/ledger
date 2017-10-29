@@ -39,8 +39,6 @@ class UI
 
   def listings(opts)
     opts.on('-l', '--list', 'List Transactions') { options[:list] = true }
-    opts.on('-c', '--categories', 'List Categories') { options[:categories] = true }
-    opts.on('-b', '--balance', 'List current balance of accounts') { options[:balance] = true }
   end
 
   def reports(opts)
@@ -49,8 +47,18 @@ class UI
 
       group_reports(opts)
       date_reports(opts)
-      categories_excluded(opts)
+      inclusions_and_exclusions(opts)
       detailed_reports(opts)
+    end
+  end
+
+  def inclusions_and_exclusions(opts)
+    opts.on('-A x,y,z', Array, 'Only include accounts provided') do |accounts|
+      options[:report][:accounts] = accounts
+    end
+
+    opts.on('-e x,y,z', Array, 'Excluding categories provided') do |categories|
+      options[:report][:exclude] = categories
     end
   end
 
@@ -71,12 +79,6 @@ class UI
 
     opts.on('-t [DATE]', Date, 'Until date provided') do |till|
       options[:report][:till] = till
-    end
-  end
-
-  def categories_excluded(opts)
-    opts.on('-e x,y,z', Array, 'Excluding categories provided') do |categories|
-      options[:report][:exclude] = categories
     end
   end
 

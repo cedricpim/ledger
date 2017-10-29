@@ -4,6 +4,7 @@
 # such as default attributes and auto-complete.
 class TransactionBuilder
   DEFAULT = ''.freeze
+  AUTO_COMPLETE = %i[account category description currency travel].freeze
 
   attr_reader :ledger
 
@@ -58,21 +59,14 @@ class TransactionBuilder
 
   # Include values on the list
   def prepare_readline_completion(key, values)
-    completion_list = recommendations(key).concat(values).uniq.sort
+    completion_list = (AUTO_COMPLETE.include?(key) ? collect_values(:account) : []).concat(values).uniq.sort
 
     Readline.completion_proc = completion_list && proc do |s|
       completion_list.grep(/^#{Regexp.escape(s)}/i)
     end
   end
 
-  def recommendations(key)
-    case key
-    when :account     then ledger.accounts.map(&:name)
-    when :category    then ledger.categories
-    when :description then ledger.descriptions
-    when :currency    then ledger.currencies
-    when :travel      then ledger.travels
-    else []
-    end
+  def collect_values(key)
+    ledger.list.map(&key).uniq.compact.sort
   end
 end

@@ -1,11 +1,28 @@
 # Class responsible for doing the correct calculations to generate reports
 # about the income/expenses of the account.
 class Report
-  attr_reader :account, :transactions
+  attr_reader :account, :filtered_transactions, :currency, :total_transactions
 
-  def initialize(account, transactions)
+  def initialize(account, filtered_transactions, total_transactions)
     @account = account
-    @transactions = transactions
+    @filtered_transactions = filtered_transactions
+    @currency = filtered_transactions.first.currency
+    @total_transactions = total_transactions
+  end
+
+  def title
+    format(
+      templates[:title],
+      account: account,
+      current: MoneyHelper.display(total_transactions.select { |t| t.account == account }.sum(&:money)),
+      total_current: MoneyHelper.display(exchanged(total_transactions).sum(&:money))
+    )
+  end
+
+  def monthly_balance
+    monthly_transactions = total_transactions.select { |t| t.parsed_date.month == Date.today.month }
+
+    format(templates[:monthly], money: MoneyHelper.balance(exchanged(monthly_transactions)))
   end
 
   def to_s(options)
@@ -13,7 +30,7 @@ class Report
   end
 
   def footer
-    totals = money(transactions) { |_value, formatted_value| formatted_value }
+    totals = money(filtered_transactions) { |_value, formatted_value| formatted_value }
 
     format(templates[:totals], totals: totals)
   end
@@ -21,7 +38,7 @@ class Report
   private
 
   def summary
-    transactions.group_by(&:category).map do |category, cts|
+    filtered_transactions.group_by(&:category).map do |category, cts|
       money = money(cts) do |value, formatted_value|
         next formatted_value if value.positive?
 
@@ -42,10 +59,16 @@ class Report
   end
 
   def percentage_expense(money)
-    total_expense = transactions.select(&:expense?).sum(&:money)
+    total_expense = filtered_transactions.select(&:expense?).sum(&:money)
     return 100.0 if total_expense.zero?
 
     ((money.abs / total_expense.abs) * 100).to_f.round(2)
+  end
+
+  def exchanged(transactions)
+    transactions.map do |transaction|
+      Transaction.new.tap { |t| t.money = transaction.money.exchange_to(currency) }
+    end
   end
 
   def templates
