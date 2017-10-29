@@ -27,16 +27,16 @@ Transaction = Struct.new(*CONFIG.transaction_fields) do # rubocop:disable Metric
   end
 
   def to_s
-    format(CONFIGS.dig(:format, :transaction), attributes.merge(travel: travel && ", Travel: #{travel}"))
+    format(CONFIG.template(:transaction), attributes.merge(travel: travel && ", Travel: #{travel}"))
   end
 
   def attributes
-    formats = CONFIGS.dig(:format, :fields)
+    templates = CONFIG.templates(:fields)
 
     members.zip(values).to_h.merge(
-      date: parsed_date.strftime(formats.dig(:date)),
+      date: parsed_date.strftime(templates.dig(:date)),
       money: MoneyHelper.display(money),
-      processed: formats.dig(:processed, processed)
+      processed: templates.dig(:processed, processed)
     )
   end
 
@@ -46,7 +46,7 @@ Transaction = Struct.new(*CONFIG.transaction_fields) do # rubocop:disable Metric
     value = public_send(member)
 
     case member
-    when :amount   then money.format(CONFIGS.dig(:format, :fields, :money, :ledger))
+    when :amount   then money.format(CONFIG.money_format(type: :ledger))
     when :currency then money.currency.iso_code
     else value
     end

@@ -59,6 +59,6 @@ class Trip
   end
 
   def templates
-    @templates ||= CONFIGS.dig(:format, :trip)
+    @templates ||= CONFIG.templates(:trip)
   end
 end

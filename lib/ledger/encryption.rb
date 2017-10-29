@@ -23,32 +23,21 @@ class Encryption
   private
 
   def cipher(source, target)
-    return unless encryption[:enabled]
+    return unless CONFIG.encryption[:enabled]
 
-    cipher = OpenSSL::Cipher.new(encryption[:algorithm])
+    cipher = OpenSSL::Cipher.new(CONFIG.encryption[:algorithm])
     yield cipher
-    cipher.pkcs5_keyivgen(*credentials)
+    cipher.pkcs5_keyivgen(*CONFIG.credentials)
     result = cipher.update(File.read(source))
     result << cipher.final
     File.open(target, 'w') { |file| file.write(result) }
   end
 
   def file
-    @file ||= File.new(File.expand_path(CONFIGS.fetch(:ledger)))
+    @file ||= File.new(File.expand_path(CONFIG.ledger))
   end
 
   def tempfile
-    @tempfile ||= encryption[:enabled] ? Tempfile.new : file
-  end
-
-  def credentials
-    [
-      `#{encryption[:credentials][:password]}`,
-      `#{encryption[:credentials][:salt]}`
-    ].compact.map(&:chomp)
-  end
-
-  def encryption
-    CONFIGS.fetch(:encryption, {})
+    @tempfile ||= CONFIG.encryption[:enabled] ? Tempfile.new : file
   end
 end

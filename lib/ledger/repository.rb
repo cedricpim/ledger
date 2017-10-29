@@ -1,7 +1,7 @@
-# Class responsible for loading the ledger file into memory and storing all the
-# transactions, creating the ledger file or adding a new transaction.
 module Ledger
-  class Ledger
+  # Class responsible for reading the ledger file into memory and loading all the
+  # transactions, creating the ledger file or adding a new transaction.
+  class Repository
     extend Forwardable
 
     def_delegators :content, :list, :accounts, :categories, :currencies,
@@ -31,11 +31,11 @@ module Ledger
     end
 
     def create!
-      filepath = File.expand_path(CONFIGS.fetch(:ledger))
+      filepath = File.expand_path(CONFIG.ledger)
 
       return if File.exist?(filepath)
 
-      CSV.open(filepath, 'wb') { |csv| csv << CONFIGS.fetch(:fields).keys.map(&:capitalize) }
+      CSV.open(filepath, 'wb') { |csv| csv << CONFIG.transaction_fields.map(&:capitalize) }
 
       encryption.encrypt!
     end

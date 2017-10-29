@@ -70,6 +70,6 @@ class Report
   end
 
   def templates
-    @templates ||= CONFIGS.dig(:format, :report)
+    @templates ||= CONFIG.templates(:report)
   end
 end

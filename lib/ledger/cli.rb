@@ -1,4 +1,6 @@
 module Ledger
+  # Class responsible for handling all the commands that Ledger can execute
+  # from command-line.
   class Cli < Thor
     COMMANDS = {
       commands: 'List commands available in Ledger',
@@ -20,20 +22,20 @@ module Ledger
     map 'c' => :create
     def create
       Config.create
-      Ledger.new.create!
+      Repository.new.create!
     end
 
     desc 'edit', COMMANDS[:edit]
     map 'e' => :edit
     def edit
-      Ledger.new.edit!
+      Repository.new.edit!
     end
 
     desc 'add', COMMANDS[:add]
     map 'a' => :add
     method_option :transaction, type: :array, aliases: '-t'
     def add
-      Ledger.new.add!(options[:transaction])
+      Repository.new.add!(options[:transaction])
     end
 
     desc 'list', COMMANDS[:list]

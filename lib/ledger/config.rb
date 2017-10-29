@@ -1,4 +1,6 @@
 module Ledger
+  # Class responsible for handling the configuration file and access its
+  # fields.
   class Config
     DEFAULT_CONFIG = File.join(XDG['CONFIG'].to_s, 'ledger', 'config').freeze
     FALLBACK_CONFIG = File.join(File.expand_path('..', __FILE__), 'config', 'default').freeze
@@ -23,8 +25,40 @@ module Ledger
       @config = YAML.safe_load(ERB.new(File.read(file)).result, [Symbol])
     end
 
+    def ledger
+      config.fetch(:ledger)
+    end
+
+    def fields
+      config.fetch(:fields)
+    end
+
     def transaction_fields
-      config.fetch(:fields).keys
+      fields.keys
+    end
+
+    def encryption
+      config.fetch(:encryption, {})
+    end
+
+    def credentials
+      [
+        `#{encryption.dig(:credentials, :password)}`,
+        `#{encryption.dig(:credentials, :salt)}`
+      ].compact.map(&:chomp)
+    end
+
+    def template(*type)
+      config.dig(:format, *type)
+    end
+    alias templates template
+
+    def money_format(type: :display)
+      config.dig(:format, :fields, :money, type)
+    end
+
+    def money_color(type:)
+      config.dig(:format, :colors, :money, type)
     end
   end
 end

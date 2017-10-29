@@ -2,25 +2,25 @@
 # Very simple and straightforward, the idea is to just be able to display
 # the title/header the and the respective summary.
 class Printer
-  attr_reader :ledger, :options
+  attr_reader :repository, :options
 
   def initialize(options = {})
-    @ledger = Ledger.new
+    @repository = Repository.new
     @options = options
   end
 
   def list
-    print('Transactions') { ledger.list }
+    print('Transactions') { repository.list }
   end
 
   def trips
-    ledger.trips.each do |trip|
+    repository.trips.each do |trip|
       print(trip.travel) { trip.to_s(options).push(trip.footer) }
     end
   end
 
   def report
-    ledger.report(options).each do |report|
+    repository.report(options).each do |report|
       print(report.title) { [report.monthly_balance].concat(report.to_s(options)).push(report.footer) }
     end
   end
@@ -28,7 +28,7 @@ class Printer
   private
 
   def print(title)
-    puts format(CONFIGS.dig(:format, :title), title: title)
+    puts format(CONFIG.template(:title), title: title)
     result = yield
     puts result.respond_to?(:join) ? result.join("\n") : result
     puts

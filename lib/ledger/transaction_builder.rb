@@ -6,14 +6,14 @@ class TransactionBuilder
   DEFAULT = ''.freeze
   AUTO_COMPLETE = %i[account category description currency travel].freeze
 
-  attr_reader :ledger
+  attr_reader :repository
 
-  def initialize(ledger)
-    @ledger = ledger
+  def initialize(repository)
+    @repository = repository
   end
 
   def build!(params)
-    CONFIGS.fetch(:fields).each_with_index do |(field, options), index|
+    CONFIG.fields.each_with_index do |(field, options), index|
       read(field, params[index], options)
     end
 
@@ -31,7 +31,7 @@ class TransactionBuilder
   end
 
   def exchange_money
-    account_currency = ledger.accounts_currency[transaction.account]
+    account_currency = repository.accounts_currency[transaction.account]
 
     return unless account_currency
 
@@ -57,7 +57,7 @@ class TransactionBuilder
 
   # Include values on the list
   def prepare_readline_completion(key, values)
-    completion_list = (AUTO_COMPLETE.include?(key) ? collect_values(:account) : []).concat(values).uniq.sort
+    completion_list = (AUTO_COMPLETE.include?(key) ? collect_values(key) : []).concat(values).uniq.sort
 
     Readline.completion_proc = completion_list && proc do |s|
       completion_list.grep(/^#{Regexp.escape(s)}/i)
@@ -65,6 +65,6 @@ class TransactionBuilder
   end
 
   def collect_values(key)
-    ledger.list.map(&key).uniq.compact.sort
+    repository.list.map(&key).uniq.compact.sort
   end
 end
