@@ -1,5 +1,5 @@
 # Location for the ledger file holding all the information
-:ledger: ~/.config/ledger/ledger.csv
+:ledger: "<%= XDG['CONFIG'].to_s %>/ledger/ledger.csv"
 
 # Fields that are present on the ledger as well as configurations for each field
 # Each field can contain the following:

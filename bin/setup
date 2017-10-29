@@ -1,7 +1,0 @@
-#!/usr/bin/env sh
-
-mkdir -p $HOME/.config/ledger
-cp -n config/default $HOME/.config/ledger/config
-sudo ln -sf `pwd`/ledger /usr/local/bin/ledger
-
-echo "Installation successful!"

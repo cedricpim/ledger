@@ -1,11 +1,18 @@
 module Ledger
   class Config
     DEFAULT_CONFIG = File.join(XDG['CONFIG'].to_s, 'ledger', 'config').freeze
-    FALLBACK_CONFIG = File.expand_path(File.join(__dir__, 'default', 'config')).freeze
+    FALLBACK_CONFIG = File.join(File.expand_path('..', __FILE__), 'config', 'default').freeze
 
-    def self.file
-      return DEFAULT_CONFIG if File.exist?(DEFAULT_CONFIG)
-      return FALLBACK_CONFIG if File.exist?(FALLBACK_CONFIG)
+    class << self
+      def create
+        FileUtils.mkdir_p(File.dirname(DEFAULT_CONFIG))
+        FileUtils.cp(FALLBACK_CONFIG, DEFAULT_CONFIG)
+      end
+
+      def file
+        return DEFAULT_CONFIG if File.exist?(DEFAULT_CONFIG)
+        return FALLBACK_CONFIG if File.exist?(FALLBACK_CONFIG)
+      end
     end
 
     attr_reader :config
