@@ -13,10 +13,8 @@ class TransactionBuilder
   end
 
   def build!(params)
-    provided_value = DEFAULT unless params.count.zero?
-
     CONFIGS.fetch(:fields).each_with_index do |(field, options), index|
-      read(field, params[index] || provided_value, options)
+      read(field, params[index], options)
     end
 
     exchange_money

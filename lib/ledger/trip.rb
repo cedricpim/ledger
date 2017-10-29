@@ -11,7 +11,7 @@ class Trip
   end
 
   def to_s(options)
-    options[:summary] ? summary : details
+    options[:detailed] ? details : summary
   end
 
   def footer

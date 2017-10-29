@@ -1,7 +1,7 @@
 # Class representing a single transaction, it contains also some methods
 # related to printing the information to different sources.
 # The class is modeled by the fields defined on the configuration file.
-Transaction = Struct.new(*CONFIGS.fetch(:fields).keys) do # rubocop:disable Metrics/BlockLength
+Transaction = Struct.new(*CONFIG.transaction_fields) do # rubocop:disable Metrics/BlockLength
   attr_writer :money
 
   WITH_SIGNAL = /\+|\-/

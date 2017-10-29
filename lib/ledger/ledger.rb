@@ -40,7 +40,7 @@ module Ledger
       encryption.encrypt!
     end
 
-    def open!
+    def edit!
       encryption.wrap { |file| system("#{ENV['EDITOR']} #{file.path}") }
     end
 
