@@ -22,7 +22,7 @@ class Report
   def monthly_balance
     monthly_transactions = total_transactions.select { |t| t.parsed_date.month == Date.today.month }
 
-    format(templates[:monthly], money: MoneyHelper.balance(exchanged(monthly_transactions)))
+    format(templates[:monthly], money: money(exchanged(monthly_transactions)))
   end
 
   def to_s(options)
@@ -30,9 +30,7 @@ class Report
   end
 
   def footer
-    totals = money(filtered_transactions) { |_value, formatted_value| formatted_value }
-
-    format(templates[:totals], totals: totals)
+    format(templates[:totals], totals: money(filtered_transactions))
   end
 
   private
@@ -54,7 +52,7 @@ class Report
     income = transactions.reject(&:expense?).sum(&:money)
 
     [expense, income].reject(&:zero?).map do |value|
-      yield value, MoneyHelper.display(value)
+      block_given? ? yield(value, MoneyHelper.display(value)) : MoneyHelper.display(value)
     end.join(' | ')
   end
 
