@@ -35,7 +35,7 @@ Transaction = Struct.new(*CONFIGS.fetch(:fields).keys) do # rubocop:disable Metr
 
     members.zip(values).to_h.merge(
       date: parsed_date.strftime(formats.dig(:date)),
-      money: money.format(formats.dig(:money, :display)),
+      money: MoneyHelper.display(money),
       processed: formats.dig(:processed, processed)
     )
   end

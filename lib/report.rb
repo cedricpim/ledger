@@ -54,7 +54,7 @@ class Report
     income = transactions.reject(&:expense?).sum(&:money)
 
     [expense, income].reject(&:zero?).map do |value|
-      yield value, value.format(CONFIGS.dig(:format, :fields, :money, :display))
+      yield value, MoneyHelper.display(value)
     end.join(' | ')
   end
 

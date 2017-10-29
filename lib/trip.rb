@@ -34,7 +34,7 @@ class Trip
     transactions.group_by(&:category).map do |category, cts|
       money = cts.sum(&:money)
       percentage = percentage(money, total_amounts[account])
-      money = money.format(CONFIGS.dig(:format, :fields, :money, :display))
+      money = MoneyHelper.display(money)
 
       format(templates[:summary], account: account, category: category, money: money, percentage: percentage)
     end
@@ -54,9 +54,7 @@ class Trip
 
   def totals
     total_amounts.map do |account, money|
-      money = money.format(CONFIGS.dig(:format, :fields, :money, :display))
-
-      format(templates[:account_total], account: account, money: money)
+      format(templates[:account_total], account: account, money: MoneyHelper.display(money))
     end.join(' | ')
   end
 
