@@ -2,7 +2,9 @@
 module MoneyHelper
   class << self
     def display(money)
-      money.format(CONFIGS.dig(:format, :fields, :money, :display))
+      color = CONFIGS.dig(:format, :colors, :money, money.negative? ? :negative : :positive)
+
+      money.format(CONFIGS.dig(:format, :fields, :money, :display)).colorize(color)
     end
   end
 end

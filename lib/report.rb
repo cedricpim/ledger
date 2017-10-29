@@ -26,7 +26,7 @@ class Report
   end
 
   def to_s(options)
-    options[:summary] ? summary : transactions
+    options[:summary] ? summary : filtered_transactions
   end
 
   def footer

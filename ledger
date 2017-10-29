@@ -13,6 +13,7 @@ require 'money'
 require 'money/bank/google_currency'
 require 'yaml'
 require 'erb'
+require 'colorize'
 require_relative 'lib/ui'
 
 # Money configurations
