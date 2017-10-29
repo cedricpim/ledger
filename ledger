@@ -1,19 +1,15 @@
 #!/usr/bin/env ruby
 
-require 'pry'
+require 'colorize'
 require 'csv'
-require 'bigdecimal'
-require 'date'
-require 'readline'
+require 'erb'
+require 'money'
+require 'money/bank/google_currency'
 require 'optparse'
 require 'optparse/date'
 require 'openssl'
-require 'tempfile'
-require 'money'
-require 'money/bank/google_currency'
-require 'yaml'
-require 'erb'
-require 'colorize'
+require 'pry'
+require 'readline'
 require_relative 'lib/ui'
 
 # Money configurations
