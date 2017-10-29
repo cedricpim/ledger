@@ -3,10 +3,12 @@ module Ledger
   # fields.
   class Config
     DEFAULT_CONFIG = File.join(XDG['CONFIG'].to_s, 'ledger', 'config').freeze
-    FALLBACK_CONFIG = File.join(File.expand_path('..', __FILE__), 'config', 'default').freeze
+    FALLBACK_CONFIG = File.join(File.expand_path('../../../', __FILE__), 'config', 'default').freeze
 
     class << self
-      def create
+      def configure
+        return if File.exist?(DEFAULT_CONFIG)
+
         FileUtils.mkdir_p(File.dirname(DEFAULT_CONFIG))
         FileUtils.cp(FALLBACK_CONFIG, DEFAULT_CONFIG)
       end

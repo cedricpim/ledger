@@ -4,6 +4,7 @@ module Ledger
   class Cli < Thor
     COMMANDS = {
       commands: 'List commands available in Ledger',
+      configure: 'Copy provided configuration file to the default location',
       create: 'Create a new ledger and copy default configuration file',
       edit: 'Open ledger in your editor',
       add: 'Add a transaction to the ledger',
@@ -18,10 +19,15 @@ module Ledger
       say COMMANDS.keys.join("\n")
     end
 
+    desc 'configure', COMMANDS[:configure]
+    map '-c' => :configure
+    def configure
+      Config.configure
+    end
+
     desc 'create', COMMANDS[:create]
     map 'c' => :create
     def create
-      Config.create
       Repository.new.create!
     end
 
