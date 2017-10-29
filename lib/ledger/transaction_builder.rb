@@ -14,7 +14,7 @@ class TransactionBuilder
 
   def build!(params)
     CONFIG.fields.each_with_index do |(field, options), index|
-      read(field, params[index], options)
+      read(field, params.to_a[index], options)
     end
 
     exchange_money

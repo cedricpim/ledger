@@ -46,15 +46,15 @@
     :values:
       - EUR
       - USD
-  :travel:
-    :default: ''
-    :presence: false
   :processed:
     :default: 'yes'
     :presence: true
     :values:
       - 'yes'
       - 'no'
+  :travel:
+    :default: ''
+    :presence: false
 
 # Define the set of formats to be used accross the application
 :format:
@@ -96,18 +96,16 @@
     # String format for displaying the transactions of a trip in a detailed version
     :detailed: '%{processed} [%{account}] Date: %{date}, %{category} (%{description}), %{money}'
   :report:
+    # Main title for an account
+    :title: '%{account} [%{current} / %{total_current}]'
+    # String format for displaying the monthly balance for each account
+    :monthly: 'Monthly: %{money}'
     # String format for displaying the transactions of a given query in a short version
     :summary: '%{category}: %{money}'
     # String format for displaying an expense in the report
     :expense: '%{display} (%{percentage}%%)'
     # String format that is set at the end of each account
     :totals: 'Total: %{totals}'
-  :accounts:
-    :balance: 'Monthly: %{money}'
-    # String format for displaying the transactions of a given query in a short version
-    :summary: '%{category}: %{money}'
-    # String format for displaying an expense in the report
-    :expense: '%{display} (%{percentage}%%)'
 
 # Values for configuring encryption on the ledger file
 :encryption:

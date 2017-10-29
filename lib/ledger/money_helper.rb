@@ -4,7 +4,7 @@ module MoneyHelper
     def display(money)
       money
         .format(CONFIG.money_format)
-        .colorize(CONFIG.money_color(type: money.negative? ? :negative : :positive))
+      # .colorize(CONFIG.money_color(type: money.negative? ? :negative : :positive))
     end
   end
 end

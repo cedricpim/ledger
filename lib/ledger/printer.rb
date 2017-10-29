@@ -5,7 +5,7 @@ class Printer
   attr_reader :repository, :options
 
   def initialize(options = {})
-    @repository = Repository.new
+    @repository = Ledger::Repository.new
     @options = options
   end
 

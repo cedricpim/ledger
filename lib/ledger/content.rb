@@ -22,7 +22,7 @@ class Content
   end
 
   def accounts_currency
-    @accounts_currency ||= accounts.each_with_object({}) do |account, result|
+    @accounts_currency ||= transactions.map(&:account).uniq.each_with_object({}) do |account, result|
       result[account] = transactions.find { |t| t.account == account }&.currency
     end
   end
