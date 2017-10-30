@@ -1,4 +1,4 @@
-require 'colorize'
+require 'command_line_reporter'
 require 'csv'
 require 'erb'
 require 'money'

@@ -19,10 +19,19 @@ class Report
     )
   end
 
+  def total
+    [
+      'Current',
+      MoneyHelper.display(total_transactions.select { |t| t.account == account }.sum(&:money)),
+      MoneyHelper.display(exchanged(total_transactions).sum(&:money))
+    ]
+  end
+
   def monthly_balance
     monthly_transactions = total_transactions.select { |t| t.parsed_date.month == Date.today.month }
 
     format(templates[:monthly], money: money(exchanged(monthly_transactions)))
+    ['Monthly', *money(exchanged(monthly_transactions))]
   end
 
   def to_s(options)
@@ -30,7 +39,7 @@ class Report
   end
 
   def footer
-    format(templates[:totals], totals: money(filtered_transactions))
+    ['Total', *money(filtered_transactions)]
   end
 
   private
@@ -43,7 +52,7 @@ class Report
         format(templates[:expense], display: formatted_value, percentage: percentage_expense(value))
       end
 
-      format(templates[:summary], category: category, money: money)
+      [category].concat(money)
     end
   end
 
@@ -51,9 +60,10 @@ class Report
     expense = transactions.select(&:expense?).sum(&:money)
     income = transactions.reject(&:expense?).sum(&:money)
 
-    [expense, income].reject(&:zero?).map do |value|
+    [expense, income].map do |value|
+      next if value.zero?
       block_given? ? yield(value, MoneyHelper.display(value)) : MoneyHelper.display(value)
-    end.join(' | ')
+    end
   end
 
   def percentage_expense(money)

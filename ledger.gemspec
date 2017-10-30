@@ -18,11 +18,10 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = '>= 1.8.23'
   s.required_ruby_version = '>= 2.2.7'
 
-  s.add_dependency 'colorize', '~> 0.8.1'
+  s.add_dependency 'command_line_reporter', '~> 4.0.0', '>=3.0'
   s.add_dependency 'google_currency', '~> 3.4.0'
   s.add_dependency 'money', '~> 6.9.0'
   s.add_dependency 'openssl', '~> 2.0.6'
-  s.add_dependency 'terminal-table', '~> 1.8.0'
   s.add_dependency 'thor', '~> 0.20.0'
   s.add_dependency 'xdg', '~> 2.2.3'
 

@@ -2,6 +2,8 @@
 # Very simple and straightforward, the idea is to just be able to display
 # the title/header the and the respective summary.
 class Printer
+  include CommandLineReporter
+
   attr_reader :repository, :options
 
   def initialize(options = {})
@@ -21,7 +23,32 @@ class Printer
 
   def report
     repository.report(options).each do |report|
-      print(report.title) { [report.monthly_balance].concat(report.to_s(options)).push(report.footer) }
+      header(title: report.account, width: 60, align: 'center', rule: true)
+      table do
+        row(header: true, color: :blue) do
+          column('Category', width: 20)
+          column('Account', width: 20)
+          column('All Accounts', width: 20)
+        end
+        [report.total, report.monthly_balance].each do |values|
+          row do
+            values.each { |v| column(v) }
+          end
+        end
+        row(header: true, color: :blue) do
+          column('Category', width: 20)
+          column('Outflow', width: 20)
+          column('Inflow', width: 20)
+        end
+        report.to_s(options).each do |values|
+          row do
+            values.each { |v| column(v) }
+          end
+        end
+        row(bold: true, color: :yellow) do
+          report.footer.each { |v| column(v) }
+        end
+      end
     end
   end
 

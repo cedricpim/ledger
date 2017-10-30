@@ -56,7 +56,7 @@ module Ledger
     method_option :monthly, type: :numeric, default: -> { Date.today.month }, aliases: '-m'
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
-    method_option :account, type: :array, aliases: '-A'
+    method_option :accounts, type: :array, aliases: '-A'
     method_option :categories, type: :array, aliases: '-C'
     method_option :detailed, type: :boolean, default: false, aliases: '-d'
     def report
