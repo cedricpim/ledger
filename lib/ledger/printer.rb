@@ -22,37 +22,24 @@ class Printer
   end
 
   def report
-    repository.report(options).each do |report|
-      header(title: report.account, width: 60, align: 'center', rule: true)
-      table do
-        row(header: true, color: :blue) do
-          column('Category', width: 20)
-          column('Account', width: 20)
-          column('All Accounts', width: 20)
-        end
-        [report.total, report.monthly_balance].each do |values|
-          row do
-            values.each { |v| column(v) }
-          end
-        end
-        row(header: true, color: :blue) do
-          column('Category', width: 20)
-          column('Outflow', width: 20)
-          column('Inflow', width: 20)
-        end
-        report.to_s(options).each do |values|
-          row do
-            values.each { |v| column(v) }
-          end
-        end
-        row(bold: true, color: :yellow) do
-          report.footer.each { |v| column(v) }
-        end
-      end
-    end
+    repository.report(options).each { |report| report.display(options[:detailed]) }
+
+    totals
   end
 
   private
+
+  def totals
+    header(Report::TITLE.merge(title: 'Totals'))
+    table do
+      row(color: :blue, bold: true) do
+        repository.currencies.each_key { |k| column(k.name, width: 23, align: 'center') }
+      end
+      row(color: :white) do
+        repository.currencies.each_value { |v| column(v, align: 'center') }
+      end
+    end
+  end
 
   def print(title)
     puts format(CONFIG.template(:title), title: title)

@@ -9,6 +9,14 @@ class Content
     @transactions = transactions
   end
 
+  def currencies
+    @currencies ||= transactions.map(&:currency).uniq.each_with_object({}) do |currency, result|
+      total = transactions.sum { |t| t.money.exchange_to(currency) }
+
+      result[total.currency] = MoneyHelper.display(total)
+    end
+  end
+
   def trips
     transactions.select(&:travel).group_by(&:travel).map do |t, trs|
       Trip.new(t, trs)
@@ -17,7 +25,7 @@ class Content
 
   def report(options)
     transactions.select { |t| filters(options).all? { |f| f.call(t) } }.group_by(&:account).map do |a, trs|
-      Report.new(a, trs, transactions)
+      Report.new(a, trs, transactions, options[:monthly])
     end
   end
 
@@ -59,9 +67,9 @@ class Content
   end
 
   def exclude(options)
-    return unless options[:exclude]
+    return unless options[:categories]
 
-    ->(transaction) { !options[:exclude].include?(transaction.category) }
+    ->(transaction) { !options[:categories].include?(transaction.category) }
   end
 
   def monthly(options)

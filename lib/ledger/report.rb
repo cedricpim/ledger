@@ -1,85 +1,88 @@
 # Class responsible for doing the correct calculations to generate reports
 # about the income/expenses of the account.
 class Report
-  attr_reader :account, :filtered_transactions, :currency, :total_transactions
+  include CommandLineReporter
 
-  def initialize(account, filtered_transactions, total_transactions)
+  TITLE = {width: 70, align: 'center', rule: true, color: :cyan, bold: true}.freeze
+  HEADER = %w[Category Outflow (%) Inflow (%)].freeze
+  HEADER_OPTIONS = [
+    {width: 20},
+    {width: 15, align: 'center'}, {width: 7, align: 'center'},
+    {width: 15, align: 'center'}, {width: 7, align: 'center'}
+  ].freeze
+
+  attr_reader :account, :filtered_transactions, :currency, :total_transactions, :monthly_transactions
+
+  def initialize(account, filtered_transactions, total_transactions, month)
     @account = account
     @filtered_transactions = filtered_transactions
     @currency = filtered_transactions.first.currency
-    @total_transactions = total_transactions
+    @total_transactions = total_transactions.map { |t| t.dup.tap { |tt| tt.money = t.money.exchange_to(currency) } }
+    @monthly_transactions = @total_transactions.select { |t| t.parsed_date.month == month }
   end
 
-  def title
-    format(
-      templates[:title],
-      account: account,
-      current: MoneyHelper.display(total_transactions.select { |t| t.account == account }.sum(&:money)),
-      total_current: MoneyHelper.display(exchanged(total_transactions).sum(&:money))
-    )
-  end
-
-  def total
-    [
-      'Current',
-      MoneyHelper.display(total_transactions.select { |t| t.account == account }.sum(&:money)),
-      MoneyHelper.display(exchanged(total_transactions).sum(&:money))
-    ]
-  end
-
-  def monthly_balance
-    monthly_transactions = total_transactions.select { |t| t.parsed_date.month == Date.today.month }
-
-    format(templates[:monthly], money: money(exchanged(monthly_transactions)))
-    ['Monthly', *money(exchanged(monthly_transactions))]
-  end
-
-  def to_s(options)
-    options[:detailed] ? filtered_transactions : summary
-  end
-
-  def footer
-    ['Total', *money(filtered_transactions)]
+  def display(detailed)
+    detailed ? details : summary
   end
 
   private
 
-  def summary
-    filtered_transactions.group_by(&:category).map do |category, cts|
-      money = money(cts) do |value, formatted_value|
-        next formatted_value if value.positive?
+  def details; end
 
-        format(templates[:expense], display: formatted_value, percentage: percentage_expense(value))
+  def summary
+    header(TITLE.merge(title: account))
+    table do
+      add_row(HEADER, HEADER_OPTIONS, color: :blue, bold: true)
+      categories.each { |values| add_row(values, color: :white) }
+      add_row(total_filtered, color: :yellow)
+      add_row(monthly, color: :magenta)
+    end
+  end
+
+  def add_row(list, column_options = [], **row_options)
+    row(row_options) do
+      list.each_with_index { |v, i| column(v, column_options.fetch(i, {})) }
+    end
+  end
+
+  def categories
+    filtered_transactions.group_by(&:category).map do |category, cts|
+      money_values = balance(cts) do |value|
+        filter = value.negative? ? :select : :reject
+        [value, filtered_transactions.public_send(filter, &:expense?).sum(&:money)]
       end
 
-      [category].concat(money)
+      [category].concat(money_values)
     end
   end
 
-  def money(transactions)
-    expense = transactions.select(&:expense?).sum(&:money)
-    income = transactions.reject(&:expense?).sum(&:money)
+  def total_filtered
+    ['Total'].concat(balance(filtered_transactions))
+  end
 
-    [expense, income].map do |value|
-      next if value.zero?
-      block_given? ? yield(value, MoneyHelper.display(value)) : MoneyHelper.display(value)
+  def monthly
+    money_values = balance(monthly_transactions) do |value|
+      income = monthly_transactions.reject(&:expense?).sum(&:money)
+      expense = monthly_transactions.select(&:expense?).sum(&:money)
+
+      value.negative? ? [value, income] : [income - expense.abs, total_transactions.sum(&:money)]
     end
+
+    ['Monthly'].concat(money_values)
   end
 
-  def percentage_expense(money)
-    total_expense = filtered_transactions.select(&:expense?).sum(&:money)
-    return 100.0 if total_expense.zero?
-
-    ((money.abs / total_expense.abs) * 100).to_f.round(2)
+  def balance(transactions, &block)
+    [
+      transactions.select(&:expense?).sum(&:money),
+      transactions.reject(&:expense?).sum(&:money)
+    ].map { |value| [MoneyHelper.display(value), percentage(value, &block)] }.flatten
   end
 
-  def exchanged(transactions)
-    transactions.map do |transaction|
-      Transaction.new.tap { |t| t.money = transaction.money.exchange_to(currency) }
-    end
-  end
+  def percentage(value)
+    value, total = yield(value) if block_given? && value.is_a?(Money)
 
-  def templates
-    @templates ||= CONFIG.templates(:report)
+    return '-' * 5 unless total.is_a?(Money)
+
+    ((value.abs / total.abs) * 100).to_f.round(2)
   end
 end

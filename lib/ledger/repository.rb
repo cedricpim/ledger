@@ -4,19 +4,19 @@ module Ledger
   class Repository
     extend Forwardable
 
-    def_delegators :content, :list, :accounts, :categories, :currencies,
+    def_delegators :content, :transactions, :list, :accounts, :categories, :currencies,
                    :descriptions, :travels, :trips, :report, :accounts_currency
 
-    attr_reader :transactions
+    attr_reader :current_transactions
 
     def initialize
-      @transactions = []
+      @current_transactions = []
     end
 
     def load!
       encryption.wrap do |file|
         CSV.foreach(file, headers: true) do |row|
-          transactions << Transaction.new(*row.fields)
+          current_transactions << Transaction.new(*row.fields)
         end
       end
     end
@@ -55,7 +55,7 @@ module Ledger
 
       load!
 
-      @content = Content.new(transactions)
+      @content = Content.new(current_transactions)
     end
   end
 end
