@@ -80,8 +80,8 @@
         :thousands_separator: ''
     # Symbols to be used when displaying if a field has been processed or not
     :processed:
-      'yes': '✓'
-      'no': '×'
+      'yes': true
+      'no': false
   # Title format used when displaying information
   :title: '******* %{title} *******'
   # Default format for displaying a transaction
@@ -95,17 +95,6 @@
     :summary: '[%{account}] %{category}: %{money} (%{percentage}%%)'
     # String format for displaying the transactions of a trip in a detailed version
     :detailed: '%{processed} [%{account}] Date: %{date}, %{category} (%{description}), %{money}'
-  :report:
-    # Main title for an account
-    :title: '%{account} [%{current} / %{total_current}]'
-    # String format for displaying the monthly balance for each account
-    :monthly: 'Monthly: %{money}'
-    # String format for displaying the transactions of a given query in a short version
-    :summary: '%{category}: %{money}'
-    # String format for displaying an expense in the report
-    :expense: '%{display} (%{percentage}%%)'
-    # String format that is set at the end of each account
-    :totals: 'Total: %{totals}'
 
 # Values for configuring encryption on the ledger file
 :encryption:

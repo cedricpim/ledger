@@ -4,12 +4,21 @@ class Report
   include CommandLineReporter
 
   TITLE = {width: 70, align: 'center', rule: true, color: :cyan, bold: true}.freeze
-  HEADER = %w[Category Outflow (%) Inflow (%)].freeze
-  HEADER_OPTIONS = [
-    {width: 20},
-    {width: 15, align: 'center'}, {width: 7, align: 'center'},
-    {width: 15, align: 'center'}, {width: 7, align: 'center'}
-  ].freeze
+  HEADER = {
+    summary: %w[Category Outflow (%) Inflow (%)],
+    detailed: %w[Date Category Amount (%)]
+  }.freeze
+  HEADER_OPTIONS = {
+    summary: [
+      {width: 20},
+      {width: 15, align: 'center'}, {width: 7, align: 'center'},
+      {width: 15, align: 'center'}, {width: 7, align: 'center'}
+    ],
+    detailed: [
+      {width: 15}, {width: 20},
+      {width: 15, align: 'center'}, {width: 7, align: 'center'}
+    ]
+  }.freeze
 
   attr_reader :account, :filtered_transactions, :currency, :total_transactions, :monthly_transactions
 
@@ -27,16 +36,42 @@ class Report
 
   private
 
-  def details; end
+  def details
+    title
+    table do
+      main_header(:detailed)
+
+      transactions_details.each { |values| add_row(values, color: values.pop ? :white : :black) }
+
+      footer { |value| value[0..2].unshift('') }
+    end
+  end
 
   def summary
-    header(TITLE.merge(title: account))
+    title
     table do
-      add_row(HEADER, HEADER_OPTIONS, color: :blue, bold: true)
+      main_header(:summary)
+
       categories.each { |values| add_row(values, color: :white) }
-      add_row(total_filtered, color: :yellow)
-      add_row(monthly, color: :magenta)
+
+      footer
     end
+  end
+
+  def title
+    header(TITLE.merge(title: account))
+  end
+
+  def main_header(type)
+    add_row(HEADER[type], HEADER_OPTIONS[type], color: :blue, bold: true)
+  end
+
+  def footer
+    total = block_given? ? yield(total_filtered) : total_filtered
+    month = block_given? ? yield(monthly) : monthly
+
+    add_row(total, color: :yellow)
+    add_row(month, color: :magenta)
   end
 
   def add_row(list, column_options = [], **row_options)
@@ -45,14 +80,19 @@ class Report
     end
   end
 
+  def transactions_details
+    filtered_transactions.map do |transaction|
+      money = MoneyHelper.display(transaction.money)
+      percentage = percentage(transaction.money)
+      processed = transaction.processed_value
+
+      [transaction.date, transaction.category, money, percentage, processed]
+    end
+  end
+
   def categories
     filtered_transactions.group_by(&:category).map do |category, cts|
-      money_values = balance(cts) do |value|
-        filter = value.negative? ? :select : :reject
-        [value, filtered_transactions.public_send(filter, &:expense?).sum(&:money)]
-      end
-
-      [category].concat(money_values)
+      [category].concat(balance(cts))
     end
   end
 
@@ -75,14 +115,25 @@ class Report
     [
       transactions.select(&:expense?).sum(&:money),
       transactions.reject(&:expense?).sum(&:money)
-    ].map { |value| [MoneyHelper.display(value), percentage(value, &block)] }.flatten
+    ].map do |value|
+      [MoneyHelper.display(value), percentage(value, &block)]
+    end.flatten
   end
 
-  def percentage(value)
-    value, total = yield(value) if block_given? && value.is_a?(Money)
+  def percentage(value, &block)
+    value, total = percentage_values(value, &block)
 
-    return '-' * 5 unless total.is_a?(Money)
+    return '-' * 5 unless total.is_a?(Money) && value.is_a?(Money)
 
     ((value.abs / total.abs) * 100).to_f.round(2)
+  end
+
+  def percentage_values(value)
+    return unless value.is_a?(Money)
+
+    return yield(value) if block_given?
+
+    filter = value.negative? ? :select : :reject
+    [value, filtered_transactions.public_send(filter, &:expense?).sum(&:money)]
   end
 end
