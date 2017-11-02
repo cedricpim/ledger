@@ -44,6 +44,10 @@ Transaction = Struct.new(*CONFIG.transaction_fields) do # rubocop:disable Metric
     )
   end
 
+  def details
+    [date, category, MoneyHelper.display(money), MoneyHelper.percentage(money), processed_value]
+  end
+
   private
 
   def ledger_format(member)

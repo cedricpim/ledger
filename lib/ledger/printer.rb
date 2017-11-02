@@ -12,7 +12,21 @@ class Printer
   end
 
   def list
-    print('Transactions') { repository.list }
+    header(Report::TITLE.merge(title: 'Transactions'))
+    table do
+      row(color: :blue, bold: true) do
+        Report::HEADER[:detailed][0..-2].push('Trip').each_with_index do |v, i|
+          column(v, Report::HEADER_OPTIONS[:detailed].fetch(i, {}))
+        end
+      end
+      repository.transactions.each do |transaction|
+        values = transaction.details
+        row(color: values.pop ? :white : :black) do
+          values[0..-2].push(transaction.travel || '-' * 6).each { |v| column(v) }
+        end
+      end
+    end
+    totals
   end
 
   def trips
