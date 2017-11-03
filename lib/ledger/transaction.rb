@@ -18,10 +18,6 @@ Transaction = Struct.new(*CONFIG.transaction_fields) do # rubocop:disable Metric
     @money ||= Money.new(BigDecimal(amount) * currency_info.subunit_to_unit, currency_info)
   end
 
-  def processed_value
-    CONFIG.templates(:fields).dig(:processed, processed)
-  end
-
   def expense?
     money.negative?
   end
@@ -45,6 +41,8 @@ Transaction = Struct.new(*CONFIG.transaction_fields) do # rubocop:disable Metric
   end
 
   def details
+    processed_value = CONFIG.templates(:fields).dig(:processed, processed)
+
     [date, category, MoneyHelper.display(money), MoneyHelper.percentage(money), processed_value]
   end
 

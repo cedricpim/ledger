@@ -41,7 +41,10 @@ class Report
     table do
       main_header(:detailed)
 
-      transactions_details.each { |values| add_row(values, color: values.pop ? :white : :black) }
+      filtered_transactions.each do |transaction|
+        values = transaction.details
+        add_row(values, color: values.pop ? :white : :black)
+      end
 
       footer { |value| value[0..2].unshift('') }
     end
@@ -80,28 +83,18 @@ class Report
     end
   end
 
-  def transactions_details
-    filtered_transactions.map do |transaction|
-      money = MoneyHelper.display(transaction.money)
-      percentage = percentage(transaction.money)
-      processed = transaction.processed_value
-
-      [transaction.date, transaction.category, money, percentage, processed]
-    end
-  end
-
   def categories
     filtered_transactions.group_by(&:category).map do |category, cts|
-      [category].concat(balance(cts))
+      [category].concat(MoneyHelper.balance(cts, filtered_transactions))
     end
   end
 
   def total_filtered
-    ['Total'].concat(balance(filtered_transactions))
+    ['Total'].concat(MoneyHelper.balance(filtered_transactions))
   end
 
   def monthly
-    money_values = balance(monthly_transactions) do |value|
+    money_values = MoneyHelper.balance(monthly_transactions, []) do |value|
       income = monthly_transactions.reject(&:expense?).sum(&:money)
       expense = monthly_transactions.select(&:expense?).sum(&:money)
 
@@ -109,31 +102,5 @@ class Report
     end
 
     ['Monthly'].concat(money_values)
-  end
-
-  def balance(transactions, &block)
-    [
-      transactions.select(&:expense?).sum(&:money),
-      transactions.reject(&:expense?).sum(&:money)
-    ].map do |value|
-      [MoneyHelper.display(value), percentage(value, &block)]
-    end.flatten
-  end
-
-  def percentage(value, &block)
-    value, total = percentage_values(value, &block)
-
-    return '-' * 5 unless total.is_a?(Money) && value.is_a?(Money)
-
-    ((value.abs / total.abs) * 100).to_f.round(2)
-  end
-
-  def percentage_values(value)
-    return unless value.is_a?(Money)
-
-    return yield(value) if block_given?
-
-    filter = value.negative? ? :select : :reject
-    [value, filtered_transactions.public_send(filter, &:expense?).sum(&:money)]
   end
 end

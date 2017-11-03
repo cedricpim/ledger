@@ -7,6 +7,15 @@ module MoneyHelper
       money.format(CONFIG.money_format)
     end
 
+    def balance(transactions, percentage_related = transactions, &block)
+      [
+        transactions.select(&:expense?).sum(&:money),
+        transactions.reject(&:expense?).sum(&:money)
+      ].map do |value|
+        [display(value), percentage(value, percentage_related, &block)]
+      end.flatten
+    end
+
     def percentage(value, transactions = [], &block)
       value, total = percentage_values(value, transactions, &block)
 
