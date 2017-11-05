@@ -59,6 +59,13 @@
 # Define the set of formats to be used across the application
 :format:
   :output:
+    :default:
+      # Fallback to be displayed when money is not present
+      :money: '------'
+      # Fallback to be displayed when percentage is not present
+      :percentage: '-----'
+      # Fallback to be displayed when travel is not present
+      :travel: '-----'
     # Options on how to print the title of a table
     :title:
       :width: 70

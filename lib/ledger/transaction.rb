@@ -39,7 +39,7 @@ module Ledger
       percentage = MoneyHelper.percentage(money, percentage_related_to)
 
       if include_travel
-        [date, category, MoneyHelper.display(money), travel || '-' * 6, percentage]
+        [date, category, MoneyHelper.display(money), travel || CONFIG.output(:default, :travel), percentage]
       else
         [date, category, MoneyHelper.display(money), percentage]
       end

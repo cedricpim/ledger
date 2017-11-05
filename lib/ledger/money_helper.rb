@@ -3,7 +3,7 @@ module Ledger
   module MoneyHelper
     class << self
       def display(money)
-        return '-' * 10 unless money.is_a?(Money)
+        return CONFIG.output(:default, :money) unless money.is_a?(Money)
 
         money.format(CONFIG.money_format(type: :display))
       end
@@ -20,7 +20,7 @@ module Ledger
       def percentage(value, transactions = [], &block)
         value, total = percentage_values(value, transactions, &block)
 
-        return '-' * 5 unless total.is_a?(Money) && value.is_a?(Money)
+        return CONFIG.output(:default, :percentage) unless total.is_a?(Money) && value.is_a?(Money)
 
         ((value.abs / total.abs) * 100).to_f.round(2)
       end
