@@ -3,7 +3,7 @@ module Ledger
   # Very simple and straightforward, the idea is to just be able to display
   # the title/header the and the respective summary.
   class Printer
-    include CommandLineReporter
+    include ReportBuilder
 
     attr_reader :repository, :options
 
@@ -13,20 +13,16 @@ module Ledger
     end
 
     def list
-      header(Report::TITLE.merge(title: 'Transactions'))
+      title('Transactions')
+
       table do
-        row(color: :blue, bold: true) do
-          Report::HEADER[:detailed][0..-2].push('Trip').each_with_index do |v, i|
-            column(v, Report::HEADER_OPTIONS[:detailed].fetch(i, {}))
-          end
-        end
-        repository.transactions.each do |transaction|
-          values = transaction.details
-          row(color: values.pop ? :white : :black) do
-            values[0..-2].push(transaction.travel || '-' * 6).each { |v| column(v) }
-          end
+        main_header(:transaction)
+
+        print(repository.transactions) do |t|
+          [t.details(include_travel: true)[0..-2], color: t.processed_value ? :white : :black]
         end
       end
+
       totals
     end
 
@@ -37,30 +33,29 @@ module Ledger
     end
 
     def report
-      repository.report(options).each { |report| report.display(options[:detailed]) }
+      repository.report(options).each do |report|
+        title(report.account)
+
+        build_report(report, options[:detailed] ? :detailed : :summary)
+      end
 
       totals
     end
 
     private
 
-    def totals
-      header(Report::TITLE.merge(title: 'Totals'))
+    def build_report(report, type)
       table do
-        row(color: :blue, bold: true) do
-          repository.currencies.each_key { |k| column(k.name, width: 23, align: 'center') }
-        end
-        row(color: :white) do
-          repository.currencies.each_value { |v| column(v, align: 'center') }
-        end
-      end
-    end
+        main_header(type)
 
-    def print(title)
-      puts format(CONFIG.template(:title), title: title)
-      result = yield
-      puts result.respond_to?(:join) ? result.join("\n") : result
-      puts
+        if type == :detailed
+          print(report.filtered_transactions) { |t| [t.details, color: t.processed_value ? :white : :black] }
+        else
+          print(report.categories)
+        end
+
+        footer(report) { |value| type == :detailed ? value[0..2].unshift('') : value }
+      end
     end
   end
 end

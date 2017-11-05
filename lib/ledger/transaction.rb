@@ -15,6 +15,10 @@ module Ledger
       @parsed_date ||= date.is_a?(String) ? Date.parse(date) : date
     end
 
+    def processed_value
+      CONFIG.templates(:fields).dig(:processed, processed)
+    end
+
     def money
       @money ||= Money.new(BigDecimal(amount) * currency_info.subunit_to_unit, currency_info)
     end
@@ -41,10 +45,10 @@ module Ledger
       )
     end
 
-    def details
-      processed_value = CONFIG.templates(:fields).dig(:processed, processed)
-
-      [date, category, MoneyHelper.display(money), MoneyHelper.percentage(money), processed_value]
+    def details(include_travel: false)
+      [date, category, MoneyHelper.display(money), MoneyHelper.percentage(money)].tap do |details|
+        details.insert(3, travel || '-' * 6) if include_travel
+      end
     end
 
     private
