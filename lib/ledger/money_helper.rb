@@ -5,7 +5,7 @@ module Ledger
       def display(money)
         return '-' * 10 unless money.is_a?(Money)
 
-        money.format(CONFIG.money_format)
+        money.format(CONFIG.money_format(type: :display))
       end
 
       def balance(transactions, percentage_related = transactions, &block)

@@ -59,8 +59,6 @@
 # Define the set of formats to be used accross the application
 :format:
   :fields:
-    # Format used to store and display dates
-    :date: '%d-%m-%Y'
     # For more information on the configuration values, please read:
     # http://www.rubydoc.info/gems/money/Money/Formatting
     :money:
@@ -80,8 +78,8 @@
         :thousands_separator: ''
     # Symbols to be used when displaying if a field has been processed or not
     :processed:
-      'yes': true
-      'no': false
+      'yes': :white
+      'no': :black
 
 # Values for configuring encryption on the ledger file
 :encryption:

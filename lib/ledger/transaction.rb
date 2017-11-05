@@ -15,8 +15,8 @@ module Ledger
       @parsed_date ||= date.is_a?(String) ? Date.parse(date) : date
     end
 
-    def processed_value
-      CONFIG.templates(:fields).dig(:processed, processed)
+    def processed_color
+      CONFIG.dig(:format, :fields, :processed).fetch(processed)
     end
 
     def money

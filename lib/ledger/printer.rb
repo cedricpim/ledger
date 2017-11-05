@@ -19,7 +19,7 @@ module Ledger
         main_header(of: :transaction, type: :list)
 
         print(repository.transactions) do |t|
-          [t.details(include_travel: true)[0..-2], color: t.processed_value ? :white : :black]
+          [t.details(include_travel: true)[0..-2], color: t.processed_color]
         end
       end
 
@@ -65,7 +65,7 @@ module Ledger
         print(trip.transactions) do |t|
           values = t.details(percentage_related_to: trip.transactions).unshift(t.account)
 
-          [values, color: t.processed_value ? :white : :black]
+          [values, color: t.processed_color]
         end
       else
         print(trip.categories)
@@ -76,9 +76,7 @@ module Ledger
 
     def build_report(report, type)
       if type == :detailed
-        print(report.filtered_transactions) do |t|
-          [t.details, color: t.processed_value ? :white : :black]
-        end
+        print(report.filtered_transactions) { |t| [t.details, color: t.processed_color] }
       else
         print(report.categories)
       end

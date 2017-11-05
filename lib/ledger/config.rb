@@ -55,17 +55,8 @@ module Ledger
       currency.fetch(:default, currency.fetch(:values, []).first)
     end
 
-    def template(*type)
-      config.dig(:format, *type)
-    end
-    alias templates template
-
-    def money_format(type: :display)
+    def money_format(type:)
       config.dig(:format, :fields, :money, type)
-    end
-
-    def money_color(type:)
-      config.dig(:format, :colors, :money, type)
     end
   end
 end
