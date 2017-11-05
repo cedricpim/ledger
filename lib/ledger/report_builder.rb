@@ -7,19 +7,35 @@ module Ledger
     TITLE = {width: 70, align: 'center', rule: true, color: :cyan, bold: true}.freeze
 
     HEADER = {
-      summary: %w[Category Outflow (%) Inflow (%)],
-      detailed: %w[Date Category Amount (%)],
-      transaction: %w[Date Category Amount Trip]
+      transaction: {
+        list: %w[Date Category Amount Trip]
+      },
+      report: {
+        summary: %w[Category Outflow (%) Inflow (%)],
+        detailed: %w[Date Category Amount (%)]
+      },
+      trips: {
+        summary: %w[Category Amount (%)],
+        detailed: %w[Account Date Category Amount (%)]
+      }
     }.freeze
 
     HEADER_OPTIONS = {
-      summary: [
-        {width: 20},
-        {width: 15, align: 'center'}, {width: 7, align: 'center'},
-        {width: 15, align: 'center'}, {width: 7, align: 'center'}
-      ],
-      detailed: [{width: 15}, {width: 20}, {width: 15, align: 'center'}, {width: 7, align: 'center'}],
-      transaction: [{width: 15}, {width: 20}, {width: 15, align: 'center'}, {width: 15, align: 'center'}]
+      transaction: {
+        list: [{width: 15}, {width: 20}, {width: 15, align: 'center'}, {width: 15, align: 'center'}]
+      },
+      report: {
+        summary: [
+          {width: 20},
+          {width: 15, align: 'center'}, {width: 7, align: 'center'},
+          {width: 15, align: 'center'}, {width: 7, align: 'center'}
+        ],
+        detailed: [{width: 15}, {width: 20}, {width: 15, align: 'center'}, {width: 7, align: 'center'}]
+      },
+      trips: {
+        summary: [{width: 20}, {width: 20, align: 'center'}, {width: 10, align: 'center'}],
+        detailed: [{width: 10}, {width: 15}, {width: 20}, {width: 15, align: 'center'}, {width: 7, align: 'center'}]
+      }
     }.freeze
 
     private
@@ -28,8 +44,8 @@ module Ledger
       header(TITLE.merge(title: title))
     end
 
-    def main_header(type)
-      add_row(HEADER[type], HEADER_OPTIONS[type], color: :blue, bold: true)
+    def main_header(of:, type:)
+      add_row(HEADER[of][type], HEADER_OPTIONS[of][type], color: :blue, bold: true)
     end
 
     def print(list)

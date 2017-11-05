@@ -82,19 +82,6 @@
     :processed:
       'yes': true
       'no': false
-  # Title format used when displaying information
-  :title: '******* %{title} *******'
-  # Default format for displaying a transaction
-  :transaction: '%{processed} [%{account}] Date: %{date}, %{category} (%{description}), %{money}%{travel}'
-  :trip:
-    # Part of the string format that composes the footer
-    :account_total: '[%{account}] %{money}'
-    # String format that is set at the end of each account
-    :totals: 'Total: %{totals}'
-    # String format for displaying the transactions of a trip in a short version
-    :summary: '[%{account}] %{category}: %{money} (%{percentage}%%)'
-    # String format for displaying the transactions of a trip in a detailed version
-    :detailed: '%{processed} [%{account}] Date: %{date}, %{category} (%{description}), %{money}'
 
 # Values for configuring encryption on the ledger file
 :encryption:

@@ -16,7 +16,7 @@ module Ledger
       title('Transactions')
 
       table do
-        main_header(:transaction)
+        main_header(of: :transaction, type: :list)
 
         print(repository.transactions) do |t|
           [t.details(include_travel: true)[0..-2], color: t.processed_value ? :white : :black]
@@ -26,17 +26,33 @@ module Ledger
       totals
     end
 
-    def trips
-      repository.trips.each do |trip|
-        print(trip.travel) { trip.to_s(options).push(trip.footer) }
-      end
-    end
-
     def report
+      type = options[:detailed] ? :detailed : :summary
+
       repository.report(options).each do |report|
         title(report.account)
 
-        build_report(report, options[:detailed] ? :detailed : :summary)
+        table do
+          main_header(of: :report, type: type)
+
+          build_report(report, type)
+        end
+      end
+
+      totals
+    end
+
+    def trips
+      type = options[:detailed] ? :detailed : :summary
+
+      repository.trips(options).each do |trip|
+        title(trip.travel)
+
+        table do
+          main_header(of: :trips, type: type)
+
+          build_trip(trip, type)
+        end
       end
 
       totals
@@ -44,18 +60,30 @@ module Ledger
 
     private
 
-    def build_report(report, type)
-      table do
-        main_header(type)
+    def build_trip(trip, type)
+      if type == :detailed
+        print(trip.transactions) do |t|
+          values = t.details(percentage_related_to: trip.transactions).unshift(t.account)
 
-        if type == :detailed
-          print(report.filtered_transactions) { |t| [t.details, color: t.processed_value ? :white : :black] }
-        else
-          print(report.categories)
+          [values, color: t.processed_value ? :white : :black]
         end
-
-        footer(report) { |value| type == :detailed ? value[0..2].unshift('') : value }
+      else
+        print(trip.categories)
       end
+
+      add_row(trip.total(type), color: :yellow)
+    end
+
+    def build_report(report, type)
+      if type == :detailed
+        print(report.filtered_transactions) do |t|
+          [t.details, color: t.processed_value ? :white : :black]
+        end
+      else
+        print(report.categories)
+      end
+
+      footer(report) { |value| type == :detailed ? value[0..2].unshift('') : value }
     end
   end
 end

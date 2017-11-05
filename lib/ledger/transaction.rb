@@ -27,27 +27,21 @@ module Ledger
       money.negative?
     end
 
+    def income?
+      !expense?
+    end
+
     def to_ledger
       members.map { |member| ledger_format(member) }.join(',') + "\n"
     end
 
-    def to_s
-      format(CONFIG.template(:transaction), attributes.merge(travel: travel && ", Travel: #{travel}"))
-    end
+    def details(include_travel: false, percentage_related_to: [])
+      percentage = MoneyHelper.percentage(money, percentage_related_to)
 
-    def attributes
-      templates = CONFIG.templates(:fields)
-
-      members.zip(values).to_h.merge(
-        date: parsed_date.strftime(templates.dig(:date)),
-        money: MoneyHelper.display(money),
-        processed: templates.dig(:processed, processed)
-      )
-    end
-
-    def details(include_travel: false)
-      [date, category, MoneyHelper.display(money), MoneyHelper.percentage(money)].tap do |details|
-        details.insert(3, travel || '-' * 6) if include_travel
+      if include_travel
+        [date, category, MoneyHelper.display(money), travel || '-' * 6, percentage]
+      else
+        [date, category, MoneyHelper.display(money), percentage]
       end
     end
 

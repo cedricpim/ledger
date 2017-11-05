@@ -18,9 +18,9 @@ module Ledger
       end
     end
 
-    def trips
+    def trips(options)
       transactions.select(&:travel).group_by(&:travel).map do |t, trs|
-        Trip.new(t, trs)
+        Trip.new(t, trs, transactions, options[:currency])
       end
     end
 
@@ -45,7 +45,8 @@ module Ledger
         till(options),
         exclude(options),
         monthly(options),
-        annual(options)
+        annual(options),
+        travels(options)
       ].compact
     end
 
@@ -70,7 +71,7 @@ module Ledger
     def exclude(options)
       return unless options[:categories]
 
-      ->(transaction) { !options[:categories].include?(transaction.category) }
+      ->(transaction) { !options[:categories].map(&:downcase).include?(transaction.category.downcase) }
     end
 
     def monthly(options)
@@ -83,6 +84,12 @@ module Ledger
       return unless options[:annual]
 
       ->(transaction) { transaction.parsed_date.cwyear == options[:annual] }
+    end
+
+    def travels(options)
+      return unless options[:travels]
+
+      ->(transaction) { options[:travels].map(&:downcase).include?(transaction.travel&.downcase) }
     end
   end
 end

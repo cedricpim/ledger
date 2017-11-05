@@ -50,6 +50,11 @@ module Ledger
       ].compact.map(&:chomp)
     end
 
+    def default_currency
+      currency = config.dig(:fields, :currency)
+      currency.fetch(:default, currency.fetch(:values, []).first)
+    end
+
     def template(*type)
       config.dig(:format, *type)
     end

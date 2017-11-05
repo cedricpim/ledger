@@ -58,28 +58,34 @@ module Ledger
     method_option :till, type: :string, aliases: '-t'
     method_option :accounts, type: :array, aliases: '-A'
     method_option :categories, type: :array, aliases: '-C'
+    method_option :travels, type: :array, aliases: '-T'
     method_option :detailed, type: :boolean, default: false, aliases: '-d'
     def report
-      options = self.options.each_with_object(Thor::CoreExt::HashWithIndifferentAccess.new) do |(k, v), h|
-        next h[k] = Date.parse(v) if %i[from till].include?(k)
-        next h[k] = v.call if v.is_a?(Proc)
-        h[k] = v
-      end.freeze
-
-      Printer.new(options).report
+      Printer.new(parsed_options).report
     end
 
     desc 'trips', COMMANDS[:trips]
     map 't' => :trips
+    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     method_option :detailed, type: :boolean, default: false, aliases: '-d'
     def trips
-      Printer.new(options).trips
+      Printer.new(parsed_options).trips
     end
 
     desc 'version', COMMANDS[:version]
     map '-v' => :version
     def version
       say "ledger #{::Ledger::VERSION}"
+    end
+
+    private
+
+    def parsed_options
+      options.each_with_object(Thor::CoreExt::HashWithIndifferentAccess.new) do |(k, v), h|
+        next h[k] = Date.parse(v) if %i[from till].include?(k)
+        next h[k] = v.call if v.is_a?(Proc)
+        h[k] = v
+      end.freeze
     end
   end
 end

@@ -2,65 +2,36 @@ module Ledger
   # Class responsible for representing a trip, it contains the identifier of the
   # trip (travel attribute) and all the transactions belonging to this trip. It
   # is capable of listing the transactions and provide a summary of the
-  # transactions, grouped by account and category.
+  # transactions, grouped by category.
   class Trip
-    attr_reader :travel, :transactions
+    attr_reader :travel, :currency, :transactions, :monthly_income
 
-    def initialize(travel, transactions)
+    def initialize(travel, transactions, total_transactions, currency)
       @travel = travel
-      @transactions = transactions
+      @currency = currency
+      @transactions = transactions.map { |t| t.dup.tap { |tt| tt.money = t.money.exchange_to(currency) } }
+      @monthly_income = total_transactions.map do |t|
+        next unless t.parsed_date.month == transactions.last.parsed_date.month && t.income?
+
+        t.dup.tap { |tt| tt.money = t.money.exchange_to(currency) }
+      end.compact
     end
 
-    def to_s(options)
-      options[:detailed] ? details : summary
-    end
-
-    def footer
-      format(templates[:totals], totals: totals)
-    end
-
-    private
-
-    def details
-      transactions.map { |transaction| format(templates[:detailed], transaction.attributes) }
-    end
-
-    def summary
-      transactions.group_by(&:account).flat_map do |account, gts|
-        display_per_category(account, gts)
-      end
-    end
-
-    def display_per_category(account, transactions)
+    def categories
       transactions.group_by(&:category).map do |category, cts|
         money = cts.sum(&:money)
-        percentage = percentage(money, total_amounts[account])
-        money = MoneyHelper.display(money)
+        percentage = MoneyHelper.percentage(money) { |value| [value, transactions.sum(&:money)] }
 
-        format(templates[:summary], account: account, category: category, money: money, percentage: percentage)
+        [category].push(MoneyHelper.display(money), percentage)
       end
     end
 
-    def percentage(money, total)
-      return 100.0 if total.zero?
+    def total(type)
+      total_spent = transactions.sum(&:money)
+      percentage = MoneyHelper.percentage(total_spent) { |value| [value, monthly_income.sum(&:money)] }
 
-      ((money.abs / total.abs) * 100).to_f.round(2)
-    end
-
-    def total_amounts
-      @total_amounts ||= transactions.group_by(&:account).each_with_object({}) do |(account, ats), result|
-        result[account] = ats.sum(&:money)
-      end
-    end
-
-    def totals
-      total_amounts.map do |account, money|
-        format(templates[:account_total], account: account, money: MoneyHelper.display(money))
-      end.join(' | ')
-    end
-
-    def templates
-      @templates ||= CONFIG.templates(:trip)
+      label = type == :detailed ? ['', '', 'Total'] : ['Total']
+      label.push(MoneyHelper.display(total_spent), percentage)
     end
   end
 end
