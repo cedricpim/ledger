@@ -83,5 +83,26 @@ module Ledger
 
       footer(report) { |value| type == :detailed ? value[0..2].unshift('') : value }
     end
+
+    def footer(report)
+      total = yield(report.total_filtered)
+      month = yield(report.monthly)
+
+      add_row(total, color: :yellow)
+      add_row(month, color: :magenta)
+    end
+
+    def totals
+      title('Totals')
+
+      table do
+        row(color: :blue, bold: true) do
+          repository.currencies.each_key { |k| column(k.name, width: 23, align: 'center') }
+        end
+        row(color: :white) do
+          repository.currencies.each_value { |v| column(v, align: 'center') }
+        end
+      end
+    end
   end
 end

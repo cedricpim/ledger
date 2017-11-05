@@ -56,8 +56,101 @@
     :default: ''
     :presence: false
 
-# Define the set of formats to be used accross the application
+# Define the set of formats to be used across the application
 :format:
+  :output:
+    # Options on how to print the title of a table
+    :title:
+      :width: 70
+      :align: 'center'
+      :rule: true
+      :color: :cyan
+      :bold: true
+    # Options related to show a transaction
+    :transaction:
+      :list:
+        # Fields to be shown for a transaction
+        :header:
+          - Date
+          - Category
+          - Amount
+          - Trip
+        # Options for each column
+        :options:
+          - :width: 15
+          - :width: 20
+          - :width: 15
+            :align: 'center'
+          - :width: 15
+            :align: 'center'
+    # Options related to how to display a report
+    :report:
+      :summary:
+        # Fields to be shown for a summary report
+        :header:
+          - Category
+          - Outflow
+          - (%)
+          - Inflow
+          - (%)
+        # Options for each column
+        :options:
+          - :width: 20
+          - :width: 15
+            :align: 'center'
+          - :width: 7
+            :align: 'center'
+          - :width: 15
+            :align: 'center'
+          - :width: 7
+            :align: 'center'
+      :detailed:
+        # Fields to be shown for a detailed report
+        :header:
+          - Date
+          - Category
+          - Amount
+          - (%)
+        # Options for each column
+        :options:
+          - :width: 15
+          - :width: 20
+          - :width: 15
+            :align: 'center'
+          - :width: 7
+            :align: 'center'
+    # Options related to how to display the list of trips
+    :trips:
+      :summary:
+        # Fields to be shown for a summary of trips
+        :header:
+          - Category
+          - Amount
+          - (%)
+        # Options for each column
+        :options:
+          - :width: 20
+          - :width: 20
+            :align: 'center'
+          - :width: 10
+            :align: 'center'
+      :detailed:
+        # Fields to be shown for a detailed showdown of trips
+        :header:
+          - Account
+          - Date
+          - Category
+          - Amount
+          - (%)
+        # Options for each column
+        :options:
+          - :width: 10
+          - :width: 15
+          - :width: 20
+          - :width: 15
+            :align: 'center'
+          - :width: 7
+            :align: 'center'
   :fields:
     # For more information on the configuration values, please read:
     # http://www.rubydoc.info/gems/money/Money/Formatting

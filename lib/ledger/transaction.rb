@@ -16,7 +16,7 @@ module Ledger
     end
 
     def processed_color
-      CONFIG.dig(:format, :fields, :processed).fetch(processed)
+      CONFIG.processed_color(type: processed)
     end
 
     def money

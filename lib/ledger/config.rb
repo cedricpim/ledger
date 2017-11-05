@@ -55,6 +55,14 @@ module Ledger
       currency.fetch(:default, currency.fetch(:values, []).first)
     end
 
+    def processed_color(type:)
+      config.dig(:format, :fields, :processed).fetch(type)
+    end
+
+    def output(*fields)
+      config.dig(:format, :output, *fields)
+    end
+
     def money_format(type:)
       config.dig(:format, :fields, :money, type)
     end
