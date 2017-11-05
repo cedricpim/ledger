@@ -46,8 +46,9 @@ module Ledger
 
     desc 'list', COMMANDS[:list]
     map 'l' => :list
+    method_option :non_processed, type: :string, aliases: '-p'
     def list
-      Printer.new.list
+      Printer.new(parsed_options).list
     end
 
     desc 'report', COMMANDS[:report]

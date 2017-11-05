@@ -18,7 +18,7 @@ module Ledger
       table do
         main_header(of: :transaction, type: :list)
 
-        print_detailed(repository.transactions, include_travel: true)
+        print_detailed(repository.list(options), include_travel: true)
       end
 
       totals

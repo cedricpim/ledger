@@ -4,10 +4,12 @@ module Ledger
   class Content
     attr_reader :transactions
 
-    alias list transactions
-
     def initialize(transactions)
       @transactions = transactions
+    end
+
+    def list(options)
+      transactions.select { |t| options[:non_processed].nil? || t.processed == options[:non_processed] }
     end
 
     def currencies
