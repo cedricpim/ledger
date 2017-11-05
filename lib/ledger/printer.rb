@@ -18,24 +18,18 @@ module Ledger
       table do
         main_header(of: :transaction, type: :list)
 
-        print(repository.transactions) do |t|
-          [t.details(include_travel: true)[0..-2], color: t.processed_color]
-        end
+        print_detailed(repository.transactions, include_travel: true)
       end
 
       totals
     end
 
     def report
-      type = options[:detailed] ? :detailed : :summary
-
       repository.report(options).each do |report|
         title(report.account)
 
-        table do
-          main_header(of: :report, type: type)
-
-          build_report(report, type)
+        build(report, :filtered_transactions) do |value|
+          type == :detailed ? value[0..2].unshift('') : value
         end
       end
 
@@ -43,15 +37,11 @@ module Ledger
     end
 
     def trips
-      type = options[:detailed] ? :detailed : :summary
-
       repository.trips(options).each do |trip|
         title(trip.travel)
 
-        table do
-          main_header(of: :trips, type: type)
-
-          build_trip(trip, type)
+        build(trip, :transactions, include_account: true) do |value|
+          type == :detailed ? value.unshift('', '') : value
         end
       end
 
@@ -60,33 +50,29 @@ module Ledger
 
     private
 
-    def build_trip(trip, type)
-      if type == :detailed
-        print(trip.transactions) do |t|
-          values = t.details(percentage_related_to: trip.transactions).unshift(t.account)
+    def build(entity, method, **options, &block)
+      table do
+        main_header(of: entity_name(entity), type: type)
 
-          [values, color: t.processed_color]
+        if type == :detailed
+          print_detailed(entity.public_send(method), options)
+        else
+          print(entity.categories)
         end
-      else
-        print(trip.categories)
-      end
 
-      add_row(trip.total(type), color: :yellow)
+        footer(entity, &block)
+      end
     end
 
-    def build_report(report, type)
-      if type == :detailed
-        print(report.filtered_transactions) { |t| [t.details, color: t.processed_color] }
-      else
-        print(report.categories)
+    def print_detailed(transactions, **options)
+      print(transactions) do |t|
+        [t.details(options.merge(percentage_related_to: transactions)), color: t.processed_color]
       end
-
-      footer(report) { |value| type == :detailed ? value[0..2].unshift('') : value }
     end
 
-    def footer(report)
-      total = yield(report.total_filtered)
-      month = yield(report.monthly)
+    def footer(entity)
+      total = yield(entity.total) if entity.respond_to?(:total)
+      month = yield(entity.monthly) if entity.respond_to?(:monthly)
 
       add_row(total, color: :yellow)
       add_row(month, color: :magenta)
@@ -103,6 +89,14 @@ module Ledger
           repository.currencies.each_value { |v| column(v, align: 'center') }
         end
       end
+    end
+
+    def type
+      options[:detailed] ? :detailed : :summary
+    end
+
+    def entity_name(entity)
+      entity.class.to_s.split('::').last.downcase.to_sym
     end
   end
 end

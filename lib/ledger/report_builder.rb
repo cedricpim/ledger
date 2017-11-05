@@ -23,6 +23,8 @@ module Ledger
     end
 
     def add_row(list, column_options = [], **row_options)
+      return unless list
+
       row(row_options) do
         list.each_with_index { |v, i| column(v, column_options.fetch(i, {})) }
       end

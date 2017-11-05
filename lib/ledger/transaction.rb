@@ -35,14 +35,17 @@ module Ledger
       members.map { |member| ledger_format(member) }.join(',') + "\n"
     end
 
-    def details(include_travel: false, percentage_related_to: [])
+    def details(include_account: false, include_travel: false, percentage_related_to: [])
       percentage = MoneyHelper.percentage(money, percentage_related_to)
 
-      if include_travel
-        [date, category, MoneyHelper.display(money), travel || CONFIG.output(:default, :travel), percentage]
-      else
-        [date, category, MoneyHelper.display(money), percentage]
+      [date, category, MoneyHelper.display(money), percentage].tap do |values|
+        values.push(travel || CONFIG.output(:default, :travel)) if include_travel
+        values.unshift(account) if include_account
       end
+    end
+
+    def exchange_to(currency)
+      dup.tap { |transaction| transaction.money = money.exchange_to(currency) }
     end
 
     private

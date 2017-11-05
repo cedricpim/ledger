@@ -127,7 +127,7 @@
           - :width: 7
             :align: 'center'
     # Options related to how to display the list of trips
-    :trips:
+    :trip:
       :summary:
         # Fields to be shown for a summary of trips
         :header:

@@ -12,7 +12,7 @@ module Ledger
 
     def currencies
       @currencies ||= transactions.map(&:currency).uniq.each_with_object({}) do |currency, result|
-        total = transactions.sum { |t| t.money.exchange_to(currency) }
+        total = transactions.map { |t| t.exchange_to(currency) }.sum(&:money)
 
         result[total.currency] = MoneyHelper.display(total)
       end

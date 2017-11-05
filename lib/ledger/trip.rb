@@ -9,29 +9,30 @@ module Ledger
     def initialize(travel, transactions, total_transactions, currency)
       @travel = travel
       @currency = currency
-      @transactions = transactions.map { |t| t.dup.tap { |tt| tt.money = t.money.exchange_to(currency) } }
-      @monthly_income = total_transactions.map do |t|
-        next unless t.parsed_date.month == transactions.last.parsed_date.month && t.income?
+      @transactions = transactions.map { |t| t.exchange_to(currency) }
+      @monthly_income = total_transactions.select(&:income?).map do |t|
+        next unless t.parsed_date.month == transactions.last.parsed_date.month
 
-        t.dup.tap { |tt| tt.money = t.money.exchange_to(currency) }
+        t.exchange_to(currency)
       end.compact
     end
 
     def categories
-      transactions.group_by(&:category).map do |category, cts|
+      list = transactions.group_by(&:category).map do |category, cts|
         money = cts.sum(&:money)
         percentage = MoneyHelper.percentage(money) { |value| [value, transactions.sum(&:money)] }
 
         [category].push(MoneyHelper.display(money), percentage)
       end
+
+      list.sort_by(&:last).reverse
     end
 
-    def total(type)
+    def total
       total_spent = transactions.sum(&:money)
       percentage = MoneyHelper.percentage(total_spent) { |value| [value, monthly_income.sum(&:money)] }
 
-      label = type == :detailed ? ['', '', 'Total'] : ['Total']
-      label.push(MoneyHelper.display(total_spent), percentage)
+      ['Total'].push(MoneyHelper.display(total_spent), percentage)
     end
   end
 end

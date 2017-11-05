@@ -8,17 +8,19 @@ module Ledger
       @account = account
       @filtered_transactions = filtered_transactions
       @currency = filtered_transactions.first.currency
-      @total_transactions = total_transactions.map { |t| t.dup.tap { |tt| tt.money = t.money.exchange_to(currency) } }
+      @total_transactions = total_transactions.map { |t| t.exchange_to(currency) }
       @monthly_transactions = @total_transactions.select { |t| t.parsed_date.month == month }
     end
 
     def categories
-      filtered_transactions.group_by(&:category).map do |category, cts|
+      list = filtered_transactions.group_by(&:category).map do |category, cts|
         [category].concat(MoneyHelper.balance(cts, filtered_transactions))
       end
+
+      list.sort_by { |l| l[2] }.reverse
     end
 
-    def total_filtered
+    def total
       ['Total'].concat(MoneyHelper.balance(filtered_transactions))
     end
 
