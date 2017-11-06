@@ -61,6 +61,8 @@ module Ledger
     method_option :categories, type: :array, aliases: '-C'
     method_option :travels, type: :array, aliases: '-T'
     method_option :detailed, type: :boolean, default: false, aliases: '-d'
+    method_option :global, type: :boolean, default: false, aliases: '-g'
+    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     def report
       Printer.new(parsed_options).report
     end

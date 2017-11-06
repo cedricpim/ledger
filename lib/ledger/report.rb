@@ -4,11 +4,11 @@ module Ledger
   class Report
     attr_reader :account, :filtered_transactions, :currency, :total_transactions, :monthly_transactions
 
-    def initialize(account, filtered_transactions, total_transactions, month)
+    def initialize(account, filtered_transactions, total_transactions, month, currency = nil)
       @account = account
-      @filtered_transactions = filtered_transactions
-      @currency = filtered_transactions.first.currency
-      @total_transactions = total_transactions.map { |t| t.exchange_to(currency) }
+      @currency = currency || filtered_transactions.first.currency
+      @filtered_transactions = filtered_transactions.map { |t| t.exchange_to(@currency) }
+      @total_transactions = total_transactions.map { |t| t.exchange_to(@currency) }
       @monthly_transactions = @total_transactions.select { |t| t.parsed_date.month == month }
     end
 
@@ -17,7 +17,7 @@ module Ledger
         [category].concat(MoneyHelper.balance(cts, filtered_transactions))
       end
 
-      list.sort_by { |l| l[2] }.reverse
+      list.sort_by { |l| l[2].is_a?(String) ? -1 : l[2] }.reverse
     end
 
     def total

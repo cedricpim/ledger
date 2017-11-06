@@ -27,8 +27,12 @@ module Ledger
     end
 
     def report(options)
-      transactions.select { |t| filters(options).all? { |f| f.call(t) } }.group_by(&:account).map do |a, trs|
-        Report.new(a, trs, transactions, options[:monthly])
+      if options[:global]
+        [Report.new('Global', filtered_transactions(options), transactions, options[:monthly], options[:currency])]
+      else
+        filtered_transactions(options).group_by(&:account).map do |a, trs|
+          Report.new(a, trs, transactions, options[:monthly])
+        end
       end
     end
 
@@ -39,6 +43,10 @@ module Ledger
     end
 
     private
+
+    def filtered_transactions(options)
+      transactions.select { |t| filters(options).all? { |f| f.call(t) } }
+    end
 
     def filters(options)
       [
