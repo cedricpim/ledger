@@ -29,10 +29,19 @@ module Ledger
     end
 
     def total
-      total_spent = transactions.sum(&:money)
       percentage = MoneyHelper.percentage(total_spent) { |value| [value, monthly_income.sum(&:money)] }
 
       ['Total'].push(MoneyHelper.display(total_spent), percentage)
+    end
+
+    def summary
+      percentage = MoneyHelper.percentage(total_spent) { |value| [value, monthly_income.sum(&:money)] }
+
+      [travel].push(MoneyHelper.display(total_spent), percentage)
+    end
+
+    def total_spent
+      @total_spent ||= transactions.sum(&:money)
     end
   end
 end

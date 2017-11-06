@@ -37,18 +37,40 @@ module Ledger
     end
 
     def trips
-      repository.trips(options).each do |trip|
+      list = repository.trips(options)
+
+      options[:global] ? trip_totals(list) : trip_individuals(list)
+
+      totals
+    end
+
+    private
+
+    def trip_individuals(list)
+      list.each do |trip|
         title(trip.travel)
 
         build(trip, :transactions, include_account: true) do |value|
           type == :detailed ? value.unshift('', '') : value
         end
       end
-
-      totals
     end
 
-    private
+    def trip_totals(list)
+      title('Trips')
+
+      table do
+        main_header(of: :trip, type: :global)
+
+        print(list.map(&:summary))
+
+        total_spent = list.sum(&:total_spent)
+        percentage = MoneyHelper.percentage(total_spent, repository.transactions)
+        total = ['Total'].push(MoneyHelper.display(total_spent), percentage)
+
+        add_row(total, CONFIG.color(:total))
+      end
+    end
 
     def build(entity, method, **options, &block)
       table do

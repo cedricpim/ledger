@@ -179,6 +179,17 @@
             :align: 'center'
           - :width: 7
             :align: 'center'
+      :global:
+        :header:
+          - Trip
+          - Amount
+          - (%)
+        :options:
+          - :width: 20
+          - :width: 20
+            :align: 'center'
+          - :width: 10
+            :align: 'center'
   :fields:
     # For more information on the configuration values, please read:
     # http://www.rubydoc.info/gems/money/Money/Formatting
