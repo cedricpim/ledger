@@ -85,7 +85,7 @@ module Ledger
 
     def parsed_options
       options.each_with_object(Thor::CoreExt::HashWithIndifferentAccess.new) do |(k, v), h|
-        next h[k] = Date.parse(v) if %i[from till].include?(k)
+        next h[k] = Date.parse(v) if %w[from till].include?(k)
         next h[k] = v.call if v.is_a?(Proc)
         h[k] = v
       end.freeze

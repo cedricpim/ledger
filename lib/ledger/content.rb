@@ -85,13 +85,13 @@ module Ledger
     end
 
     def monthly(options)
-      return unless options[:monthly]
+      return unless options[:monthly] && !filter_with_date_range?(options)
 
       ->(transaction) { transaction.parsed_date.month == options[:monthly] }
     end
 
     def annual(options)
-      return unless options[:annual]
+      return unless options[:annual] && !filter_with_date_range?(options)
 
       ->(transaction) { transaction.parsed_date.cwyear == options[:annual] }
     end
@@ -100,6 +100,10 @@ module Ledger
       return unless options[:travels]
 
       ->(transaction) { options[:travels].map(&:downcase).include?(transaction.travel&.downcase) }
+    end
+
+    def filter_with_date_range?(options)
+      options[:from] || options[:till]
     end
   end
 end
