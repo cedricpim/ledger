@@ -66,6 +66,27 @@
       :percentage: '-----'
       # Fallback to be displayed when travel is not present
       :travel: '-----'
+    # Section to define colors of the output
+    :color:
+      # Color of the header of the table
+      :header:
+        :color: :blue
+        :bold: true
+      # Color of each regular row
+      :element:
+        :color: :white
+      # Color of the total amounts
+      :total:
+        :color: :yellow
+      # Color for the monthly amounts
+      :monthly:
+        :color: :magenta
+      # Color according to the value of the processed field
+      :processed:
+        'yes':
+          :color: :white
+        'no':
+          :color: :black
     # Options on how to print the title of a table
     :title:
       :width: 70

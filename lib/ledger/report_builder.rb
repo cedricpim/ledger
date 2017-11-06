@@ -11,12 +11,12 @@ module Ledger
     end
 
     def main_header(of:, type:)
-      add_row(CONFIG.output(of, type, :header), CONFIG.output(of, type, :options), color: :blue, bold: true)
+      add_row(CONFIG.output(of, type, :header), CONFIG.output(of, type, :options), CONFIG.color(:header))
     end
 
     def print(list)
       list.each do |elements|
-        values, options = block_given? ? yield(elements) : [elements, color: :white]
+        values, options = block_given? ? yield(elements) : [elements, CONFIG.color(:element)]
 
         add_row(values, options)
       end

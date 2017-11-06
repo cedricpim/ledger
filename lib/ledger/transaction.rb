@@ -15,10 +15,6 @@ module Ledger
       @parsed_date ||= date.is_a?(String) ? Date.parse(date) : date
     end
 
-    def processed_color
-      CONFIG.processed_color(type: processed)
-    end
-
     def money
       @money ||= Money.new(BigDecimal(amount) * currency_info.subunit_to_unit, currency_info)
     end

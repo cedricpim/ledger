@@ -66,7 +66,7 @@ module Ledger
 
     def print_detailed(transactions, **options)
       print(transactions) do |t|
-        [t.details(options.merge(percentage_related_to: transactions)), color: t.processed_color]
+        [t.details(options.merge(percentage_related_to: transactions)), CONFIG.color(:processed, t.processed)]
       end
     end
 
@@ -74,18 +74,18 @@ module Ledger
       total = yield(entity.total) if entity.respond_to?(:total)
       month = yield(entity.monthly) if entity.respond_to?(:monthly)
 
-      add_row(total, color: :yellow)
-      add_row(month, color: :magenta)
+      add_row(total, CONFIG.color(:total))
+      add_row(month, CONFIG.color(:monthly))
     end
 
     def totals
       title('Totals')
 
       table do
-        row(color: :blue, bold: true) do
+        row(CONFIG.color(:header)) do
           repository.currencies.each_key { |k| column(k.name, width: 23, align: 'center') }
         end
-        row(color: :white) do
+        row(CONFIG.color(:element)) do
           repository.currencies.each_value { |v| column(v, align: 'center') }
         end
       end
