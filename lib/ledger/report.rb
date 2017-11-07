@@ -2,14 +2,14 @@ module Ledger
   # Class responsible for doing the correct calculations to generate reports
   # about the income/expenses of the account.
   class Report
-    attr_reader :account, :filtered_transactions, :currency, :total_transactions, :monthly_transactions
+    attr_reader :account, :filtered_transactions, :currency, :total_transactions, :period_transactions
 
-    def initialize(account, filtered_transactions, total_transactions, month, currency = nil)
+    def initialize(account, filtered_transactions, total_transactions, period, currency = nil)
       @account = account
       @currency = currency || filtered_transactions.first.currency
       @filtered_transactions = filtered_transactions.map { |t| t.exchange_to(@currency) }
       @total_transactions = total_transactions.map { |t| t.exchange_to(@currency) }
-      @monthly_transactions = @total_transactions.select { |t| t.parsed_date.month == month }
+      @period_transactions = @total_transactions.select { |t| t.parsed_date.between?(*period) }
     end
 
     def categories
@@ -24,15 +24,15 @@ module Ledger
       ['Total'].concat(MoneyHelper.balance(filtered_transactions))
     end
 
-    def monthly
-      money_values = MoneyHelper.balance(monthly_transactions) do |value|
-        income = monthly_transactions.reject(&:expense?).sum(&:money)
-        expense = monthly_transactions.select(&:expense?).sum(&:money)
+    def period
+      money_values = MoneyHelper.balance(period_transactions) do |value|
+        income = period_transactions.reject(&:expense?).sum(&:money)
+        expense = period_transactions.select(&:expense?).sum(&:money)
 
         value.negative? ? [value, income] : [income - expense.abs, total_transactions.sum(&:money)]
       end
 
-      ['Monthly'].concat(money_values)
+      ['Period'].concat(money_values)
     end
   end
 end

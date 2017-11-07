@@ -78,8 +78,8 @@
       # Color of the total amounts
       :total:
         :color: :yellow
-      # Color for the monthly amounts
-      :monthly:
+      # Color for the period amounts
+      :period:
         :color: :magenta
       # Color according to the value of the processed field
       :processed:

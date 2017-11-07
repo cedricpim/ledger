@@ -54,7 +54,7 @@ module Ledger
     desc 'report', COMMANDS[:report]
     map 'r' => :report
     method_option :year, type: :numeric, default: -> { Date.today.cwyear }, aliases: '-y'
-    method_option :monthly, type: :numeric, default: -> { Date.today.month }, aliases: '-m'
+    method_option :month, type: :numeric, default: -> { Date.today.month }, aliases: '-m'
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
     method_option :accounts, type: :array, aliases: '-A'

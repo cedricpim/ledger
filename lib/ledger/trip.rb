@@ -10,11 +10,9 @@ module Ledger
       @travel = travel
       @currency = currency
       @transactions = transactions.map { |t| t.exchange_to(currency) }
-      @monthly_income = total_transactions.select(&:income?).map do |t|
-        next unless t.parsed_date.month == transactions.last.parsed_date.month
-
-        t.exchange_to(currency)
-      end.compact
+      @monthly_income = total_transactions.select(&:income?).sum do |t|
+        t.parsed_date.month == transactions.last.parsed_date.month ? t.exchange_to(currency).money : 0
+      end
     end
 
     def categories
@@ -43,7 +41,7 @@ module Ledger
     private
 
     def build_total(name)
-      percentage = MoneyHelper.percentage(total_spent) { |value| [value, monthly_income.sum(&:money)] }
+      percentage = MoneyHelper.percentage(total_spent) { |value| [value, monthly_income] }
 
       [name].push(MoneyHelper.display(total_spent), percentage)
     end

@@ -28,10 +28,10 @@ module Ledger
 
     def report(options)
       if options[:global]
-        [Report.new('Global', filtered_transactions(options), transactions, options[:monthly], options[:currency])]
+        [Report.new('Global', filtered_transactions(options), transactions, period(options), options[:currency])]
       else
         filtered_transactions(options).group_by(&:account).map do |a, trs|
-          Report.new(a, trs, transactions, options[:monthly])
+          Report.new(a, trs, transactions, period(options))
         end
       end
     end
@@ -48,14 +48,22 @@ module Ledger
       transactions.select { |t| filters(options).all? { |f| f.call(t) } }
     end
 
+    def period(options)
+      if filter_with_date_range?(options)
+        [options.fetch(:from, -Float::INFINITY), options.fetch(:till, Float::INFINITY)]
+      else
+        [Date.new(options[:year], options[:month], 1), Date.new(options[:year], options[:month], -1)]
+      end
+    end
+
     def filters(options)
       [
         include_accounts(options),
         from(options),
         till(options),
         exclude(options),
-        monthly(options),
-        annual(options),
+        month(options),
+        year(options),
         travels(options)
       ].compact
     end
@@ -84,16 +92,16 @@ module Ledger
       ->(transaction) { !options[:categories].map(&:downcase).include?(transaction.category.downcase) }
     end
 
-    def monthly(options)
-      return unless options[:monthly] && !filter_with_date_range?(options)
+    def month(options)
+      return unless options[:month] && !filter_with_date_range?(options)
 
-      ->(transaction) { transaction.parsed_date.month == options[:monthly] }
+      ->(transaction) { transaction.parsed_date.month == options[:month] }
     end
 
-    def annual(options)
-      return unless options[:annual] && !filter_with_date_range?(options)
+    def year(options)
+      return unless options[:year] && !filter_with_date_range?(options)
 
-      ->(transaction) { transaction.parsed_date.cwyear == options[:annual] }
+      ->(transaction) { transaction.parsed_date.cwyear == options[:year] }
     end
 
     def travels(options)
