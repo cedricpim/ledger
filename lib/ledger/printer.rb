@@ -64,12 +64,17 @@ module Ledger
 
         print(list.map(&:summary))
 
-        total_spent = list.sum(&:total_spent)
-        percentage = MoneyHelper.percentage(total_spent, repository.transactions)
-        total = ['Total'].push(MoneyHelper.display(total_spent), percentage)
-
-        add_row(total, CONFIG.color(:total))
+        add_row(trip_total_footer(list), CONFIG.color(:total))
       end
+    end
+
+    def trip_total_footer(list)
+      total_spent = list.sum(&:total_spent)
+      percentage = MoneyHelper.percentage(total_spent) do |value|
+        [value, repository.transactions.select(&:income?).sum(&:money)]
+      end
+
+      ['Total'].push(MoneyHelper.display(total_spent), percentage)
     end
 
     def build(entity, method, **options, &block)

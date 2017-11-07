@@ -5,7 +5,7 @@ module Ledger
     attr_reader :transactions
 
     def initialize(transactions)
-      @transactions = transactions
+      @transactions = transactions.sort_by(&:parsed_date)
     end
 
     def list(options)

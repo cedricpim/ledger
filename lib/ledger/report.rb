@@ -25,7 +25,7 @@ module Ledger
     end
 
     def monthly
-      money_values = MoneyHelper.balance(monthly_transactions, []) do |value|
+      money_values = MoneyHelper.balance(monthly_transactions) do |value|
         income = monthly_transactions.reject(&:expense?).sum(&:money)
         expense = monthly_transactions.select(&:expense?).sum(&:money)
 
