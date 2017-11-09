@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version       = Ledger::VERSION
   s.authors       = ['Cedric Pimenta']
   s.description   = 'Simple CLI money tracker'
-  s.summary       = 'Simple CLI money tracker'
+  s.summary       = 'Quickly create a ledger and manage it from the command line'
   s.license       = 'GPL-3.0'
 
   s.files         = Dir['lib/**/*', 'spec/**/*', 'bin/*']
@@ -19,11 +19,11 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.2.7'
 
   s.add_dependency 'command_line_reporter', '~> 4.0.0', '>=3.0'
-  s.add_dependency 'google_currency', '~> 3.4.0'
-  s.add_dependency 'money', '~> 6.9.0'
-  s.add_dependency 'openssl', '~> 2.0.6'
-  s.add_dependency 'thor', '~> 0.20.0'
-  s.add_dependency 'xdg', '~> 2.2.3'
+  s.add_dependency 'google_currency', '~> 3.4.0', '>= 3.4'
+  s.add_dependency 'money', '~> 6.9.0', '>= 6.9'
+  s.add_dependency 'openssl', '~> 2.0.6', '>= 2.0'
+  s.add_dependency 'thor', '~> 0.20.0', '>= 0.20'
+  s.add_dependency 'xdg', '~> 2.2.3', '>= 2.2'
 
   s.add_development_dependency 'pry', '~> 0.11.2'
   s.add_development_dependency 'rubocop', '~> 0.51.0'
