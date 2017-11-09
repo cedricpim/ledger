@@ -21,18 +21,18 @@ module Ledger
     end
 
     def trips(options)
-      transactions.select(&:travel).group_by(&:travel).map do |t, trs|
+      relevant_transactions.select(&:travel).group_by(&:travel).map do |t, trs|
         Trip.new(t, trs, transactions, options[:currency])
       end
     end
 
     def report(options)
+      params = [relevant_transactions, period(options)]
+
       if options[:global]
-        [Report.new('Global', filtered_transactions(options), transactions, period(options), options[:currency])]
+        [Report.new('Global', filtered_transactions(options), *params, options[:currency])]
       else
-        filtered_transactions(options).group_by(&:account).map do |a, trs|
-          Report.new(a, trs, transactions, period(options))
-        end
+        filtered_transactions(options).group_by(&:account).map { |a, trs| Report.new(a, trs, *params) }
       end
     end
 
@@ -42,10 +42,16 @@ module Ledger
       end
     end
 
+    def relevant_transactions
+      @relevant_transactions ||= transactions.reject do |transaction|
+        CONFIG.default_excluded_categories.include?(transaction.category.downcase)
+      end
+    end
+
     private
 
     def filtered_transactions(options)
-      transactions.select { |t| filters(options).all? { |f| f.call(t) } }
+      relevant_transactions.select { |t| filters(options).all? { |f| f.call(t) } }
     end
 
     def period(options)
@@ -59,9 +65,9 @@ module Ledger
     def filters(options)
       [
         include_accounts(options),
+        exclude_categories(options),
         from(options),
         till(options),
-        exclude(options),
         month(options),
         year(options),
         travels(options)
@@ -74,6 +80,12 @@ module Ledger
       ->(transaction) { options[:accounts].include?(transaction.account) }
     end
 
+    def exclude_categories(options)
+      return unless options[:categories]
+
+      ->(transaction) { !options[:categories].map(&:downcase).include?(transaction.category.downcase) }
+    end
+
     def from(options)
       return unless options[:from]
 
@@ -84,12 +96,6 @@ module Ledger
       return unless options[:till]
 
       ->(transaction) { transaction.parsed_date <= options[:till] }
-    end
-
-    def exclude(options)
-      return unless options[:categories]
-
-      ->(transaction) { !options[:categories].map(&:downcase).include?(transaction.category.downcase) }
     end
 
     def month(options)

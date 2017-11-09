@@ -71,7 +71,7 @@ module Ledger
     def trip_total_footer(list)
       total_spent = list.sum(&:total_spent)
       percentage = MoneyHelper.percentage(total_spent) do |value|
-        [value, repository.transactions.select(&:income?).sum(&:money)]
+        [value, repository.relevant_transactions.select(&:income?).sum(&:money)]
       end
 
       ['Total'].push(MoneyHelper.display(total_spent), percentage)

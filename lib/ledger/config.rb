@@ -55,6 +55,11 @@ module Ledger
       currency.fetch(:default, currency.fetch(:values, []).first)
     end
 
+    def default_excluded_categories
+      fields = config.dig(:format, :fields)
+      fields.fetch(:excluded_categories, []).map(&:downcase)
+    end
+
     def color(*fields)
       output(:color, *fields)
     end

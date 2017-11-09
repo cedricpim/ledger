@@ -212,6 +212,9 @@
     :processed:
       'yes': :white
       'no': :black
+    # List of categories to be excluded by default on the general report
+    :excluded_categories:
+      - 'Exchange'
 
 # Values for configuring encryption on the ledger file
 :encryption:
