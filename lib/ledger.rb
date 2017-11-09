@@ -8,16 +8,14 @@ require 'pry'
 require 'readline'
 require 'xdg'
 
-require_relative 'ledger/config'
-
-# Money configurations (TODO: can I get rid of this?)
-I18n.enforce_available_locales = false
-Money.default_bank = Money::Bank::GoogleCurrency.new
-
 # Configurations
+require_relative 'ledger/config'
 CONFIG = Ledger::Config.new
 
 Dir.glob(File.join(__dir__, 'ledger', '*.rb')).each { |file| require file }
+
+I18n.enforce_available_locales = false
+Money.default_bank = Money::Bank::GoogleCurrency.new
 
 # Namespace for the whole project
 module Ledger; end
