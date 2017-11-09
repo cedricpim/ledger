@@ -8,7 +8,7 @@ module Ledger
     attr_reader :repository, :options
 
     def initialize(options = {})
-      @repository = Ledger::Repository.new
+      @repository = Ledger::Repository.new(options)
       @options = options
     end
 
@@ -18,14 +18,14 @@ module Ledger
       table do
         main_header(of: :transaction, type: :list)
 
-        print_detailed(repository.list(options), include_travel: true)
+        print_detailed(repository.list, include_travel: true)
       end
 
       totals
     end
 
     def report
-      repository.report(options).each do |report|
+      repository.report.each do |report|
         title(report.account)
 
         build(report, :filtered_transactions) do |value|
@@ -37,7 +37,7 @@ module Ledger
     end
 
     def trips
-      list = repository.trips(options)
+      list = repository.trips
 
       options[:global] ? trip_totals(list) : trip_individuals(list)
 

@@ -2,13 +2,14 @@ module Ledger
   # Class holding the transactions read from the ledger and used to query the
   # content of the ledger.
   class Content
-    attr_reader :transactions
+    attr_reader :transactions, :options
 
-    def initialize(transactions)
+    def initialize(transactions, options)
       @transactions = transactions.sort_by(&:parsed_date)
+      @options = options
     end
 
-    def list(options)
+    def list
       transactions.select { |t| options[:non_processed].nil? || t.processed == options[:non_processed] }
     end
 
@@ -20,19 +21,17 @@ module Ledger
       end
     end
 
-    def trips(options)
+    def trips
       relevant_transactions.select(&:travel).group_by(&:travel).map do |t, trs|
         Trip.new(t, trs, transactions, options[:currency])
       end
     end
 
-    def report(options)
-      params = [relevant_transactions, period(options)]
-
+    def report
       if options[:global]
-        [Report.new('Global', filtered_transactions(options), *params, options[:currency])]
+        [Report.new('Global', filtered_transactions, relevant_transactions, period, options[:currency])]
       else
-        filtered_transactions(options).group_by(&:account).map { |a, trs| Report.new(a, trs, *params) }
+        filtered_transactions.group_by(&:account).map { |a, trs| Report.new(a, trs, relevant_transactions, period) }
       end
     end
 
@@ -50,73 +49,69 @@ module Ledger
 
     private
 
-    def filtered_transactions(options)
-      relevant_transactions.select { |t| filters(options).all? { |f| f.call(t) } }
+    def filtered_transactions
+      relevant_transactions.select { |t| filters.all? { |f| f.call(t) } }
     end
 
-    def period(options)
-      if filter_with_date_range?(options)
+    def period
+      if filter_with_date_range?
         [options.fetch(:from, -Float::INFINITY), options.fetch(:till, Float::INFINITY)]
       else
-        [Date.new(options[:year], options[:month], 1), Date.new(options[:year], options[:month], -1)]
+        [build_date(1), build_date(-1)]
       end
     end
 
-    def filters(options)
-      [
-        include_accounts(options),
-        exclude_categories(options),
-        from(options),
-        till(options),
-        month(options),
-        year(options),
-        travels(options)
-      ].compact
+    def build_date(day)
+      Date.new(options[:year], options[:month], day)
     end
 
-    def include_accounts(options)
+    def filters
+      [include_accounts, exclude_categories, from, till, month, year, travels].compact
+    end
+
+    def include_accounts
       return unless options[:accounts]
 
       ->(transaction) { options[:accounts].include?(transaction.account) }
     end
 
-    def exclude_categories(options)
+    def exclude_categories
       return unless options[:categories]
 
       ->(transaction) { !options[:categories].map(&:downcase).include?(transaction.category.downcase) }
     end
 
-    def from(options)
+    def from
       return unless options[:from]
 
       ->(transaction) { transaction.parsed_date >= options[:from] }
     end
 
-    def till(options)
+    def till
       return unless options[:till]
 
       ->(transaction) { transaction.parsed_date <= options[:till] }
     end
 
-    def month(options)
-      return unless options[:month] && !filter_with_date_range?(options)
+    def month
+      return unless options[:month] && !filter_with_date_range?
 
       ->(transaction) { transaction.parsed_date.month == options[:month] }
     end
 
-    def year(options)
-      return unless options[:year] && !filter_with_date_range?(options)
+    def year
+      return unless options[:year] && !filter_with_date_range?
 
       ->(transaction) { transaction.parsed_date.cwyear == options[:year] }
     end
 
-    def travels(options)
+    def travels
       return unless options[:travels]
 
       ->(transaction) { options[:travels].map(&:downcase).include?(transaction.travel&.downcase) }
     end
 
-    def filter_with_date_range?(options)
+    def filter_with_date_range?
       options[:from] || options[:till]
     end
   end

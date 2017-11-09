@@ -7,10 +7,11 @@ module Ledger
     def_delegators :content, :transactions, :list, :accounts, :categories, :currencies,
                    :descriptions, :travels, :trips, :report, :accounts_currency, :relevant_transactions
 
-    attr_reader :current_transactions
+    attr_reader :current_transactions, :options
 
-    def initialize
+    def initialize(options = {})
       @current_transactions = []
+      @options = options
     end
 
     def load!
@@ -21,8 +22,8 @@ module Ledger
       end
     end
 
-    def add!(params)
-      transaction = TransactionBuilder.new(self).build!(params)
+    def add!
+      transaction = TransactionBuilder.new(self, options).build!
 
       encryption.wrap do |file|
         File.open(file, 'a') { |f| f.write("#{transaction.to_ledger}\n") }
@@ -55,7 +56,7 @@ module Ledger
 
       load!
 
-      @content = Content.new(current_transactions)
+      @content = Content.new(current_transactions, options)
     end
   end
 end

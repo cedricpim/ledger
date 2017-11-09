@@ -41,7 +41,7 @@ module Ledger
     map 'a' => :add
     method_option :transaction, type: :array, aliases: '-t'
     def add
-      Repository.new.add!(options[:transaction])
+      Repository.new(parsed_options).add!
     end
 
     desc 'list', COMMANDS[:list]

@@ -7,15 +7,16 @@ module Ledger
     DEFAULT = ''.freeze
     AUTO_COMPLETE = %i[account category description currency travel].freeze
 
-    attr_reader :repository
+    attr_reader :repository, :options
 
-    def initialize(repository)
+    def initialize(repository, options)
       @repository = repository
+      @options = options
     end
 
-    def build!(params)
-      CONFIG.fields.each_with_index do |(field, options), index|
-        read(field, params.to_a[index], options)
+    def build!
+      CONFIG.fields.each_with_index do |(field, default_options), index|
+        read(field, index, default_options)
       end
 
       exchange_money
@@ -39,10 +40,10 @@ module Ledger
       transaction.money = transaction.money.exchange_to(account_currency)
     end
 
-    def read(key, value, default: DEFAULT, presence: false, values: [])
+    def read(key, index, default: DEFAULT, presence: false, values: [])
       title = key.to_s.capitalize
 
-      value ||= handle_input(key, title, default, values)
+      value = provided_values[index] || handle_input(key, title, default, values)
 
       puts "#{title} must be present" or exit if presence && value.empty?
 
@@ -67,6 +68,10 @@ module Ledger
 
     def collect_values(key)
       repository.transactions.map(&key).uniq.compact.sort
+    end
+
+    def provided_values
+      options[:transaction].to_a
     end
   end
 end
