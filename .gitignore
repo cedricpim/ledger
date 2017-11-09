@@ -10,6 +10,7 @@
 /test/version_tmp/
 /tmp/
 Gemfile.lock
+.build
 
 ## Specific to RubyMotion:
 .dat*
