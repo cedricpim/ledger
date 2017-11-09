@@ -11,7 +11,7 @@ module Ledger
       def balance(transactions, percentage_related = transactions, &block)
         [
           transactions.select(&:expense?).sum(&:money),
-          transactions.reject(&:expense?).sum(&:money)
+          transactions.select(&:income?).sum(&:money)
         ].map do |value|
           [display(value), percentage(value, percentage_related, &block)]
         end.flatten
@@ -32,8 +32,8 @@ module Ledger
 
         return yield(value) if block_given?
 
-        filter = value.negative? ? :select : :reject
-        [value, transactions.public_send(filter, &:expense?).sum(&:money)]
+        filter = value.negative? ? :expense? : :income?
+        [value, transactions.select(&filter).sum(&:money)]
       end
     end
   end
