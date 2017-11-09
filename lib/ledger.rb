@@ -4,8 +4,8 @@ require 'erb'
 require 'money'
 require 'money/bank/google_currency'
 require 'openssl'
-require 'pry'
 require 'readline'
+require 'tempfile'
 require 'xdg'
 
 # Configurations
