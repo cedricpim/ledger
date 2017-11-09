@@ -66,7 +66,7 @@ module Ledger
     end
 
     def collect_values(key)
-      repository.list.map(&key).uniq.compact.sort
+      repository.transactions.map(&key).uniq.compact.sort
     end
   end
 end
