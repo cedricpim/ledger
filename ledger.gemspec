@@ -6,6 +6,8 @@ Gem::Specification.new do |s|
   s.name          = 'ledger'
   s.version       = Ledger::VERSION
   s.authors       = ['Cedric Pimenta']
+  s.email         = 'contact@cedricpim.com'
+  s.homepage      = 'https://github.com/cedricpim/ledger'
   s.description   = 'Simple CLI money tracker'
   s.summary       = 'Quickly create a ledger and manage it from the command line'
   s.license       = 'GPL-3.0'
