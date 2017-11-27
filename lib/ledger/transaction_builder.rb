@@ -6,6 +6,7 @@ module Ledger
   class TransactionBuilder
     DEFAULT = ''.freeze
     AUTO_COMPLETE = %i[account category description currency travel].freeze
+    ALLOWED_DATE_SEPARATORS = %r{-|/|\.}
 
     attr_reader :repository, :options
 
@@ -54,7 +55,18 @@ module Ledger
       prepare_readline_completion(key, values)
 
       value = Readline.readline("#{title} [#{default}] ", true).strip
-      value.empty? ? default : value
+      process_input(key, default, value)
+    end
+
+    def process_input(key, default, value)
+      return default if value.empty?
+      return value if key != :date
+
+      value = Array.new(3) do |i|
+        value.split(ALLOWED_DATE_SEPARATORS)[i] || default.split(ALLOWED_DATE_SEPARATORS)[i]
+      end.join('-')
+
+      Date.parse(value) && value
     end
 
     # Include values on the list
