@@ -44,10 +44,13 @@ module Ledger
     end
 
     def credentials
-      [
-        `#{encryption.dig(:credentials, :password)}`,
-        `#{encryption.dig(:credentials, :salt)}`
-      ].compact.map(&:chomp)
+      [credential_value(:password), credential_value(:salt)]
+    end
+
+    def credential_value(key)
+      value = encryption.dig(:credentials, key)
+
+      value || `encryption.dig(:credentials, "#{key}eval".to_sym)`.chomp
     end
 
     def default_currency
