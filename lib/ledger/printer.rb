@@ -12,6 +12,23 @@ module Ledger
       @options = options
     end
 
+    def balance
+      title('Balance')
+
+      table do
+        main_header(of: :balance)
+
+        repository.accounts.each_pair do |account, total|
+          row_options = CONFIG.output(:balance, :options)
+          values = [account, '', MoneyHelper.display(total)]
+
+          add_row(values, colorize_money(row_options, total, 2), CONFIG.color(:element))
+        end
+      end
+
+      totals
+    end
+
     def list
       title('Transactions')
 
@@ -95,14 +112,6 @@ module Ledger
       print(transactions) do |t|
         [t.details(options.merge(percentage_related_to: transactions)), CONFIG.color(:processed, t.processed)]
       end
-    end
-
-    def footer(entity)
-      total = yield(entity.total) if entity.respond_to?(:total)
-      period = yield(entity.period) if entity.respond_to?(:period)
-
-      add_row(total, CONFIG.color(:total))
-      add_row(period, CONFIG.color(:period))
     end
 
     def totals

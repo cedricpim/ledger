@@ -8,6 +8,7 @@ module Ledger
       create: 'Create a new ledger and copy default configuration file',
       edit: 'Open ledger in your editor',
       add: 'Add a transaction to the ledger',
+      balance: 'List the current balance of each account',
       list: 'List all transactions on the ledger',
       report: 'Create a report about the transaction on the ledger according to any params provided',
       trips: 'Create a report about the trips specified on the ledger',
@@ -42,6 +43,12 @@ module Ledger
     method_option :transaction, type: :array, aliases: '-t'
     def add
       Repository.new(parsed_options).add!
+    end
+
+    desc 'balance', COMMANDS[:balance]
+    map 'b' => :balance
+    def balance
+      Printer.new.balance
     end
 
     desc 'list', COMMANDS[:list]

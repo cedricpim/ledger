@@ -10,8 +10,18 @@ module Ledger
       header(CONFIG.output(:title).merge(title: title))
     end
 
-    def main_header(of:, type:)
-      add_row(CONFIG.output(of, type, :header), CONFIG.output(of, type, :options), CONFIG.color(:header))
+    def main_header(of: nil, type: nil)
+      keys = [of, type].compact
+
+      add_row(CONFIG.output(*keys, :header), CONFIG.output(*keys, :options), CONFIG.color(:header))
+    end
+
+    def footer(entity)
+      total = yield(entity.total) if entity.respond_to?(:total)
+      period = yield(entity.period) if entity.respond_to?(:period)
+
+      add_row(total, CONFIG.color(:total))
+      add_row(period, CONFIG.color(:period))
     end
 
     def print(list)
@@ -28,6 +38,12 @@ module Ledger
       row(row_options) do
         list.each_with_index { |v, i| column(v, column_options.fetch(i, {})) }
       end
+    end
+
+    def colorize_money(options, total, index)
+      money_options = options.delete_at(index)
+
+      options.insert(index, money_options.merge(MoneyHelper.color(total)))
     end
   end
 end

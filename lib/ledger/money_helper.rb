@@ -25,6 +25,17 @@ module Ledger
         ((value.abs / total.abs) * 100).to_f.round(2)
       end
 
+      def color(value)
+        key =
+          case
+          when value.zero?     then :neutral
+          when value.negative? then :negative
+          when value.positive? then :positive
+          end
+
+        CONFIG.output(:color, :money, key)
+      end
+
       private
 
       def percentage_values(value, transactions)

@@ -81,6 +81,14 @@
       # Color for the period amounts
       :period:
         :color: :magenta
+      # Color for the money according to its value
+      :money:
+        :negative:
+          :color: :red
+        :neutral:
+          :color: :black
+        :positive:
+          :color: :green
       # Color according to the value of the processed field
       :processed:
         'yes':
@@ -94,6 +102,18 @@
       :rule: true
       :color: :cyan
       :bold: true
+    # Options related to show the balances
+    :balance:
+      :header:
+        - Account
+        - ''
+        - Amount
+      :options:
+        - :width: 25
+          :align: 'right'
+        - :width: 10
+        - :width: 25
+          :align: 'left'
     # Options related to show a transaction
     :transaction:
       :list:
