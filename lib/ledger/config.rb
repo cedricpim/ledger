@@ -31,6 +31,10 @@ module Ledger
       config.fetch(:ledger)
     end
 
+    def exchange
+      config.fetch(:exchange)
+    end
+
     def fields
       config.fetch(:fields)
     end
