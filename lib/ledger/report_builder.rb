@@ -40,6 +40,13 @@ module Ledger
       end
     end
 
+    def add_balance_row(account, total)
+      row_options = CONFIG.output(:balance, :options)
+      values = [account, '', MoneyHelper.display(total)]
+
+      add_row(values, colorize_money(row_options, total, 2), CONFIG.color(:element))
+    end
+
     def colorize_money(options, total, index)
       money_options = options.delete_at(index)
 

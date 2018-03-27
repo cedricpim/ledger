@@ -47,8 +47,9 @@ module Ledger
 
     desc 'balance', COMMANDS[:balance]
     map 'b' => :balance
+    method_option :all, type: :boolean, default: false, aliases: '-a'
     def balance
-      Printer.new.balance
+      Printer.new(parsed_options).balance
     end
 
     desc 'list', COMMANDS[:list]

@@ -19,10 +19,9 @@ module Ledger
         main_header(of: :balance)
 
         repository.accounts.each_pair do |account, total|
-          row_options = CONFIG.output(:balance, :options)
-          values = [account, '', MoneyHelper.display(total)]
+          next if total.zero? && !options[:all]
 
-          add_row(values, colorize_money(row_options, total, 2), CONFIG.color(:element))
+          add_balance_row(account, total)
         end
       end
 

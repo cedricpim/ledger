@@ -11,6 +11,7 @@ require 'xdg'
 # Fixed on https://github.com/spk/money-open-exchange-rates/pull/46
 class Money
   module Bank
+    # Class from gem money-open-exchange-rates
     class OpenExchangeRatesBank < Money::Bank::VariableExchange
       def calc_pair_rate_using_base(from_currency, to_currency, opts)
         from_base_rate = get_rate_or_calc_inverse(source, from_currency, opts)
