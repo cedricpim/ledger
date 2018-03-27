@@ -8,25 +8,6 @@ require 'readline'
 require 'tempfile'
 require 'xdg'
 
-# Fixed on https://github.com/spk/money-open-exchange-rates/pull/46
-class Money
-  module Bank
-    # Class from gem money-open-exchange-rates
-    class OpenExchangeRatesBank < Money::Bank::VariableExchange
-      def calc_pair_rate_using_base(from_currency, to_currency, opts)
-        from_base_rate = get_rate_or_calc_inverse(source, from_currency, opts)
-        to_base_rate   = get_rate_or_calc_inverse(source, to_currency, opts)
-        if to_base_rate && from_base_rate
-          rate = BigDecimal(to_base_rate.to_s) / from_base_rate
-          add_rate(from_currency, to_currency, rate)
-          return rate
-        end
-        nil
-      end
-    end
-  end
-end
-
 I18n.enforce_available_locales = false
 
 require_relative 'ledger/config'
