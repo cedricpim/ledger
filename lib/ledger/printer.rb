@@ -52,6 +52,20 @@ module Ledger
       totals
     end
 
+    def study(category)
+      repository.study(category).each do |study|
+        title(study.account)
+
+        table do
+          main_header(of: :study)
+
+          print(study.descriptions)
+
+          footer(study) { |v| v }
+        end
+      end
+    end
+
     def trips
       list = repository.trips
 

@@ -5,7 +5,8 @@ module Ledger
     extend Forwardable
 
     def_delegators :content, :transactions, :list, :accounts, :categories, :currencies,
-                   :descriptions, :travels, :trips, :report, :accounts_currency, :relevant_transactions
+                   :descriptions, :travels, :trips, :report, :study, :accounts_currency,
+                   :relevant_transactions
 
     attr_reader :current_transactions, :options
 

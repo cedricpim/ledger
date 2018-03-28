@@ -11,6 +11,7 @@ module Ledger
       balance: 'List the current balance of each account',
       list: 'List all transactions on the ledger',
       report: 'Create a report about the transaction on the ledger according to any params provided',
+      study: 'List all transactions on the ledger for the specified category',
       trips: 'Create a report about the trips specified on the ledger',
       version: 'Display installed Ledger version'
     }.freeze
@@ -57,6 +58,19 @@ module Ledger
     method_option :non_processed, type: :string, aliases: '-p'
     def list
       Printer.new(parsed_options).list
+    end
+
+    desc 'study [CATEGORY]', COMMANDS[:study]
+    map 's' => :study
+    method_option :year, type: :numeric, default: -> { Date.today.cwyear }, aliases: '-y'
+    method_option :month, type: :numeric, default: -> { Date.today.month }, aliases: '-m'
+    method_option :from, type: :string, aliases: '-f'
+    method_option :till, type: :string, aliases: '-t'
+    method_option :accounts, type: :array, aliases: '-A'
+    method_option :global, type: :boolean, default: false, aliases: '-g'
+    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
+    def study(category)
+      Printer.new(parsed_options).study(category)
     end
 
     desc 'report', COMMANDS[:report]

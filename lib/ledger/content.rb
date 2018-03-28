@@ -41,6 +41,16 @@ module Ledger
       end
     end
 
+    def study(category)
+      category_transactions = filtered_transactions.select { |t| t.category.downcase == category.downcase }
+
+      if options[:global]
+        [Study.new('Global', category_transactions, relevant_transactions, period, options[:currency])]
+      else
+        category_transactions.group_by(&:account).map { |a, trs| Study.new(a, trs, relevant_transactions, period) }
+      end
+    end
+
     def accounts_currency
       @accounts_currency ||= transactions.map(&:account).uniq.each_with_object({}) do |account, result|
         result[account] = transactions.find { |t| t.account == account }&.currency
