@@ -28,18 +28,6 @@ module Ledger
       totals
     end
 
-    def list
-      title('Transactions')
-
-      table do
-        main_header(of: :transaction, type: :list)
-
-        print_detailed(repository.list, include_travel: true)
-      end
-
-      totals
-    end
-
     def report
       repository.report.each do |report|
         title(report.account)

@@ -127,23 +127,6 @@
         - :width: 10
         - :width: 25
           :align: 'left'
-    # Options related to show a transaction
-    :transaction:
-      :list:
-        # Fields to be shown for a transaction
-        :header:
-          - Date
-          - Category
-          - Amount
-          - Trip
-        # Options for each column
-        :options:
-          - :width: 15
-          - :width: 20
-          - :width: 15
-            :align: 'center'
-          - :width: 15
-            :align: 'center'
     # Options related to how to display a report
     :report:
       :summary:

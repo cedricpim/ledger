@@ -11,10 +11,6 @@ module Ledger
       @options = options
     end
 
-    def list
-      transactions.select { |t| options[:non_processed].nil? || t.processed == options[:non_processed] }
-    end
-
     def accounts
       @accounts ||= transactions.group_by(&:account).each_with_object({}) do |(account, transactions), result|
         result[account] = transactions.map { |t| t.exchange_to(accounts_currency[account]) }.sum(&:money)

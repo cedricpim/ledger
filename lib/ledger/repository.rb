@@ -4,7 +4,7 @@ module Ledger
   class Repository
     extend Forwardable
 
-    def_delegators :content, :transactions, :list, :accounts, :categories, :currencies,
+    def_delegators :content, :transactions, :accounts, :categories, :currencies,
                    :descriptions, :travels, :trips, :report, :study, :accounts_currency,
                    :period_transactions
 

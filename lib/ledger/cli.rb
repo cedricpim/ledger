@@ -9,7 +9,6 @@ module Ledger
       edit: 'Open ledger in your editor',
       add: 'Add a transaction to the ledger',
       balance: 'List the current balance of each account',
-      list: 'List all transactions on the ledger',
       report: 'Create a report about the transaction on the ledger according to any params provided',
       study: 'List all transactions on the ledger for the specified category',
       trips: 'Create a report about the trips specified on the ledger',
@@ -51,13 +50,6 @@ module Ledger
     method_option :all, type: :boolean, default: false, aliases: '-a'
     def balance
       Printer.new(parsed_options).balance
-    end
-
-    desc 'list', COMMANDS[:list]
-    map 'l' => :list
-    method_option :non_processed, type: :string, aliases: '-p'
-    def list
-      Printer.new(parsed_options).list
     end
 
     desc 'study [CATEGORY]', COMMANDS[:study]

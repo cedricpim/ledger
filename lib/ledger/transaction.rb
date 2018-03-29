@@ -31,11 +31,10 @@ module Ledger
       members.map { |member| ledger_format(member) }.join(',') + "\n"
     end
 
-    def details(include_account: false, include_travel: false, percentage_related_to: [])
+    def details(include_account: false, percentage_related_to: [])
       percentage = MoneyHelper.percentage(money, percentage_related_to)
 
       [date, category, MoneyHelper.display(money), percentage].tap do |values|
-        values.push(travel || CONFIG.output(:default, :travel)) if include_travel
         values.unshift(account) if include_account
       end
     end
