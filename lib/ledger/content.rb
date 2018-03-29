@@ -5,7 +5,9 @@ module Ledger
     attr_reader :transactions, :options
 
     def initialize(transactions, options)
-      @transactions = transactions.sort_by(&:parsed_date)
+      @transactions = transactions.sort_by(&:parsed_date).reject do |transaction|
+        CONFIG.excluded_categories.any? { |c| c.match?(/#{transaction.category}/i) }
+      end
       @options = options
     end
 
@@ -28,16 +30,16 @@ module Ledger
     end
 
     def trips
-      relevant_transactions.select(&:travel).group_by(&:travel).map do |t, trs|
+      transactions.select(&:travel).group_by(&:travel).map do |t, trs|
         Trip.new(t, trs, transactions, options[:currency])
       end
     end
 
     def report
       if options[:global]
-        [Report.new('Global', filtered_transactions, relevant_transactions, period, options[:currency])]
+        [Report.new('Global', filtered_transactions, options[:currency])]
       else
-        filtered_transactions.group_by(&:account).map { |a, trs| Report.new(a, trs, relevant_transactions, period) }
+        filtered_transactions.group_by(&:account).map { |acc, trs| Report.new(acc, trs, accounts_currency[acc]) }
       end
     end
 
@@ -45,9 +47,9 @@ module Ledger
       category_transactions = filtered_transactions.select { |t| t.category.downcase == category.downcase }
 
       if options[:global]
-        [Study.new('Global', category_transactions, relevant_transactions, period, options[:currency])]
+        [Study.new('Global', category_transactions, transactions, period, options[:currency])]
       else
-        category_transactions.group_by(&:account).map { |a, trs| Study.new(a, trs, relevant_transactions, period) }
+        category_transactions.group_by(&:account).map { |a, trs| Study.new(a, trs, transactions, period) }
       end
     end
 
@@ -57,16 +59,14 @@ module Ledger
       end
     end
 
-    def relevant_transactions
-      @relevant_transactions ||= transactions.reject do |transaction|
-        CONFIG.default_excluded_categories.include?(transaction.category.downcase)
-      end
+    def period_transactions
+      @period_transactions ||= filtered_transactions.select { |t| t.parsed_date.between?(*period) }
     end
 
     private
 
     def filtered_transactions
-      relevant_transactions.select { |t| filters.all? { |f| f.call(t) } }
+      @filtered_transactions ||= transactions.select { |t| filters.all? { |f| f.call(t) } }
     end
 
     def period

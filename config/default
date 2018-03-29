@@ -63,6 +63,12 @@
     :default: ''
     :presence: false
 
+# Configure values to be always excluded from reports
+:report:
+  :exclude:
+    :categories:
+      - 'Exchange'
+
 # Define the set of formats to be used across the application
 :format:
   :output:
@@ -144,20 +150,14 @@
         # Fields to be shown for a summary report
         :header:
           - Category
-          - Outflow
-          - (%)
-          - Inflow
+          - Amount
           - (%)
         # Options for each column
         :options:
+          - :width: 25
           - :width: 20
-          - :width: 15
-            :align: 'center'
-          - :width: 7
             :align: 'center'
           - :width: 15
-            :align: 'center'
-          - :width: 7
             :align: 'center'
       :detailed:
         # Fields to be shown for a detailed report
@@ -173,6 +173,21 @@
           - :width: 15
             :align: 'center'
           - :width: 7
+            :align: 'center'
+    # Options related to how to display a study of a category
+    :study:
+      :header:
+          - Item
+          - Unit
+          - Amount
+          - Partial (%)
+      :options:
+          - :width: 20
+          - :width: 5
+            :align: 'center'
+          - :width: 15
+            :align: 'center'
+          - :width: 12
             :align: 'center'
     # Options related to how to display the list of trips
     :trip:
@@ -239,9 +254,6 @@
     :processed:
       'yes': :white
       'no': :black
-    # List of categories to be excluded by default on the general report
-    :excluded_categories:
-      - 'Exchange'
 
 # Values for configuring encryption on the ledger file
 :encryption:

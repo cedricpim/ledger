@@ -28,15 +28,15 @@ module Ledger
     end
 
     def ledger
-      config.fetch(:ledger)
+      @ledger ||= config.fetch(:ledger)
     end
 
     def exchange
-      config.fetch(:exchange)
+      @exchange ||= config.fetch(:exchange)
     end
 
     def fields
-      config.fetch(:fields)
+      @fields ||= config.fetch(:fields)
     end
 
     def transaction_fields
@@ -44,11 +44,11 @@ module Ledger
     end
 
     def encryption
-      config.fetch(:encryption, {})
+      @encryption ||= config.fetch(:encryption, {})
     end
 
     def credentials
-      [credential_value(:password), credential_value(:salt)]
+      @credentials ||= [credential_value(:password), credential_value(:salt)]
     end
 
     def credential_value(key)
@@ -58,13 +58,14 @@ module Ledger
     end
 
     def default_currency
-      currency = config.dig(:fields, :currency)
-      currency.fetch(:default, currency.fetch(:values, []).first)
+      @default_currency ||= begin
+        currency = config.dig(:fields, :currency)
+        currency.fetch(:default, currency.fetch(:values, []).first)
+      end
     end
 
-    def default_excluded_categories
-      fields = config.dig(:format, :fields)
-      fields.fetch(:excluded_categories, []).map(&:downcase)
+    def excluded_categories
+      @excluded_categories ||= config.dig(:report, :exclude).fetch(:categories, [])
     end
 
     def color(*fields)

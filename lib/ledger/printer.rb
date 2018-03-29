@@ -132,10 +132,20 @@ module Ledger
 
       table do
         row(CONFIG.color(:header)) do
-          repository.currencies.each_key { |k| column(k.name, width: 23, align: 'center') }
+          repository.currencies.each_key do |v|
+            ts = repository.period_transactions.map { |t| t.exchange_to(v) }
+            income = ts.reject(&:expense?).sum(&:money)
+            expense = ts.select(&:expense?).sum(&:money)
+            column(MoneyHelper.display(income)[1..-1], MoneyHelper.color(income).merge(width: 11, align: 'center'))
+            column(MoneyHelper.display(expense)[1..-1], MoneyHelper.color(expense).merge(width: 11, align: 'center'))
+          end
+          column("55%", width: 10, align: 'center')
         end
-        row(CONFIG.color(:element)) do
-          repository.currencies.each_value { |v| column(v, align: 'center') }
+        row(CONFIG.color(:header)) do
+          repository.currencies.each_value do |v|
+            column(v, width: 10, align: 'center', span: 2)
+          end
+          column("53%", width: 5, align: 'center')
         end
       end
     end
