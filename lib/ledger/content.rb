@@ -55,14 +55,18 @@ module Ledger
       end
     end
 
-    def period_transactions
-      @period_transactions ||= filtered_transactions.select { |t| t.parsed_date.between?(*period) }
+    def filtered_transactions
+      @filtered_transactions ||= period_transactions.select { |t| !exclude_categories&.call(t) }
+    end
+
+    def excluded_transactions
+      @excluded_transactions ||= period_transactions.select { |t| exclude_categories&.call(t) }
     end
 
     private
 
-    def filtered_transactions
-      @filtered_transactions ||= transactions.select { |t| filters.all? { |f| f.call(t) } }
+    def period_transactions
+      @period_transactions ||= transactions.select { |t| t.parsed_date.between?(*period) }
     end
 
     def period
@@ -77,54 +81,14 @@ module Ledger
       Date.new(options[:year], options[:month], day)
     end
 
-    def filters
-      [include_accounts, exclude_categories, from, till, month, year, travels].compact
-    end
-
-    def include_accounts
-      return unless options[:accounts]
-
-      ->(transaction) { options[:accounts].include?(transaction.account) }
+    def filter_with_date_range?
+      options[:from] || options[:till]
     end
 
     def exclude_categories
       return unless options[:categories]
 
-      ->(transaction) { !options[:categories].map(&:downcase).include?(transaction.category.downcase) }
-    end
-
-    def from
-      return unless options[:from]
-
-      ->(transaction) { transaction.parsed_date >= options[:from] }
-    end
-
-    def till
-      return unless options[:till]
-
-      ->(transaction) { transaction.parsed_date <= options[:till] }
-    end
-
-    def month
-      return unless options[:month] && !filter_with_date_range?
-
-      ->(transaction) { transaction.parsed_date.month == options[:month] }
-    end
-
-    def year
-      return unless options[:year] && !filter_with_date_range?
-
-      ->(transaction) { transaction.parsed_date.cwyear == options[:year] }
-    end
-
-    def travels
-      return unless options[:travels]
-
-      ->(transaction) { options[:travels].map(&:downcase).include?(transaction.travel&.downcase) }
-    end
-
-    def filter_with_date_range?
-      options[:from] || options[:till]
+      ->(transaction) { options[:categories].map(&:downcase).include?(transaction.category.downcase) }
     end
   end
 end

@@ -118,11 +118,11 @@ module Ledger
     def totals
       title('Totals')
 
-      t = Totals.new(repository.period_transactions, repository.currencies.first, repository.current)
+      total = Totals.new(repository)
 
       table do
-        total_period_row(repository, t)
-        total_current_row(repository, t)
+        total_period_row(repository, total)
+        total_current_row(repository, total)
       end
     end
 

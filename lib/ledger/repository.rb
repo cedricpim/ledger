@@ -6,7 +6,7 @@ module Ledger
 
     def_delegators :content, :transactions, :accounts, :categories, :currencies, :current,
                    :descriptions, :travels, :trips, :report, :study, :accounts_currency,
-                   :period_transactions
+                   :filtered_transactions, :excluded_transactions
 
     attr_reader :current_transactions, :options
 

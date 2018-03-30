@@ -58,7 +58,6 @@ module Ledger
     method_option :month, type: :numeric, default: -> { Date.today.month }, aliases: '-m'
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
-    method_option :accounts, type: :array, aliases: '-A'
     method_option :global, type: :boolean, default: true, aliases: '-g'
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     def study(category)
@@ -71,9 +70,7 @@ module Ledger
     method_option :month, type: :numeric, default: -> { Date.today.month }, aliases: '-m'
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
-    method_option :accounts, type: :array, aliases: '-A'
     method_option :categories, type: :array, aliases: '-C'
-    method_option :travels, type: :array, aliases: '-T'
     method_option :detailed, type: :boolean, default: false, aliases: '-d'
     method_option :global, type: :boolean, default: true, aliases: '-g'
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
