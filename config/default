@@ -215,6 +215,25 @@
             :align: 'center'
           - :width: 10
             :align: 'center'
+    # Options for how to display the fields in the totals section
+    :totals:
+      :expense:
+        :width: 11
+        :align: 'center'
+      :income:
+        :width: 11
+        :align: 'center'
+      :total:
+        :width: 10
+        :align: 'center'
+        :span: 2
+      :percentage:
+        :period:
+          :width: 10
+          :align: 'center'
+        :total:
+          :width: 5
+          :align: 'center'
   :fields:
     # For more information on the configuration values, please read:
     # http://www.rubydoc.info/gems/money/Money/Formatting

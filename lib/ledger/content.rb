@@ -18,11 +18,11 @@ module Ledger
     end
 
     def currencies
-      @currencies ||= transactions.map(&:currency).uniq.each_with_object({}) do |currency, result|
-        total = transactions.map { |t| t.exchange_to(currency) }.sum(&:money)
+      @currencies ||= transactions.map(&:currency).uniq
+    end
 
-        result[total.currency] = MoneyHelper.display(total)
-      end
+    def current
+      @current ||= transactions.sum { |t| t.exchange_to(currencies.first).money }
     end
 
     def trips
@@ -40,7 +40,7 @@ module Ledger
     end
 
     def study(category)
-      category_transactions = filtered_transactions.select { |t| t.category.downcase == category.downcase }
+      category_transactions = filtered_transactions.select { |t| t.category.casecmp?(category) }
 
       if options[:global]
         [Study.new('Global', category_transactions, transactions, period, options[:currency])]

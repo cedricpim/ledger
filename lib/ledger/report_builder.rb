@@ -40,6 +40,26 @@ module Ledger
       end
     end
 
+    def total_period_row(repository, total)
+      row(CONFIG.color(:header)) do
+        repository.currencies.each do |currency|
+          %i[income expense].each { |type| column(*total.for(method: type, currency: currency)) }
+        end
+
+        column(*total.period_percentage)
+      end
+    end
+
+    def total_current_row(repository, total)
+      row(CONFIG.color(:header)) do
+        repository.currencies.each do |currency|
+          column(MoneyHelper.display(repository.current.exchange_to(currency)), CONFIG.output(:totals, :total))
+        end
+
+        column(*total.total_percentage)
+      end
+    end
+
     def add_balance_row(account, total)
       row_options = CONFIG.output(:balance, :options)
       values = [account, '', MoneyHelper.display(total)]
