@@ -71,7 +71,6 @@ module Ledger
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
     method_option :categories, type: :array, aliases: '-C'
-    method_option :detailed, type: :boolean, default: false, aliases: '-d'
     method_option :global, type: :boolean, default: true, aliases: '-g'
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     def report
@@ -81,7 +80,6 @@ module Ledger
     desc 'trips', COMMANDS[:trips]
     map 't' => :trips
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
-    method_option :detailed, type: :boolean, default: false, aliases: '-d'
     method_option :global, type: :boolean, default: false, aliases: '-g'
     def trips
       Printer.new(parsed_options).trips

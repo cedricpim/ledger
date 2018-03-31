@@ -142,21 +142,6 @@
             :align: 'center'
           - :width: 15
             :align: 'center'
-      :detailed:
-        # Fields to be shown for a detailed report
-        :header:
-          - Date
-          - Category
-          - Amount
-          - (%)
-        # Options for each column
-        :options:
-          - :width: 15
-          - :width: 20
-          - :width: 15
-            :align: 'center'
-          - :width: 7
-            :align: 'center'
     # Options related to how to display a study of a category
     :study:
       :header:
@@ -186,23 +171,6 @@
           - :width: 20
             :align: 'center'
           - :width: 10
-            :align: 'center'
-      :detailed:
-        # Fields to be shown for a detailed showdown of trips
-        :header:
-          - Account
-          - Date
-          - Category
-          - Amount
-          - (%)
-        # Options for each column
-        :options:
-          - :width: 10
-          - :width: 15
-          - :width: 20
-          - :width: 15
-            :align: 'center'
-          - :width: 7
             :align: 'center'
       :global:
         :header:

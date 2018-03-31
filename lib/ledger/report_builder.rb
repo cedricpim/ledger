@@ -17,8 +17,8 @@ module Ledger
     end
 
     def footer(entity)
-      total = yield(entity.total) if entity.respond_to?(:total)
-      period = yield(entity.period) if entity.respond_to?(:period)
+      total = entity.total if entity.respond_to?(:total)
+      period = entity.period if entity.respond_to?(:period)
 
       add_row(total, CONFIG.color(:total))
       add_row(period, CONFIG.color(:period))

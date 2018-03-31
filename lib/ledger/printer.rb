@@ -32,9 +32,7 @@ module Ledger
       repository.report.each do |report|
         title(report.account)
 
-        build(report, :filtered_transactions) do |value|
-          type == :detailed ? value[0..2].unshift('') : value
-        end
+        build(report)
       end
 
       totals
@@ -49,7 +47,7 @@ module Ledger
 
           print(study.descriptions)
 
-          footer(study) { |v| v }
+          footer(study)
         end
       end
     end
@@ -68,9 +66,7 @@ module Ledger
       list.each do |trip|
         title(trip.travel)
 
-        build(trip, :transactions, include_account: true) do |value|
-          type == :detailed ? value.unshift('', '') : value
-        end
+        build(trip)
       end
     end
 
@@ -95,23 +91,13 @@ module Ledger
       ['Total'].push(MoneyHelper.display(total_spent), percentage)
     end
 
-    def build(entity, method, **options, &block)
+    def build(entity)
       table do
-        main_header(of: entity_name(entity), type: type)
+        main_header(of: entity.class.to_s.split('::').last.downcase.to_sym, type: :summary)
 
-        if type == :detailed
-          print_detailed(entity.public_send(method), options)
-        else
-          print(entity.categories)
-        end
+        print(entity.categories)
 
-        footer(entity, &block)
-      end
-    end
-
-    def print_detailed(transactions, **options)
-      print(transactions) do |t|
-        [t.details(options.merge(percentage_related_to: transactions)), CONFIG.color(:processed, t.processed)]
+        footer(entity)
       end
     end
 
@@ -122,14 +108,6 @@ module Ledger
         total_period_row(with_period: with_period)
         total_current_row(with_period: with_period)
       end
-    end
-
-    def type
-      options[:detailed] ? :detailed : :summary
-    end
-
-    def entity_name(entity)
-      entity.class.to_s.split('::').last.downcase.to_sym
     end
   end
 end
