@@ -119,14 +119,14 @@
     :balance:
       :header:
         - Account
-        - ''
         - Amount
       :options:
-        - :width: 25
+        - :width: 40
           :align: 'right'
-        - :width: 10
-        - :width: 25
+          :padding: 5
+        - :width: 40
           :align: 'left'
+          :padding: 5
     # Options related to how to display a report
     :report:
       :summary:

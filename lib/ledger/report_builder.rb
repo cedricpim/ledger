@@ -40,7 +40,9 @@ module Ledger
       end
     end
 
-    def total_period_row(repository, total)
+    def total_period_row(with_period:)
+      return unless with_period
+
       row(CONFIG.color(:header)) do
         repository.currencies.each do |currency|
           %i[income expense].each { |type| column(*total.for(method: type, currency: currency)) }
@@ -50,27 +52,27 @@ module Ledger
       end
     end
 
-    def total_current_row(repository, total)
+    def total_current_row(with_period:)
       row(CONFIG.color(:header)) do
         repository.currencies.each do |currency|
           column(MoneyHelper.display(repository.current.exchange_to(currency)), CONFIG.output(:totals, :total))
         end
 
-        column(*total.total_percentage)
+        column(*total.total_percentage) if with_period
       end
     end
 
-    def add_balance_row(account, total)
-      row_options = CONFIG.output(:balance, :options)
-      values = [account, '', MoneyHelper.display(total)]
+    def balance_row(account, total)
+      options = CONFIG.output(:balance, :options)
 
-      add_row(values, colorize_money(row_options, total, 2), CONFIG.color(:element))
+      row(CONFIG.color(:element)) do
+        column(account, options[0])
+        column(MoneyHelper.display(total), MoneyHelper.color(total).merge(options[1]))
+      end
     end
 
-    def colorize_money(options, total, index)
-      money_options = options.delete_at(index)
-
-      options.insert(index, money_options.merge(MoneyHelper.color(total)))
+    def total
+      @total ||= Totals.new(repository)
     end
   end
 end

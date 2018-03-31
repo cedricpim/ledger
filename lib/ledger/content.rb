@@ -5,28 +5,32 @@ module Ledger
     attr_reader :transactions, :options
 
     def initialize(transactions, options)
-      @transactions = transactions.sort_by(&:parsed_date).reject do |transaction|
-        CONFIG.excluded_categories.any? { |c| c.match?(/#{transaction.category}/i) }
-      end
+      @transactions = transactions.sort_by(&:parsed_date)
       @options = options
-    end
-
-    def accounts
-      @accounts ||= transactions.group_by(&:account).each_with_object({}) do |(account, transactions), result|
-        result[account] = transactions.map { |t| t.exchange_to(accounts_currency[account]) }.sum(&:money)
-      end
     end
 
     def currencies
       @currencies ||= transactions.map(&:currency).uniq
     end
 
+    def accounts_currency
+      @accounts_currency ||= transactions.uniq(&:account).each_with_object({}) do |t, result|
+        result[t.account] = t.currency
+      end
+    end
+
+    def accounts
+      @accounts ||= transactions.group_by(&:account).each_with_object({}) do |(acc, ts), result|
+        result[acc] = ts.sum { |t| t.exchange_to(accounts_currency[acc]).money }
+      end
+    end
+
     def current
-      @current ||= transactions.sum { |t| t.exchange_to(currencies.first).money }
+      @current ||= accounts.values.sum { |m| m.exchange_to(currencies.first) }
     end
 
     def trips
-      transactions.select(&:travel).group_by(&:travel).map do |t, trs|
+      filtered_transactions.select(&:travel).group_by(&:travel).map do |t, trs|
         Trip.new(t, trs, transactions, options[:currency])
       end
     end
@@ -49,14 +53,8 @@ module Ledger
       end
     end
 
-    def accounts_currency
-      @accounts_currency ||= transactions.map(&:account).uniq.each_with_object({}) do |account, result|
-        result[account] = transactions.find { |t| t.account == account }&.currency
-      end
-    end
-
     def filtered_transactions
-      @filtered_transactions ||= period_transactions.select { |t| !exclude_categories&.call(t) }
+      @filtered_transactions ||= period_transactions.reject { |t| exclude_categories&.call(t) }
     end
 
     def excluded_transactions
@@ -65,8 +63,14 @@ module Ledger
 
     private
 
+    def relevant_transactions
+      @relevant_transactions ||= transactions.reject do |transaction|
+        CONFIG.excluded_categories.any? { |c| c.match?(/#{transaction.category}/i) }
+      end
+    end
+
     def period_transactions
-      @period_transactions ||= transactions.select { |t| t.parsed_date.between?(*period) }
+      @period_transactions ||= relevant_transactions.select { |t| t.parsed_date.between?(*period) }
     end
 
     def period

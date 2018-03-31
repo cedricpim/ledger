@@ -21,11 +21,11 @@ module Ledger
         repository.accounts.each_pair do |account, total|
           next if total.zero? && !options[:all]
 
-          add_balance_row(account, total)
+          balance_row(account, total)
         end
       end
 
-      totals
+      totals(with_period: false)
     end
 
     def report
@@ -115,14 +115,12 @@ module Ledger
       end
     end
 
-    def totals
+    def totals(with_period: true)
       title('Totals')
 
-      total = Totals.new(repository)
-
       table do
-        total_period_row(repository, total)
-        total_current_row(repository, total)
+        total_period_row(with_period: with_period)
+        total_current_row(with_period: with_period)
       end
     end
 
