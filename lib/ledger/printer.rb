@@ -42,14 +42,10 @@ module Ledger
       repository.study(category).each do |study|
         title(study.account)
 
-        table do
-          main_header(of: :study)
-
-          print(study.descriptions)
-
-          footer(study)
-        end
+        build(study)
       end
+
+      totals
     end
 
     def trips

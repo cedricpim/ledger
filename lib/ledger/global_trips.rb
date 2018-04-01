@@ -13,7 +13,7 @@ module Ledger
     end
 
     def categories
-      list = transactions.select(&:travel).group_by(&:travel).sort_by do |travel, tts|
+      list = transactions.select(&:travel).group_by(&:travel).sort_by do |_travel, tts|
         tts.sort_by(&:parsed_date).last.parsed_date
       end
 

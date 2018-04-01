@@ -48,12 +48,12 @@ module Ledger
     end
 
     def study(category)
-      category_transactions = filtered_transactions.select { |t| t.category.casecmp?(category) }
-
       if options[:global]
-        [Study.new('Global', category_transactions, transactions, period, options[:currency])]
+        [Study.new('Global', category_transactions(category), transactions, period_transactions, options[:currency])]
       else
-        category_transactions.group_by(&:account).map { |a, trs| Study.new(a, trs, transactions, period) }
+        category_transactions(category).group_by(&:account).map do |a, trs|
+          Study.new(a, trs, transactions, period_transactions, options[:currency])
+        end
       end
     end
 
@@ -79,6 +79,10 @@ module Ledger
 
     def travel_transactions
       filtered_transactions.select { |t| t.travel && (options[:trip].nil? || t.travel.match?(/#{options[:trip]}/i)) }
+    end
+
+    def category_transactions(category)
+      filtered_transactions.select { |t| t.category.match?(/#{category}/i) }
     end
 
     def period
