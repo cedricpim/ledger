@@ -78,7 +78,7 @@ module Ledger
     end
 
     def travel_transactions
-      filtered_transactions.select(&:travel)
+      filtered_transactions.select { |t| t.travel && (options[:trip].nil? || t.travel.match?(/#{options[:trip]}/i)) }
     end
 
     def period

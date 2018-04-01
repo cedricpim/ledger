@@ -81,6 +81,7 @@ module Ledger
     map 't' => :trips
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     method_option :global, type: :boolean, default: true, aliases: '-g'
+    method_option :trip, type: :string, aliases: '-t'
     def trips
       Printer.new(parsed_options).trips
     end
