@@ -195,11 +195,11 @@
         :span: 2
       :percentage:
         :period:
-          :width: 10
-          :align: 'center'
+          :width: 8
+          :align: 'right'
         :total:
-          :width: 5
-          :align: 'center'
+          :width: 4
+          :align: 'right'
   :fields:
     # For more information on the configuration values, please read:
     # http://www.rubydoc.info/gems/money/Money/Formatting

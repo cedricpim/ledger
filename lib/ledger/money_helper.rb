@@ -19,9 +19,9 @@ module Ledger
       def color(value)
         key =
           case
-          when value.zero?     then :neutral
           when value.negative? then :negative
           when value.positive? then :positive
+          else :neutral
           end
 
         CONFIG.output(:color, :money, key)

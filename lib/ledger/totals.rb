@@ -12,37 +12,35 @@ module Ledger
     end
 
     def for(method:, currency:)
-      value = public_send(method)
-      value = value.exchange_to(currency) if value.respond_to?(:exchange_to)
+      value = public_send(method).exchange_to(currency)
       [
-        MoneyHelper.display(value)[1..-1],
+        MoneyHelper.display(value)[(value.zero? ? 0 : 1)..-1],
         MoneyHelper.color(value).merge(CONFIG.output(:totals, method))
       ]
     end
 
     def income
-      @income ||= calculate(:income?, :expense?)
+      @income ||= begin
+        value = calculate(:income?, :expense?)
+        value.positive? ? value : Money.new(0, currency)
+      end
     end
 
     def expense
-      @expense ||= calculate(:expense?, :income?)
+      @expense ||= begin
+        value = calculate(:expense?, :income?)
+        value.negative? ? value : Money.new(0, currency)
+      end
     end
 
     def period_percentage
-      percentage =
-        if expense.zero?
-          0
-        elsif income.zero?
-          -100
-        else
-          ((1 + (expense / income)) * 100).round(2)
-        end
+      percentage = ((1 + (expense / income)) * 100).round(2)
       display_percentage(percentage, :period)
     end
 
     def total_percentage
       period = income - expense.abs
-      percentage = period.zero? ? 0 : (period / (current - period) * 100).round(2)
+      percentage = (period / (current - period) * 100).round(2)
       display_percentage(percentage, :total)
     end
 
@@ -54,7 +52,7 @@ module Ledger
     end
 
     def display_percentage(value, key)
-      ["#{value}%", MoneyHelper.color(value).merge(CONFIG.output(:totals, :percentage, key))]
+      ["#{value.nan? ? 0.0 : value}%", MoneyHelper.color(value).merge(CONFIG.output(:totals, :percentage, key))]
     end
   end
 end
