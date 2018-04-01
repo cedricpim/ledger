@@ -17,7 +17,7 @@ module Ledger
       @date ||= transactions.sort_by(&:parsed_date).last.parsed_date
     end
 
-    def categories
+    def list
       list = transactions.group_by(&:category).map do |category, cts|
         money = cts.sum(&:money)
 

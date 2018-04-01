@@ -62,7 +62,7 @@ module Ledger
       table do
         main_header(of: entity.class.to_s.split('::').last.downcase.to_sym)
 
-        print(entity.categories)
+        print(entity.list)
 
         add_row(entity.total, CONFIG.color(:total)) if entity.respond_to?(:total)
       end

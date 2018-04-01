@@ -14,7 +14,7 @@ module Ledger
       @filtered_transactions = filtered_transactions.map { |t| t.exchange_to(currency) }
     end
 
-    def categories
+    def list
       list = filtered_transactions.group_by(&:category).map do |category, cts|
         total = cts.sum(&:money)
         [

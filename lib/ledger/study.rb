@@ -17,7 +17,7 @@ module Ledger
       @period_transactions = period_transactions.map { |t| t.exchange_to(@currency) }
     end
 
-    def categories
+    def list
       list = transactions.group_by(&:description).map do |description, dts|
         money = dts.sum(&:money)
 
