@@ -10,26 +10,12 @@ module Ledger
       header(CONFIG.output(:title).merge(title: title))
     end
 
-    def main_header(of: nil, type: nil)
-      keys = [of, type].compact
-
-      add_row(CONFIG.output(*keys, :header), CONFIG.output(*keys, :options), CONFIG.color(:header))
-    end
-
-    def footer(entity)
-      total = entity.total if entity.respond_to?(:total)
-      period = entity.period if entity.respond_to?(:period)
-
-      add_row(total, CONFIG.color(:total))
-      add_row(period, CONFIG.color(:period))
+    def main_header(of:)
+      add_row(CONFIG.output(of, :header), CONFIG.output(of, :options), CONFIG.color(:header))
     end
 
     def print(list)
-      list.each do |elements|
-        values, options = block_given? ? yield(elements) : [elements, CONFIG.color(:element)]
-
-        add_row(values, options)
-      end
+      list.each { |elements| add_row(elements, CONFIG.color(:element)) }
     end
 
     def add_row(list, column_options = [], **row_options)

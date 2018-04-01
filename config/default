@@ -129,19 +129,18 @@
           :padding: 5
     # Options related to how to display a report
     :report:
-      :summary:
-        # Fields to be shown for a summary report
-        :header:
-          - Category
-          - Amount
-          - (%)
-        # Options for each column
-        :options:
-          - :width: 25
-          - :width: 20
-            :align: 'center'
-          - :width: 15
-            :align: 'center'
+      # Fields to be shown for a summary report
+      :header:
+        - Category
+        - Amount
+        - (%)
+      # Options for each column
+      :options:
+        - :width: 25
+        - :width: 20
+          :align: 'center'
+        - :width: 15
+          :align: 'center'
     # Options related to how to display a study of a category
     :study:
       :header:
@@ -159,30 +158,29 @@
             :align: 'center'
     # Options related to how to display the list of trips
     :trip:
-      :summary:
-        # Fields to be shown for a summary of trips
-        :header:
-          - Category
-          - Amount
-          - (%)
-        # Options for each column
-        :options:
-          - :width: 20
-          - :width: 20
-            :align: 'center'
-          - :width: 10
-            :align: 'center'
-      :global:
-        :header:
-          - Trip
-          - Amount
-          - (%)
-        :options:
-          - :width: 20
-          - :width: 20
-            :align: 'center'
-          - :width: 10
-            :align: 'center'
+      # Fields to be shown for a summary of trips
+      :header:
+        - Category
+        - Amount
+        - (%)
+      # Options for each column
+      :options:
+        - :width: 20
+        - :width: 20
+          :align: 'center'
+        - :width: 10
+          :align: 'center'
+    :globaltrips:
+      :header:
+        - Trip
+        - Amount
+        - (%)
+      :options:
+        - :width: 20
+        - :width: 20
+          :align: 'center'
+        - :width: 10
+          :align: 'center'
     # Options for how to display the fields in the totals section
     :totals:
       :expense:

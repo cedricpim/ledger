@@ -53,51 +53,22 @@ module Ledger
     end
 
     def trips
-      list = repository.trips
-
-      options[:global] ? trip_totals(list) : trip_individuals(list)
-
-      totals
-    end
-
-    private
-
-    def trip_individuals(list)
-      list.each do |trip|
+      repository.trips.each do |trip|
         title(trip.travel)
 
         build(trip)
       end
     end
 
-    def trip_totals(list)
-      title('Trips')
-
-      table do
-        main_header(of: :trip, type: :global)
-
-        print(list.map(&:summary))
-
-        add_row(trip_total_footer(list), CONFIG.color(:total))
-      end
-    end
-
-    def trip_total_footer(list)
-      total_spent = list.sum(&:total_spent)
-      percentage = MoneyHelper.percentage(total_spent) do |value|
-        [value, repository.relevant_transactions.select(&:income?).sum(&:money)]
-      end
-
-      ['Total'].push(MoneyHelper.display(total_spent), percentage)
-    end
+    private
 
     def build(entity)
       table do
-        main_header(of: entity.class.to_s.split('::').last.downcase.to_sym, type: :summary)
+        main_header(of: entity.class.to_s.split('::').last.downcase.to_sym)
 
         print(entity.categories)
 
-        footer(entity)
+        add_row(entity.total, CONFIG.color(:total)) if entity.respond_to?(:total)
       end
     end
 

@@ -4,46 +4,37 @@ module Ledger
   # is capable of listing the transactions and provide a summary of the
   # transactions, grouped by category.
   class Trip
-    attr_reader :travel, :currency, :transactions, :monthly_income
+    attr_reader :travel, :transactions, :total_transactions, :currency
 
     def initialize(travel, transactions, total_transactions, currency)
       @travel = travel
-      @currency = currency
       @transactions = transactions.map { |t| t.exchange_to(currency) }
-      @monthly_income = total_transactions.select(&:income?).sum do |t|
-        t.parsed_date.month == transactions.last.parsed_date.month ? t.exchange_to(currency).money : 0
-      end
+      @total_transactions = total_transactions
+      @currency = currency
+    end
+
+    def date
+      @date ||= transactions.sort_by(&:parsed_date).last.parsed_date
     end
 
     def categories
       list = transactions.group_by(&:category).map do |category, cts|
         money = cts.sum(&:money)
-        percentage = MoneyHelper.percentage(money) { |value| [value, transactions.sum(&:money)] }
 
-        [category].push(MoneyHelper.display(money), percentage)
+        [category, MoneyHelper.display(money), MoneyHelper.percentage(money, transactions)]
       end
 
       list.sort_by(&:last).reverse
     end
 
     def total
-      build_total('Total')
-    end
+      total_spent = transactions.sum(&:money)
 
-    def summary
-      build_total(travel)
-    end
+      percentage = MoneyHelper.percentage(total_spent) do
+        total_transactions.select { |t| t.income? && t.parsed_date.month == date.month }.sum(&:money)
+      end
 
-    def total_spent
-      @total_spent ||= transactions.sum(&:money)
-    end
-
-    private
-
-    def build_total(name)
-      percentage = MoneyHelper.percentage(total_spent) { |value| [value, monthly_income] }
-
-      [name].push(MoneyHelper.display(total_spent), percentage)
+      ['Total', MoneyHelper.display(total_spent), percentage]
     end
   end
 end

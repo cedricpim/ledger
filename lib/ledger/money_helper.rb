@@ -8,8 +8,8 @@ module Ledger
         money.format(CONFIG.money_format(type: :display))
       end
 
-      def percentage(value, transactions = [])
-        value, total = percentage_values(value, transactions)
+      def percentage(value, transactions = [], &block)
+        value, total = percentage_values(value, transactions, &block)
 
         return CONFIG.output(:default, :percentage) unless total.is_a?(Money) && value.is_a?(Money)
 
@@ -32,8 +32,12 @@ module Ledger
       def percentage_values(value, transactions)
         return unless value.is_a?(Money)
 
-        filter = value.negative? ? :expense? : :income?
-        [value, transactions.select(&filter).sum(&:money)]
+        if block_given?
+          [value, yield]
+        else
+          filter = value.negative? ? :expense? : :income?
+          [value, transactions.select(&filter).sum(&:money)]
+        end
       end
     end
   end

@@ -30,8 +30,12 @@ module Ledger
     end
 
     def trips
-      filtered_transactions.select(&:travel).group_by(&:travel).map do |t, trs|
-        Trip.new(t, trs, transactions, options[:currency])
+      if options[:global]
+        [GlobalTrips.new('Global', travel_transactions, current, options[:currency])]
+      else
+        travel_transactions.group_by(&:travel).map do |t, trs|
+          Trip.new(t, trs, filtered_transactions, options[:currency])
+        end.sort_by(&:date)
       end
     end
 
@@ -73,11 +77,17 @@ module Ledger
       @period_transactions ||= relevant_transactions.select { |t| t.parsed_date.between?(*period) }
     end
 
+    def travel_transactions
+      filtered_transactions.select(&:travel)
+    end
+
     def period
       if filter_with_date_range?
         [options.fetch(:from, -Float::INFINITY), options.fetch(:till, Float::INFINITY)]
-      else
+      elsif options[:month] && options[:year]
         [build_date(1), build_date(-1)]
+      else
+        [-Float::INFINITY, Float::INFINITY]
       end
     end
 
