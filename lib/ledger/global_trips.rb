@@ -17,17 +17,11 @@ module Ledger
         tts.sort_by(&:parsed_date).last.parsed_date
       end
 
-      list.map do |travel, tts|
-        money = tts.sum(&:money)
-
-        [travel, MoneyHelper.display(money), MoneyHelper.percentage(money, transactions)]
-      end
+      list.map { |travel, tts| [travel].concat(MoneyHelper.display_with_percentage(tts, transactions)) }
     end
 
     def total
-      money = transactions.sum(&:money)
-      percentage = MoneyHelper.percentage(money) { current.exchange_to(currency) }
-      ['Total', MoneyHelper.display(money), percentage]
+      ['Total'].concat(MoneyHelper.display_with_percentage(transactions) { current.exchange_to(currency) })
     end
   end
 end

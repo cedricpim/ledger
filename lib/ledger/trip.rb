@@ -19,22 +19,15 @@ module Ledger
 
     def list
       list = transactions.group_by(&:category).map do |category, cts|
-        money = cts.sum(&:money)
-
-        [category, MoneyHelper.display(money), MoneyHelper.percentage(money, transactions)]
+        [category].concat(MoneyHelper.display_with_percentage(cts, transactions))
       end
 
       list.sort_by(&:last).reverse
     end
 
     def total
-      total_spent = transactions.sum(&:money)
-
-      percentage = MoneyHelper.percentage(total_spent) do
-        total_transactions.select { |t| t.income? && t.parsed_date.month == date.month }.sum(&:money)
-      end
-
-      ['Total', MoneyHelper.display(total_spent), percentage]
+      total_spent = total_transactions.select { |t| t.income? && t.parsed_date.month == date.month }.sum(&:money)
+      ['Total'].concat(MoneyHelper.display_with_percentage(transactions) { total_spent })
     end
   end
 end

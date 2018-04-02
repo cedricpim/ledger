@@ -53,7 +53,7 @@ module Ledger
 
       row(CONFIG.color(:element)) do
         column(account, options[0])
-        column(MoneyHelper.display(total), MoneyHelper.color(total).merge(options[1]))
+        column(*MoneyHelper.display_with_color(total, options[1]))
       end
     end
 

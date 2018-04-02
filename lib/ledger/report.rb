@@ -16,12 +16,7 @@ module Ledger
 
     def list
       list = filtered_transactions.group_by(&:category).map do |category, cts|
-        total = cts.sum(&:money)
-        [
-          padded_category(category, cts),
-          MoneyHelper.display(total),
-          MoneyHelper.percentage(total, filtered_transactions)
-        ]
+        [padded_category(category, cts)].concat(MoneyHelper.display_with_percentage(cts, filtered_transactions))
       end
 
       list.sort_by { |l| l[2] }.reverse

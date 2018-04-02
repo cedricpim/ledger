@@ -13,10 +13,7 @@ module Ledger
 
     def for(method:, currency:)
       value = public_send(method).exchange_to(currency)
-      [
-        MoneyHelper.display(value)[(value.zero? ? 0 : 1)..-1],
-        MoneyHelper.color(value).merge(CONFIG.output(:totals, method))
-      ]
+      MoneyHelper.display_with_color(value, CONFIG.output(:totals, method))
     end
 
     def income

@@ -16,6 +16,23 @@ module Ledger
         ((value.abs / total.abs) * 100).to_f.round(2)
       end
 
+      def display_with_percentage(*transactions, &block)
+        value = transactions.shift.sum(&:money)
+
+        if block_given?
+          [display(value), percentage(value, &block)]
+        else
+          [display(value)].concat(transactions.map { |ts| percentage(value, ts) })
+        end
+      end
+
+      def display_with_color(money, options)
+        display = display(money)[(money.zero? ? 0 : 1)..-1]
+        color = color(money)
+
+        [display, color.merge(options)]
+      end
+
       def color(value)
         key =
           case

@@ -19,27 +19,18 @@ module Ledger
 
     def list
       list = transactions.group_by(&:description).map do |description, dts|
-        money = dts.sum(&:money)
-
-        [
-          padded_description(description, dts),
-          MoneyHelper.display(money),
-          MoneyHelper.percentage(money, transactions),
-          MoneyHelper.percentage(money, period_transactions)
-        ]
+        [padded_description(description, dts)].concat(
+          MoneyHelper.display_with_percentage(dts, transactions, period_transactions)
+        )
       end
 
       list.sort_by { |l| l[2] }.reverse
     end
 
     def total
-      money = transactions.sum(&:money)
-      [
-        padded_description(transactions.first.category, transactions),
-        MoneyHelper.display(money),
-        MoneyHelper.percentage(money, period_transactions),
-        MoneyHelper.percentage(money, total_transactions)
-      ]
+      [padded_description(transactions.first.category, transactions)].concat(
+        MoneyHelper.display_with_percentage(transactions, period_transactions, total_transactions)
+      )
     end
 
     private
