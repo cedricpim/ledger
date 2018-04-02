@@ -31,28 +31,28 @@ module Ledger
 
     def trips
       if options[:global]
-        [GlobalTrips.new('Global', travel_transactions, relevant_transactions, options[:currency])]
+        [GlobalTrips.new('Global', travel_transactions, relevant_transactions)]
       else
         travel_transactions.group_by(&:travel).map do |t, trs|
-          Trip.new(t, trs, filtered_transactions, options[:currency])
+          Trip.new(t, trs, filtered_transactions)
         end.sort_by(&:date)
       end
     end
 
     def report
       if options[:global]
-        [Report.new('Global', filtered_transactions, options[:currency])]
+        [Report.new('Global', filtered_transactions)]
       else
-        filtered_transactions.group_by(&:account).map { |acc, trs| Report.new(acc, trs, accounts_currency[acc]) }
+        filtered_transactions.group_by(&:account).map { |acc, trs| Report.new(acc, trs) }
       end
     end
 
     def study(category)
       if options[:global]
-        [Study.new('Global', category_transactions(category), period_transactions, relevant_transactions, options[:currency])]
+        [Study.new('Global', category_transactions(category), period_transactions, relevant_transactions)]
       else
         category_transactions(category).group_by(&:account).map do |a, trs|
-          Study.new(a, trs, period_transactions, relevant_transactions, options[:currency])
+          Study.new(a, trs, period_transactions, relevant_transactions)
         end
       end
     end
@@ -68,8 +68,11 @@ module Ledger
     private
 
     def relevant_transactions
-      @relevant_transactions ||= transactions.reject do |transaction|
-        CONFIG.excluded_categories.any? { |c| c.match?(/#{transaction.category}/i) }
+      @relevant_transactions ||= begin
+        list = transactions.reject do |transaction|
+          CONFIG.excluded_categories.any? { |c| c.match?(/#{transaction.category}/i) }
+        end
+        options[:currency] && options[:global] ? list.map { |elem| elem.exchange_to(options[:currency]) } : list
       end
     end
 

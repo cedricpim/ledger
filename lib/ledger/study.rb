@@ -7,14 +7,13 @@ module Ledger
     # Space used by characters that enclose each side of the amount
     ENCLOSING_UNIT = 1
 
-    attr_reader :account, :transactions, :period_transactions, :total_transactions, :currency
+    attr_reader :account, :transactions, :period_transactions, :total_transactions
 
-    def initialize(account, transactions, period_transactions, total_transactions, currency)
+    def initialize(account, transactions, period_transactions, total_transactions)
       @account = account
-      @currency = currency
-      @transactions = transactions.map { |t| t.exchange_to(@currency) }
-      @period_transactions = period_transactions.map { |t| t.exchange_to(@currency) }
-      @total_transactions = total_transactions.map { |t| t.exchange_to(@currency) }
+      @transactions = transactions
+      @period_transactions = period_transactions
+      @total_transactions = total_transactions
     end
 
     def list

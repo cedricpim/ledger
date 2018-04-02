@@ -7,16 +7,16 @@ module Ledger
     # Space used by characters that enclose each side of the amount
     ENCLOSING_UNIT = 1
 
-    attr_reader :account, :filtered_transactions
+    attr_reader :account, :transactions
 
-    def initialize(account, filtered_transactions, currency)
+    def initialize(account, transactions)
       @account = account
-      @filtered_transactions = filtered_transactions.map { |t| t.exchange_to(currency) }
+      @transactions = transactions
     end
 
     def list
-      list = filtered_transactions.group_by(&:category).map do |category, cts|
-        [padded_category(category, cts)].concat(MoneyHelper.display_with_percentage(cts, filtered_transactions))
+      list = transactions.group_by(&:category).map do |category, cts|
+        [padded_category(category, cts)].concat(MoneyHelper.display_with_percentage(cts, transactions))
       end
 
       list.sort_by { |l| l[2] }.reverse

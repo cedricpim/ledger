@@ -3,13 +3,12 @@ module Ledger
   # and all the transactions belonging to all the trips. It is capable of
   # listing the transactions and provide a summary of each trip.
   class GlobalTrips
-    attr_reader :travel, :transactions, :total_transactions, :currency
+    attr_reader :travel, :transactions, :total_transactions
 
-    def initialize(travel, transactions, total_transactions, currency)
+    def initialize(travel, transactions, total_transactions)
       @travel = travel
-      @transactions = transactions.map { |t| t.exchange_to(currency) }
-      @total_transactions = total_transactions.map { |t| t.exchange_to(currency) }
-      @currency = currency
+      @transactions = transactions
+      @total_transactions = total_transactions
     end
 
     def list

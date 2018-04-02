@@ -4,13 +4,12 @@ module Ledger
   # is capable of listing the transactions and provide a summary of the
   # transactions, grouped by category.
   class Trip
-    attr_reader :travel, :transactions, :total_transactions, :currency
+    attr_reader :travel, :transactions, :total_transactions
 
-    def initialize(travel, transactions, total_transactions, currency)
+    def initialize(travel, transactions, total_transactions)
       @travel = travel
-      @transactions = transactions.map { |t| t.exchange_to(currency) }
+      @transactions = transactions
       @total_transactions = total_transactions
-      @currency = currency
     end
 
     def date
