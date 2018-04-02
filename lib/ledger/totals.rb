@@ -49,7 +49,14 @@ module Ledger
     end
 
     def display_percentage(value, key)
-      ["#{value.nan? ? 0.0 : value}%", MoneyHelper.color(value).merge(CONFIG.output(:totals, :percentage, key))]
+      value =
+        case
+        when value.nan?      then 0.0
+        when value.infinite? then -100
+        else value
+        end
+
+      ["#{value}%", MoneyHelper.color(value).merge(CONFIG.output(:totals, :percentage, key))]
     end
   end
 end
