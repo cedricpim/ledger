@@ -26,8 +26,8 @@ module Ledger
     end
 
     def total
-      total_spent = total_transactions.select { |t| t.income? && t.parsed_date.month == date.month }.sum(&:money)
-      ['Total'].concat(MoneyHelper.display_with_percentage(transactions) { total_spent })
+      monthly_income = total_transactions.select { |t| t.income? && t.parsed_date.month == date.month }.sum(&:money)
+      ['Total'].concat(MoneyHelper.display_with_percentage(transactions) { monthly_income })
     end
   end
 end

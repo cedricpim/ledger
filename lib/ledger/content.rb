@@ -31,7 +31,7 @@ module Ledger
 
     def trips
       if options[:global]
-        [GlobalTrips.new('Global', travel_transactions, current, options[:currency])]
+        [GlobalTrips.new('Global', travel_transactions, relevant_transactions, options[:currency])]
       else
         travel_transactions.group_by(&:travel).map do |t, trs|
           Trip.new(t, trs, filtered_transactions, options[:currency])
@@ -49,10 +49,10 @@ module Ledger
 
     def study(category)
       if options[:global]
-        [Study.new('Global', category_transactions(category), transactions, period_transactions, options[:currency])]
+        [Study.new('Global', category_transactions(category), period_transactions, relevant_transactions, options[:currency])]
       else
         category_transactions(category).group_by(&:account).map do |a, trs|
-          Study.new(a, trs, transactions, period_transactions, options[:currency])
+          Study.new(a, trs, period_transactions, relevant_transactions, options[:currency])
         end
       end
     end
