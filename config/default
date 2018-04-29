@@ -44,6 +44,9 @@
   :description:
     :default: ''
     :presence: false
+  :venue:
+    :default: ''
+    :presence: false
   :amount:
     :default: ''
     :presence: true
@@ -218,10 +221,6 @@
         :symbol_position: :after
         :symbol: false
         :thousands_separator: ''
-    # Symbols to be used when displaying if a field has been processed or not
-    :processed:
-      'yes': :white
-      'no': :black
 
 # Values for configuring encryption on the ledger file
 :encryption:

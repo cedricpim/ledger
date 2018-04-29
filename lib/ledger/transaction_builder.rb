@@ -5,7 +5,7 @@ module Ledger
   # such as default attributes and auto-complete.
   class TransactionBuilder
     DEFAULT = ''.freeze
-    AUTO_COMPLETE = %i[account category description currency travel].freeze
+    AUTO_COMPLETE = %i[account category description venue currency travel].freeze
     ALLOWED_DATE_SEPARATORS = %r{-|/|\.}
 
     attr_reader :repository, :options
