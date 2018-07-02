@@ -73,7 +73,7 @@ module Ledger
 
       table do
         total_period_row(with_period: with_period)
-        total_current_row(with_period: with_period)
+        total_current_row(with_period: with_period) if CONFIG.show_totals?
       end
     end
   end

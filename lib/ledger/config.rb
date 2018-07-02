@@ -79,5 +79,9 @@ module Ledger
     def money_format(type:)
       config.dig(:format, :fields, :money, type)
     end
+
+    def show_totals?
+      config.dig(:format, :output, :show_totals)
+    end
   end
 end

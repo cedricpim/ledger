@@ -75,6 +75,8 @@
 # Define the set of formats to be used across the application
 :format:
   :output:
+    # Show the current total value
+    :show_totals: yes
     :default:
       # Fallback to be displayed when money is not present
       :money: '------'
