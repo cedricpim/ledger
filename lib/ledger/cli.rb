@@ -4,6 +4,7 @@ module Ledger
   class Cli < Thor
     COMMANDS = {
       commands: 'List commands available in Ledger',
+      compare: 'Compare multiple periods',
       configure: 'Copy provided configuration file to the default location',
       create: 'Create a new ledger and copy default configuration file',
       edit: 'Open ledger in your editor',
@@ -20,6 +21,14 @@ module Ledger
       say COMMANDS.keys.join("\n")
     end
 
+    desc 'compare', COMMANDS[:compare]
+    map 'c' => :compare
+    method_option :months, type: :numeric, default: 1, aliases: '-m'
+    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
+    def compare
+      Printer.new(parsed_options).compare
+    end
+
     desc 'configure', COMMANDS[:configure]
     map '-c' => :configure
     def configure
@@ -27,7 +36,6 @@ module Ledger
     end
 
     desc 'create', COMMANDS[:create]
-    map 'c' => :create
     def create
       Repository.new.create!
     end

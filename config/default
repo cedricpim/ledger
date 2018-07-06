@@ -77,13 +77,8 @@
   :output:
     # Show the current total value
     :show_totals: yes
-    :default:
-      # Fallback to be displayed when money is not present
-      :money: '------'
-      # Fallback to be displayed when percentage is not present
-      :percentage: '-----'
-      # Fallback to be displayed when travel is not present
-      :travel: '-----'
+    # Fallback to be displayed when a value is not present
+    :default: '------'
     # Section to define colors of the output
     :color:
       # Color of the header of the table

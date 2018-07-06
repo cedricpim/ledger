@@ -1,7 +1,7 @@
 module Ledger
   # Class holding the transactions read from the ledger and used to query the
   # content of the ledger.
-  class Content
+  class Content # rubocop:disable Metrics/ClassLength
     attr_reader :transactions, :options
 
     def initialize(transactions, options)
@@ -33,13 +33,19 @@ module Ledger
       if options[:global]
         [GlobalTrips.new('Global', travel_transactions, relevant_transactions)]
       else
-        travel_transactions.group_by(&:travel).map do |t, trs|
-          Trip.new(t, trs, filtered_transactions)
+        travel_transactions.group_by(&:travel).map do |t, tts|
+          Trip.new(t, tts, filtered_transactions)
         end.sort_by(&:date)
       end
     end
 
-    def report
+    def comparisons
+      transactions_for_comparison.group_by(&:category).map do |c, cts|
+        Comparison.new(c, cts, periods, options[:currency])
+      end
+    end
+
+    def reports
       if options[:global]
         [Report.new('Global', filtered_transactions)]
       else
@@ -47,7 +53,7 @@ module Ledger
       end
     end
 
-    def study(category)
+    def studies(category)
       if options[:global]
         [Study.new('Global', category_transactions(category), period_transactions, relevant_transactions)]
       else
@@ -63,6 +69,10 @@ module Ledger
 
     def excluded_transactions
       @excluded_transactions ||= period_transactions.select { |t| exclude_categories&.call(t) }
+    end
+
+    def periods
+      @periods ||= (current_period + previous_periods).sort
     end
 
     private
@@ -88,6 +98,16 @@ module Ledger
       filtered_transactions.select { |t| t.category.match?(/#{category}/i) }
     end
 
+    def transactions_for_comparison
+      initial = periods.first.first
+
+      transactions.map do |t|
+        next unless t.parsed_date > initial
+
+        t.exchange_to(options[:currency])
+      end.compact
+    end
+
     def period
       if filter_with_date_range?
         [options.fetch(:from, -Float::INFINITY), options.fetch(:till, Float::INFINITY)]
@@ -110,6 +130,26 @@ module Ledger
       return unless options[:categories]
 
       ->(transaction) { options[:categories].map(&:downcase).include?(transaction.category.downcase) }
+    end
+
+    def current_period
+      [range(Date.today.year, Date.today.month)]
+    end
+
+    def previous_periods
+      current_year = Date.today.year
+      current_month = Date.today.month
+
+      Array.new(options[:months]) do
+        current_year, current_month =
+          current_month > 1 ? [current_year, current_month - 1] : [current_year - 1, 12]
+
+        range(current_year, current_month)
+      end
+    end
+
+    def range(year, month)
+      [Date.new(year, month, 1), Date.new(year, month, -1)]
     end
   end
 end

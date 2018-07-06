@@ -1,9 +1,9 @@
 module Ledger
-  # Module containing helpers to deal with Money instances.
+  # Module containing helpers to deal with Money instances and values representation.
   module MoneyHelper
     class << self
       def display(money)
-        return CONFIG.output(:default, :money) unless money.is_a?(Money)
+        return CONFIG.default_value unless money.is_a?(Money)
 
         money.format(CONFIG.money_format(type: :display))
       end
@@ -11,7 +11,7 @@ module Ledger
       def percentage(value, transactions = [], &block)
         value, total = percentage_values(value, transactions, &block)
 
-        return CONFIG.output(:default, :percentage) unless total.is_a?(Money) && value.is_a?(Money)
+        return CONFIG.default_value unless total.is_a?(Money) && value.is_a?(Money)
 
         ((value.abs / total.abs) * 100).to_f.round(2)
       end
@@ -26,11 +26,17 @@ module Ledger
         end
       end
 
-      def display_with_color(money, options)
-        display = display(money)[(money.zero? ? 0 : 1)..-1]
-        color = color(money)
+      def display_with_color(value, options = {})
+        display, color =
+          if value.is_a?(Money)
+            [display(value.abs), color(value)]
+          elsif value
+            ["#{value.abs}%", color(value)]
+          else
+            [CONFIG.default_value, color(0)]
+          end
 
-        [display, color.merge(options)]
+        [display, options.merge(color)]
       end
 
       def color(value)

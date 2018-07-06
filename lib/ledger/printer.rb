@@ -28,8 +28,22 @@ module Ledger
       totals(with_period: false)
     end
 
+    def compare
+      title('Comparison')
+
+      table do
+        comparisons = repository.comparisons
+
+        build_comparison_header(comparisons.map(&:list))
+
+        comparisons.each do |comparison|
+          add_row(comparison.list.map(&:first), comparison.list.map(&:last), color: :white, bold: true)
+        end
+      end
+    end
+
     def report
-      repository.report.each do |report|
+      repository.reports.each do |report|
         title(report.account)
 
         build(report)
@@ -39,7 +53,7 @@ module Ledger
     end
 
     def study(category)
-      repository.study(category).each do |study|
+      repository.studies(category).each do |study|
         title(study.account)
 
         build(study)
@@ -75,6 +89,33 @@ module Ledger
         total_period_row(with_period: with_period)
         total_current_row(with_period: with_period) if CONFIG.show_totals?
       end
+    end
+
+    def build_comparison_header(lists)
+      widths = Array.new(lists.first.count) { |i| lists.map { |list| list[i][0].length }.max }
+
+      row(CONFIG.color(:header)) do
+        widths.slice_after(&:zero?).each.with_index do |set, header_index|
+          build_comparison_header_columns(set, header_index)
+        end
+      end
+    end
+
+    def build_comparison_header_columns(set, header_index)
+      set.each.with_index do |width, period_index|
+        if width.zero?
+          column('', width: 2)
+        else
+          title = build_column_title(header_index, period_index)
+          column(title, width: [width, title.length].max + 1, align: 'center')
+        end
+      end
+    end
+
+    def build_column_title(header_index, period_index)
+      periods = repository.periods.flatten.map { |p| p.strftime('%m/%y') }.uniq
+      title, starting = Ledger::Comparison::HEADERS[header_index]
+      starting ? "#{title} (#{periods[period_index + starting]})" : title
     end
   end
 end

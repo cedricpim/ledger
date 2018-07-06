@@ -64,6 +64,10 @@ module Ledger
       end
     end
 
+    def default_value
+      CONFIG.output(:default)
+    end
+
     def excluded_categories
       @excluded_categories ||= config.dig(:report, :exclude).fetch(:categories, [])
     end

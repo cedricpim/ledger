@@ -12,6 +12,7 @@ I18n.enforce_available_locales = false
 
 require_relative 'ledger/config'
 require_relative 'ledger/cli'
+require_relative 'ledger/comparison'
 require_relative 'ledger/content'
 require_relative 'ledger/encryption'
 require_relative 'ledger/global_trips'
