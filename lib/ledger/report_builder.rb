@@ -18,6 +18,14 @@ module Ledger
       list.each { |elements| add_row(elements, CONFIG.color(:element)) }
     end
 
+    def add_colored_row(list, row_options = {})
+      return unless list
+
+      row(row_options) do
+        list.each { |elem| column(*elem) }
+      end
+    end
+
     def add_row(list, column_options = [], **row_options)
       return unless list
 

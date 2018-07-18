@@ -110,10 +110,10 @@ module Ledger
     end
 
     def compare_rows(headers, comparisons)
-      add_row(headers.map(&:first), headers.map(&:last), CONFIG.color(:header))
+      add_colored_row(headers, CONFIG.color(:header))
 
       comparisons.each do |comparison|
-        add_row(comparison.list.map(&:first), comparison.list.map(&:last), color: :white, bold: true)
+        add_colored_row(comparison.list, CONFIG.color(:element))
       end
     end
   end
