@@ -6,8 +6,8 @@ module Ledger
 
     private
 
-    def title(title)
-      header(CONFIG.output(:title).merge(title: title))
+    def title(title, options = {})
+      header(CONFIG.output(:title).merge(title: title).merge(options))
     end
 
     def main_header(from:)

@@ -9,9 +9,9 @@ module Ledger
     # the second element the starting point for the periods
     HEADERS = [
       ['Category'],
-      ['Totals', 0],
-      ['Diffs', 1],
-      ['Percentages', 1]
+      ['Total', 0],
+      ['+/-', 1],
+      ['%', 1]
     ].freeze
 
     attr_reader :category, :transactions, :periods, :currency
@@ -59,7 +59,7 @@ module Ledger
     def calculate_percentage(prev_value, value)
       return if prev_value.zero? || value.zero?
 
-      ((1 - value / prev_value).abs * (value > prev_value ? 1 : -1)).round(4) * 100
+      ((1 - value / prev_value).abs * (value > prev_value ? 1 : -1) * 100).round(2)
     end
 
     def value(period)
