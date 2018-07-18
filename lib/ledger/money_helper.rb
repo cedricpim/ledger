@@ -36,7 +36,7 @@ module Ledger
             [CONFIG.default_value, color(0)]
           end
 
-        [display, options.merge(color)]
+        [display.start_with?('-', '+') ? display[1..-1] : display, options.merge(color)]
       end
 
       def color(value)
