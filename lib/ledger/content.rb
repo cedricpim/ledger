@@ -42,7 +42,7 @@ module Ledger
     def comparisons
       transactions_for_comparison.group_by(&:category).map do |c, cts|
         Comparison.new(c, cts, periods, options[:currency])
-      end
+      end.sort_by(&:category)
     end
 
     def reports
