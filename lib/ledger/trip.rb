@@ -13,7 +13,7 @@ module Ledger
     end
 
     def date
-      @date ||= transactions.sort_by(&:parsed_date).last.parsed_date
+      @date ||= transactions.max_by(&:parsed_date).parsed_date
     end
 
     def list

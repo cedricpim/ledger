@@ -1,4 +1,4 @@
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'ledger/version'
 
@@ -18,15 +18,15 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.required_rubygems_version = '>= 1.8.23'
-  s.required_ruby_version = '>= 2.2.7'
+  s.required_ruby_version = '>= 2.4'
 
-  s.add_dependency 'command_line_reporter', '~> 4.0.0', '>=3.0'
-  s.add_dependency 'money', '~> 6.9.0', '>= 6.9'
-  s.add_dependency 'money-open-exchange-rates', '~> 1.0.2', '>= 1.0.2'
-  s.add_dependency 'openssl', '~> 2.0.6', '>= 2.0'
-  s.add_dependency 'thor', '~> 0.20.0', '>= 0.20'
-  s.add_dependency 'xdg', '~> 2.2.3', '>= 2.2'
+  s.add_dependency 'command_line_reporter', '~> 4.0'
+  s.add_dependency 'money', '~> 6.12'
+  s.add_dependency 'money-open-exchange-rates', '~> 1.2'
+  s.add_dependency 'openssl', '~> 2.1'
+  s.add_dependency 'thor', '~> 0.20'
+  s.add_dependency 'xdg', '~> 2.2'
 
-  s.add_development_dependency 'pry', '~> 0.11.2'
-  s.add_development_dependency 'rubocop', '~> 0.51.0'
+  s.add_development_dependency 'pry', '~> 0.11'
+  s.add_development_dependency 'rubocop', '~> 0.58'
 end

@@ -13,7 +13,7 @@ module Ledger
 
     def list
       list = transactions.select(&:travel).group_by(&:travel).sort_by do |_travel, tts|
-        tts.sort_by(&:parsed_date).last.parsed_date
+        tts.max_by(&:parsed_date).parsed_date
       end
 
       list.map { |travel, tts| [travel].concat(MoneyHelper.display_with_percentage(tts, transactions)) }

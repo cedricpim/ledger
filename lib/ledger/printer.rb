@@ -16,7 +16,7 @@ module Ledger
       title('Balance')
 
       table do
-        main_header(of: :balance)
+        main_header(from: :balance)
 
         repository.accounts.each_pair do |account, total|
           next if total.zero? && !options[:all]
@@ -74,7 +74,7 @@ module Ledger
 
     def build(entity)
       table do
-        main_header(of: entity.class.to_s.split('::').last.downcase.to_sym)
+        main_header(from: entity.class.to_s.split('::').last.downcase.to_sym)
 
         print(entity.list)
 

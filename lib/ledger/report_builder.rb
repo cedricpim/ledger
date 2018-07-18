@@ -10,8 +10,8 @@ module Ledger
       header(CONFIG.output(:title).merge(title: title))
     end
 
-    def main_header(of:)
-      add_row(CONFIG.output(of, :header), CONFIG.output(of, :options), CONFIG.color(:header))
+    def main_header(from:)
+      add_row(CONFIG.output(from, :header), CONFIG.output(from, :options), CONFIG.color(:header))
     end
 
     def print(list)
