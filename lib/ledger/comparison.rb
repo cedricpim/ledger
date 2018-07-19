@@ -30,7 +30,7 @@ module Ledger
     private
 
     def title
-      [[category, {}]]
+      [[category, category == 'Totals' ? {color: :yellow} : {}]]
     end
 
     def totals

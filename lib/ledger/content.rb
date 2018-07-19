@@ -40,9 +40,11 @@ module Ledger
     end
 
     def comparisons
+      totals_comparison = Comparison.new('Totals', transactions_for_comparison, periods, options[:currency])
+
       transactions_for_comparison.group_by(&:category).map do |c, cts|
         Comparison.new(c, cts, periods, options[:currency])
-      end.sort_by(&:category)
+      end.sort_by(&:category) + [totals_comparison]
     end
 
     def reports
@@ -99,13 +101,15 @@ module Ledger
     end
 
     def transactions_for_comparison
-      initial = periods.first.first
+      @transactions_for_comparison ||= begin
+        initial = periods.first.first
 
-      transactions.map do |t|
-        next unless t.parsed_date > initial
+        transactions.map do |t|
+          next unless t.parsed_date > initial
 
-        t.exchange_to(options[:currency])
-      end.compact
+          t.exchange_to(options[:currency])
+        end.compact
+      end
     end
 
     def period
