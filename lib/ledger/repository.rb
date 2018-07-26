@@ -4,9 +4,14 @@ module Ledger
   class Repository
     extend Forwardable
 
-    def_delegators :content, :transactions, :accounts, :categories, :currencies, :current,
-                   :descriptions, :travels, :trips, :reports, :studies, :comparisons,
-                   :accounts_currency, :filtered_transactions, :excluded_transactions, :periods
+    # Methods that are forwarded to content
+    CONTENT_METHODS = %i[
+      transactions accounts currencies current
+      trips reports studies comparisons
+      accounts_currency filtered_transactions excluded_transactions periods
+    ].freeze
+
+    def_delegators :content, *CONTENT_METHODS
 
     attr_reader :current_transactions, :options
 
@@ -17,14 +22,14 @@ module Ledger
 
     def load!
       encryption.wrap do |file|
-        CSV.foreach(file, headers: true) do |row|
-          current_transactions << Transaction.new(*row.fields)
+        CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
+          current_transactions << Transaction.new(row.to_h)
         end
       end
     end
 
     def add!
-      transaction = TransactionBuilder.new(self, options).build!
+      transaction = TransactionBuilder.new(self).build!
 
       encryption.wrap do |file|
         File.open(file, 'a') { |f| f.write("#{transaction.to_ledger}\n") }
@@ -53,11 +58,10 @@ module Ledger
     end
 
     def content
-      return @content if @content
-
-      load!
-
-      @content = Content.new(current_transactions, options)
+      @content ||= begin
+        load!
+        Content.new(current_transactions, options)
+      end
     end
   end
 end

@@ -5,8 +5,8 @@ require 'ledger/version'
 Gem::Specification.new do |s|
   s.name          = 'ledger'
   s.version       = Ledger::VERSION
-  s.authors       = ['Cedric Pimenta']
-  s.email         = 'contact@cedricpim.com'
+  s.authors       = ['cedricpim']
+  s.email         = 'github.f@cedricpim.com'
   s.homepage      = 'https://github.com/cedricpim/ledger'
   s.description   = 'Simple CLI money tracker'
   s.summary       = 'Quickly create a ledger and manage it from the command line'
@@ -27,6 +27,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'thor', '~> 0.20'
   s.add_dependency 'xdg', '~> 2.2'
 
+  s.add_development_dependency 'guard', '~> 2.14'
+  s.add_development_dependency 'guard-rspec', '~> 4.7'
   s.add_development_dependency 'pry', '~> 0.11'
+  s.add_development_dependency 'rspec', '~> 3.7'
   s.add_development_dependency 'rubocop', '~> 0.58'
 end

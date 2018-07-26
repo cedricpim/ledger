@@ -31,7 +31,7 @@ module Ledger
 
     def trips
       if options[:global]
-        [GlobalTrips.new('Global', travel_transactions, relevant_transactions)]
+        [GlobalTrip.new('Global', travel_transactions, relevant_transactions)]
       else
         travel_transactions.group_by(&:travel).map do |t, tts|
           Trip.new(t, tts, filtered_transactions)
@@ -40,10 +40,10 @@ module Ledger
     end
 
     def comparisons
-      totals_comparison = Comparison.new('Totals', transactions_for_comparison, periods, options[:currency])
+      totals_comparison = Comparison.new('Totals', transactions_for_comparison, periods, currency)
 
       transactions_for_comparison.group_by(&:category).map do |c, cts|
-        Comparison.new(c, cts, periods, options[:currency])
+        Comparison.new(c, cts, periods, currency)
       end.sort_by(&:category) + [totals_comparison]
     end
 
@@ -80,12 +80,11 @@ module Ledger
     private
 
     def relevant_transactions
-      @relevant_transactions ||= begin
-        list = transactions.reject do |transaction|
-          CONFIG.excluded_categories.any? { |c| c.match?(/#{transaction.category}/i) }
-        end
-        options[:currency] && options[:global] ? list.map { |elem| elem.exchange_to(options[:currency]) } : list
-      end
+      @relevant_transactions ||= transactions.map do |t|
+        next if CONFIG.excluded_categories.any? { |c| c.casecmp(t.category).zero? }
+
+        options[:global] && currency ? t.exchange_to(currency) : t
+      end.compact
     end
 
     def period_transactions
@@ -93,23 +92,19 @@ module Ledger
     end
 
     def travel_transactions
-      filtered_transactions.select { |t| t.travel && (options[:trip].nil? || t.travel.match?(/#{options[:trip]}/i)) }
+      period_transactions.select { |t| t.travel && (options[:trip].nil? || t.travel.match?(/#{options[:trip]}/i)) }
     end
 
     def category_transactions(category)
-      filtered_transactions.select { |t| t.category.match?(/#{category}/i) }
+      period_transactions.select { |t| t.category.casecmp(category).zero? }
     end
 
     def transactions_for_comparison
-      @transactions_for_comparison ||= begin
-        initial = periods.first.first
+      @transactions_for_comparison ||= transactions.map do |t|
+        next unless t.parsed_date > periods.first.first
 
-        transactions.map do |t|
-          next unless t.parsed_date > initial
-
-          t.exchange_to(options[:currency])
-        end.compact
-      end
+        t.exchange_to(currency)
+      end.compact
     end
 
     def period
@@ -154,6 +149,10 @@ module Ledger
 
     def range(year, month)
       [Date.new(year, month, 1), Date.new(year, month, -1)]
+    end
+
+    def currency
+      options[:currency]
     end
   end
 end

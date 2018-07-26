@@ -1,3 +1,5 @@
+require 'xdg'
+
 module Ledger
   # Class responsible for handling the configuration file and access its
   # fields.
@@ -24,7 +26,7 @@ module Ledger
     def initialize(file = self.class.file)
       puts 'Configuration file not found' or exit unless file
 
-      @config = YAML.safe_load(ERB.new(File.read(file)).result, [Symbol])
+      @config = YAML.safe_load(ERB.new(File.read(file)).result, [Symbol]).freeze
     end
 
     def ledger
@@ -49,12 +51,6 @@ module Ledger
 
     def credentials
       @credentials ||= [credential_value(:password), credential_value(:salt)]
-    end
-
-    def credential_value(key)
-      value = encryption.dig(:credentials, key)
-
-      value || `encryption.dig(:credentials, "#{key}eval".to_sym)`.chomp
     end
 
     def default_currency
@@ -86,6 +82,14 @@ module Ledger
 
     def show_totals?
       config.dig(:format, :output, :show_totals)
+    end
+
+    private
+
+    def credential_value(key)
+      value = encryption.dig(:credentials, key)
+
+      value || IO.popen(encryption.dig(:credentials, "#{key}eval".to_sym)).readlines.first.chomp
     end
   end
 end

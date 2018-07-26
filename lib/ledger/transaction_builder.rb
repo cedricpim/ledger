@@ -10,9 +10,9 @@ module Ledger
 
     attr_reader :repository, :options
 
-    def initialize(repository, options)
+    def initialize(repository)
       @repository = repository
-      @options = options
+      @options = repository.options
     end
 
     def build!

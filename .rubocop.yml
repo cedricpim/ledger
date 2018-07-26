@@ -15,3 +15,8 @@ Style/EmptyCaseCondition:
 
 SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
+
+Metrics/BlockLength:
+  Exclude:
+    - 'Guardfile'
+    - 'spec/**/*.rb'

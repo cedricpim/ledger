@@ -2,14 +2,8 @@ module Ledger
   # Class representing a single transaction, it contains also some methods
   # related to printing the information to different sources.
   # The class is modeled by the fields defined on the configuration file.
-  Transaction = Struct.new(*CONFIG.transaction_fields) do # rubocop:disable Metrics/BlockLength
+  Transaction = Struct.new(*CONFIG.transaction_fields, keyword_init: true) do # rubocop:disable Metrics/BlockLength
     attr_writer :money
-
-    WITH_SIGNAL = /\+|\-/
-
-    def amount=(amount)
-      self['amount'] = amount.nil? || amount.match?(WITH_SIGNAL) ? amount : "-#{amount}"
-    end
 
     def parsed_date
       @parsed_date ||= date.is_a?(String) ? Date.parse(date) : date
@@ -32,7 +26,11 @@ module Ledger
     end
 
     def exchange_to(currency)
-      dup.tap { |transaction| transaction.money = money.exchange_to(currency) }
+      dup.tap do |transaction|
+        transaction.money = money.exchange_to(currency)
+        transaction.amount = MoneyHelper.display(transaction.money, type: :ledger)
+        transaction.currency = transaction.money.currency.iso_code
+      end
     end
 
     private
@@ -41,7 +39,7 @@ module Ledger
       value = public_send(member)
 
       case member
-      when :amount   then money.format(CONFIG.money_format(type: :ledger))
+      when :amount   then MoneyHelper.display(money, type: :ledger)
       when :currency then money.currency.iso_code
       else value
       end

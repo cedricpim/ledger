@@ -66,7 +66,7 @@ module Ledger
     end
 
     def total
-      @total ||= Totals.new(repository)
+      @total ||= Total.new(repository)
     end
   end
 end

@@ -2,7 +2,7 @@ module Ledger
   # Class responsible for representing all trips, it contains the global identifier
   # and all the transactions belonging to all the trips. It is capable of
   # listing the transactions and provide a summary of each trip.
-  class GlobalTrips
+  class GlobalTrip
     attr_reader :travel, :transactions, :total_transactions
 
     def initialize(travel, transactions, total_transactions)
@@ -12,7 +12,7 @@ module Ledger
     end
 
     def list
-      list = transactions.select(&:travel).group_by(&:travel).sort_by do |_travel, tts|
+      list = transactions.group_by(&:travel).sort_by do |_travel, tts|
         tts.max_by(&:parsed_date).parsed_date
       end
 
