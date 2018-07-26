@@ -215,8 +215,7 @@ RSpec.describe Ledger::Content do
       [
         Ledger::Comparison.new('A', transactions.slice(1, 1), periods, 'USD'),
         Ledger::Comparison.new('B', transactions.slice(2, 2), periods, 'USD'),
-        Ledger::Comparison.new('Exchange', transactions.slice(4, 1), periods, 'USD'),
-        Ledger::Comparison.new('Totals', transactions.slice(1, 4), periods, 'USD')
+        Ledger::Comparison.new('Totals', transactions.slice(1, 3), periods, 'USD')
       ].map(&:list)
     end
 
@@ -237,8 +236,7 @@ RSpec.describe Ledger::Content do
         [
           Ledger::Comparison.new('A', exchanged_transaction + transactions.slice(1, 1), periods, 'USD'),
           Ledger::Comparison.new('B', transactions.slice(2, 2), periods, 'USD'),
-          Ledger::Comparison.new('Exchange', transactions.slice(4, 1), periods, 'USD'),
-          Ledger::Comparison.new('Totals', exchanged_transaction + transactions.slice(1, 4), periods, 'USD')
+          Ledger::Comparison.new('Totals', exchanged_transaction + transactions.slice(1, 3), periods, 'USD')
         ].map(&:list)
       end
 

@@ -100,7 +100,7 @@ module Ledger
     end
 
     def transactions_for_comparison
-      @transactions_for_comparison ||= transactions.map do |t|
+      @transactions_for_comparison ||= relevant_transactions.map do |t|
         next unless t.parsed_date > periods.first.first
 
         t.exchange_to(currency)
