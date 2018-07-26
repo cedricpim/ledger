@@ -4,6 +4,8 @@ module Ledger
   class Repository
     extend Forwardable
 
+    class IncorrectCSVFormatError < StandardError; end
+
     # Methods that are forwarded to content
     CONTENT_METHODS = %i[
       transactions accounts currencies current
@@ -14,18 +16,16 @@ module Ledger
     def_delegators :content, *CONTENT_METHODS
 
     attr_reader :current_transactions, :options
+    attr_accessor :counter
 
     def initialize(options = {})
       @current_transactions = []
       @options = options
+      @counter = 1
     end
 
     def load!
-      encryption.wrap do |file|
-        CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-          current_transactions << Transaction.new(row.to_h)
-        end
-      end
+      encryption.wrap { |file| parse(file) }
     end
 
     def add!
@@ -62,6 +62,17 @@ module Ledger
         load!
         Content.new(current_transactions, options)
       end
+    end
+
+    def parse(file)
+      CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
+        self.counter += 1
+        current_transactions << Transaction.new(row.to_h)
+      end
+    rescue OpenSSL::Cipher::CipherError => e
+      raise e
+    rescue StandardError => e
+      raise IncorrectCSVFormatError, "A problem reading line #{counter} has occurred"
     end
   end
 end

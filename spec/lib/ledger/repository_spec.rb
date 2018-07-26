@@ -33,6 +33,23 @@ RSpec.describe Ledger::Repository do
     specify do
       expect { subject }.to change { repository.current_transactions }.from([]).to(transactions)
     end
+
+    context 'when there is an error with Cipher' do
+      before { expect(CSV).to receive(:foreach).and_raise(OpenSSL::Cipher::CipherError) }
+
+      specify do
+        expect { subject }.to raise_error(OpenSSL::Cipher::CipherError)
+      end
+    end
+
+    context 'when there is an error loading a file' do
+      let(:path) { File.join('spec', 'fixtures', 'wrong-example.csv') }
+      let(:message) { 'A problem reading line 3 has occurred' }
+
+      specify do
+        expect { subject }.to raise_error(described_class::IncorrectCSVFormatError, message)
+      end
+    end
   end
 
   describe '#add!' do
