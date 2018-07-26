@@ -7,9 +7,6 @@ RSpec.describe Ledger::Cli do
   let(:options) { Thor::CoreExt::HashWithIndifferentAccess.new(options_attrs) }
 
   RSpec.shared_context 'has currency option' do
-    let(:options_attrs) { {currency: -> { CONFIG.default_currency }} }
-    let(:parsed_options_attrs) { {currency: 'USD'} }
-
     before do
       allow(cli).to receive(:options).and_return(options)
       allow_any_instance_of(Ledger::Config).to receive(:default_currency).and_return('USD')
@@ -76,6 +73,9 @@ RSpec.describe Ledger::Cli do
   end
 
   describe '#compare' do
+    let(:options_attrs) { {currency: -> { CONFIG.default_currency }} }
+    let(:parsed_options_attrs) { {currency: 'USD'} }
+
     include_context 'has currency option'
 
     it_behaves_like 'printer receives', :compare
@@ -118,6 +118,9 @@ RSpec.describe Ledger::Cli do
   end
 
   describe '#trips' do
+    let(:options_attrs) { {currency: -> { CONFIG.default_currency }} }
+    let(:parsed_options_attrs) { {currency: 'USD'} }
+
     include_context 'has currency option'
 
     it_behaves_like 'printer receives', :trips

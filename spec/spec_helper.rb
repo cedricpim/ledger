@@ -21,15 +21,15 @@ require 'ledger/config'
 
 # Ensure that we will always use the same exchange rate file in specs and use
 # the fallback configuration file
-module Ledger
-  class Config
-    DEFAULT_CONFIG = File.join('tmp', 'non-existent', 'config').freeze
+module RSpecConfig
+  DEFAULT_CONFIG = File.join('tmp', 'non-existent', 'config').freeze
 
-    def exchange
-      {cache_file: File.join('spec', 'fixtures', 'exchange-cache.json')}
-    end
+  def exchange
+    {cache_file: File.join('spec', 'fixtures', 'exchange-cache.json')}
   end
 end
+
+Ledger::Config.prepend(RSpecConfig)
 
 require 'ledger' # Load application
 

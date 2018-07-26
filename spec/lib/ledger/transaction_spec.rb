@@ -65,15 +65,17 @@ RSpec.describe Ledger::Transaction do
     subject { transaction.exchange_to('EUR') }
 
     %w[+ -].each do |signal|
-      let(:attrs) { {account: 'A', amount: "#{signal}10", currency: 'USD'} }
-      let(:result) { described_class.new(account: 'A', amount: "#{signal}8.62", currency: 'EUR') }
+      context "for signal #{signal}" do
+        let(:attrs) { {account: 'A', amount: "#{signal}10", currency: 'USD'} }
+        let(:result) { described_class.new(account: 'A', amount: "#{signal}8.62", currency: 'EUR') }
 
-      it { is_expected.to eq result }
+        it { is_expected.to eq result }
 
-      context 'for money instance' do
-        subject { transaction.exchange_to('EUR').money }
+        context 'for money instance' do
+          subject { transaction.exchange_to('EUR').money }
 
-        it { is_expected.to eq result.money }
+          it { is_expected.to eq result.money }
+        end
       end
     end
   end
