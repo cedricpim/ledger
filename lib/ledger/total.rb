@@ -17,7 +17,10 @@ module Ledger
     end
 
     def period_percentage
-      calculate_percentage(income, expense, :period) { expense / income }
+      calculate_percentage(income, expense, :period) do |period|
+        ratio = expense / income
+        period.positive? ? 1 - ratio.abs : ratio
+      end
     end
 
     def total_percentage

@@ -120,7 +120,7 @@ RSpec.describe Ledger::Total do
           ]
         end
 
-        it { is_expected.to eq ['33.33%', width: 8, align: 'right', color: :green] }
+        it { is_expected.to eq ['66.67%', width: 8, align: 'right', color: :green] }
       end
 
       context 'when there is less than two times' do
@@ -132,7 +132,7 @@ RSpec.describe Ledger::Total do
           ]
         end
 
-        it { is_expected.to eq ['75.0%', width: 8, align: 'right', color: :green] }
+        it { is_expected.to eq ['25.0%', width: 8, align: 'right', color: :green] }
       end
     end
 
