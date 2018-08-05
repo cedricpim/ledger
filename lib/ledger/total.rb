@@ -17,6 +17,8 @@ module Ledger
     end
 
     def period_percentage
+      return handle_period_extremes(income, expense) if zero_income_or_expense?
+
       calculate_percentage(income, expense, :period) do |period|
         ratio = expense / income
         period.positive? ? 1 - ratio.abs : ratio
@@ -49,9 +51,6 @@ module Ledger
     end
 
     def calculate_percentage(income, expense, type)
-      return display_percentage(expense / income, type) if income.zero?
-      return display_percentage(income / expense, type) if expense.zero?
-
       period = income - expense.abs
 
       value = yield period
@@ -59,6 +58,15 @@ module Ledger
       percentage = (value * 100).round(2).abs * (period.positive? ? 1 : -1)
 
       display_percentage(percentage, type)
+    end
+
+    def zero_income_or_expense?
+      income.zero? || expense.zero?
+    end
+
+    def handle_period_extremes(income, expense)
+      return display_percentage(expense / income, :period) if income.zero?
+      return display_percentage(income / expense, :period) if expense.zero?
     end
 
     def display_percentage(value, key)

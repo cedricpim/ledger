@@ -71,7 +71,7 @@ module Ledger
       end
     rescue OpenSSL::Cipher::CipherError => e
       raise e
-    rescue StandardError => e
+    rescue StandardError
       raise IncorrectCSVFormatError, "A problem reading line #{counter} has occurred"
     end
   end

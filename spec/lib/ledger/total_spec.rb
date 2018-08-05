@@ -180,6 +180,15 @@ RSpec.describe Ledger::Total do
       end
 
       it { is_expected.to eq ['100.0%', width: 4, align: 'right', color: :red] }
+
+      context 'when there is a current value' do
+        let(:transactions) { super() + other_transactions }
+        let(:other_transactions) do
+          [t(account: 'J', category: 'I', date: '20/07/2017', amount: 800, currency: 'USD')]
+        end
+
+        it { is_expected.to eq ['50.0%', width: 4, align: 'right', color: :red] }
+      end
     end
 
     context 'when there is only income' do
@@ -188,6 +197,15 @@ RSpec.describe Ledger::Total do
       end
 
       it { is_expected.to eq ['100.0%', width: 4, align: 'right', color: :green] }
+
+      context 'when there is a current value' do
+        let(:transactions) { super() + other_transactions }
+        let(:other_transactions) do
+          [t(account: 'J', category: 'I', date: '20/07/2017', amount: 800, currency: 'USD')]
+        end
+
+        it { is_expected.to eq ['50.0%', width: 4, align: 'right', color: :green] }
+      end
     end
 
     context 'when there is more income than expense' do
