@@ -48,7 +48,8 @@ module Ledger
     end
 
     def edit!
-      encryption.wrap { |file| system("#{ENV['EDITOR']} #{file.path}") }
+      line = ":#{options[:line]}" if options[:line]
+      encryption.wrap { |file| system("#{ENV['EDITOR']} #{file.path}#{line}") }
     end
 
     private

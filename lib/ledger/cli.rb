@@ -42,8 +42,9 @@ module Ledger
 
     desc 'edit', COMMANDS[:edit]
     map 'e' => :edit
+    method_option :line, type: :numeric, aliases: '-l'
     def edit
-      Repository.new.edit!
+      Repository.new(parsed_options).edit!
     end
 
     desc 'add', COMMANDS[:add]

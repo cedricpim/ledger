@@ -114,6 +114,16 @@ RSpec.describe Ledger::Repository do
 
       subject
     end
+
+    context 'when a line is specified' do
+      let(:options) { {line: 10} }
+
+      specify do
+        expect_any_instance_of(Kernel).to receive(:system).with([editor, "#{path.path}:10"].join(' '))
+
+        subject
+      end
+    end
   end
 
   (described_class::CONTENT_METHODS - %i[studies]).each do |method|
