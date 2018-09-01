@@ -19,6 +19,13 @@ RSpec.describe Ledger::Content do
   describe '#currencies' do
     subject { content.currencies }
 
+    let(:transactions) do
+      super() + [
+        t(account: 'E', category: 'C', date: '14/07/2018', amount: -50, currency: 'AED'),
+        t(account: 'E', category: 'C', date: '14/07/2018', amount: +50, currency: 'AED')
+      ]
+    end
+
     it { is_expected.to eq %w[USD CUP BBD EUR] }
   end
 

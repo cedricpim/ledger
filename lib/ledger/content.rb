@@ -10,7 +10,7 @@ module Ledger
     end
 
     def currencies
-      @currencies ||= transactions.map(&:currency).uniq
+      @currencies ||= transactions.group_by(&:currency).reject { |_cur, ts| ts.sum(&:money).zero? }.keys
     end
 
     def accounts_currency
