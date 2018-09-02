@@ -21,7 +21,10 @@ module Ledger
 
     def accounts
       @accounts ||= transactions.group_by(&:account).each_with_object({}) do |(acc, ts), result|
-        result[acc] = ts.sum { |t| t.exchange_to(accounts_currency[acc]).money }
+        total = ts.sum do |t|
+          options[:date] && t.parsed_date > options[:date] ? 0 : t.exchange_to(accounts_currency[acc]).money
+        end
+        result[acc] = total if options[:all] || !total.zero?
       end
     end
 

@@ -22,7 +22,7 @@ RSpec.describe Ledger::Content do
     let(:transactions) do
       super() + [
         t(account: 'E', category: 'C', date: '14/07/2018', amount: -50, currency: 'AED'),
-        t(account: 'E', category: 'C', date: '14/07/2018', amount: +50, currency: 'AED')
+        t(account: 'E', category: 'C', date: '14/07/2018', amount: 50, currency: 'AED')
       ]
     end
 
@@ -38,6 +38,13 @@ RSpec.describe Ledger::Content do
   describe '#accounts' do
     subject { content.accounts }
 
+    let(:transactions) do
+      super() + [
+        t(account: 'E', category: 'C', date: '14/07/2018', amount: -50, currency: 'AED'),
+        t(account: 'E', category: 'C', date: '14/07/2018', amount: +50, currency: 'AED')
+      ]
+    end
+
     let(:result) do
       {
         'A' => Money.new(-3000, 'USD'),
@@ -48,6 +55,22 @@ RSpec.describe Ledger::Content do
     end
 
     it { is_expected.to eq result }
+
+    context 'when options[:all] is true' do
+      let(:options) { {all: true} }
+
+      let(:result) { super().merge('E' => Money.new(0, 'AED')) }
+
+      it { is_expected.to eq result }
+    end
+
+    context 'when options[:date] is provided' do
+      let(:options) { {date: Date.new(2018, 07, 15)} }
+
+      let(:result) { {'C' => Money.new(-500, 'CUP'), 'D' => Money.new(-5000, 'USD')} }
+
+      it { is_expected.to eq result }
+    end
   end
 
   describe '#current' do

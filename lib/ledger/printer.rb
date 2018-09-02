@@ -19,8 +19,6 @@ module Ledger
         main_header(from: :balance)
 
         repository.accounts.each_pair do |account, total|
-          next if total.zero? && !options[:all]
-
           balance_row(account, total)
         end
       end

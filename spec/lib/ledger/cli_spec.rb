@@ -102,6 +102,11 @@ RSpec.describe Ledger::Cli do
   end
 
   describe '#balance' do
+    let(:options_attrs) { {date: '2018/10/28'} }
+    let(:parsed_options_attrs) { {date: Date.new(2018, 10, 28)} }
+
+    before { allow(cli).to receive(:options).and_return(options) }
+
     it_behaves_like 'printer receives', :balance
   end
 

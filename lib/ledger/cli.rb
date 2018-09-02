@@ -57,6 +57,7 @@ module Ledger
     desc 'balance', COMMANDS[:balance]
     map 'b' => :balance
     method_option :all, type: :boolean, default: false, aliases: '-a'
+    method_option :date, type: :string, aliases: '-d'
     def balance
       Printer.new(parsed_options).balance
     end
@@ -105,7 +106,7 @@ module Ledger
 
     def parsed_options
       options.each_with_object(Thor::CoreExt::HashWithIndifferentAccess.new) do |(k, v), h|
-        next h[k] = Date.parse(v) if %w[from till].include?(k)
+        next h[k] = Date.parse(v) if %w[from till date].include?(k)
         next h[k] = v.call if v.is_a?(Proc)
         h[k] = v
       end.freeze
