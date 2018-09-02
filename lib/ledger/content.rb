@@ -33,7 +33,7 @@ module Ledger
     end
 
     def trips
-      if options[:global]
+      if options[:global] && !options[:trip]
         [GlobalTrip.new('Global', travel_transactions, relevant_transactions)]
       else
         travel_transactions.group_by(&:travel).map do |t, tts|

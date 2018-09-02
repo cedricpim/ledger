@@ -126,6 +126,20 @@ RSpec.describe Ledger::Content do
 
       it { is_expected.to eq result }
 
+      context 'when a trip is defined' do
+        let(:options) { super().merge(trip: 'Travel A') }
+
+        let(:result) do
+          [
+            Ledger::Trip.new(
+              'Travel A', exchanged_transaction + transactions.slice(1, 1), exchanged_transaction + transactions.slice(1, 3)
+            ).list
+          ]
+        end
+
+        it { is_expected.to eq result }
+      end
+
       context 'within a period' do
         let(:options) do
           super().merge(from: Date.new(2018, 7, 14), till: Date.new(2018, 7, 15), year: 2018, month: 6)
