@@ -54,7 +54,7 @@ module Ledger
 
     def show
       encryption.wrap do |file|
-        system("echo '#{filtered_transactions.map(&:to_ledger).join}' > #{options[:output]}")
+        system("echo \"#{filtered_transactions.map(&:to_ledger).join}\" > #{options[:output]}")
       end
     end
 

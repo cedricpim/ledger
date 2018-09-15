@@ -90,8 +90,8 @@ module Ledger
 
     desc 'show', COMMANDS[:show]
     map 's' => :show
-    method_option :year, type: :numeric, default: -> { Date.today.cwyear }, aliases: '-y'
-    method_option :month, type: :numeric, default: -> { Date.today.month }, aliases: '-m'
+    method_option :year, type: :numeric, aliases: '-y'
+    method_option :month, type: :numeric, aliases: '-m'
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
     method_option :currency, type: :string, aliases: '-c'

@@ -132,7 +132,7 @@ RSpec.describe Ledger::Repository do
     let(:options) { {output: '/dev/stdout'} }
 
     specify do
-      expect_any_instance_of(Kernel).to receive(:system).with("echo '#{transactions.map(&:to_ledger).join}' > /dev/stdout")
+      expect_any_instance_of(Kernel).to receive(:system).with("echo \"#{transactions.map(&:to_ledger).join}\" > /dev/stdout")
 
       subject
     end
@@ -141,7 +141,7 @@ RSpec.describe Ledger::Repository do
       let(:options) { super().merge(from: Date.new(2018, 6, 28), till: Date.new(2018, 9, 28)) }
 
       specify do
-        expect_any_instance_of(Kernel).to receive(:system).with("echo '#{transactions[1].to_ledger}' > /dev/stdout")
+        expect_any_instance_of(Kernel).to receive(:system).with("echo \"#{transactions[1].to_ledger}\" > /dev/stdout")
 
         subject
       end
@@ -153,7 +153,7 @@ RSpec.describe Ledger::Repository do
       let(:result) { transactions.map { |t| t.exchange_to(options[:currency]).to_ledger }.join }
 
       specify do
-        expect_any_instance_of(Kernel).to receive(:system).with("echo '#{result}' > /dev/stdout")
+        expect_any_instance_of(Kernel).to receive(:system).with("echo \"#{result}\" > /dev/stdout")
 
         subject
       end
