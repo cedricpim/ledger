@@ -114,10 +114,10 @@ RSpec.describe Ledger::Cli do
     it_behaves_like 'printer receives', :balance
   end
 
-  describe '#analyse' do
+  describe '#analysis' do
     include_context 'has options'
 
-    it_behaves_like 'printer receives', :analyse, 'Category'
+    it_behaves_like 'printer receives', :analysis, 'Category'
   end
 
   describe '#report' do

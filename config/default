@@ -142,7 +142,7 @@
         - :width: 15
           :align: 'center'
     # Options related to how to display an analysis of a category
-    :analyse:
+    :analysis:
       :header:
           - Item
           - Amount

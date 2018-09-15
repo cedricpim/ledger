@@ -400,8 +400,8 @@ RSpec.describe Ledger::Content do
     end
   end
 
-  describe '#analysis' do
-    subject { content.analysis('C').map(&:list) }
+  describe '#analyses' do
+    subject { content.analyses('C').map(&:list) }
 
     let(:transactions) do
       [
@@ -416,8 +416,8 @@ RSpec.describe Ledger::Content do
 
     let(:result) do
       [
-        Ledger::Analyse.new('A', transactions.slice(0, 2), transactions.slice(0, 5), transactions.slice(0, 5)),
-        Ledger::Analyse.new('B', transactions.slice(2, 2), transactions.slice(0, 5), transactions.slice(0, 5))
+        Ledger::Analysis.new('A', transactions.slice(0, 2), transactions.slice(0, 5), transactions.slice(0, 5)),
+        Ledger::Analysis.new('B', transactions.slice(2, 2), transactions.slice(0, 5), transactions.slice(0, 5))
       ].map(&:list)
     end
 
@@ -432,7 +432,7 @@ RSpec.describe Ledger::Content do
 
       let(:result) do
         [
-          Ledger::Analyse.new(
+          Ledger::Analysis.new(
             'Global',
             exchanged_transaction + transactions.slice(1, 3),
             exchanged_transaction + transactions.slice(1, 4),
@@ -450,7 +450,7 @@ RSpec.describe Ledger::Content do
 
         let(:result) do
           [
-            Ledger::Analyse.new(
+            Ledger::Analysis.new(
               'Global',
               transactions.slice(1, 2),
               transactions.slice(1, 2),
@@ -466,7 +466,7 @@ RSpec.describe Ledger::Content do
 
           let(:result) do
             [
-              Ledger::Analyse.new(
+              Ledger::Analysis.new(
                 'Global',
                 exchanged_transaction + transactions.slice(1, 2),
                 exchanged_transaction + transactions.slice(1, 2),
@@ -483,7 +483,7 @@ RSpec.describe Ledger::Content do
 
           let(:result) do
             [
-              Ledger::Analyse.new(
+              Ledger::Analysis.new(
                 'Global',
                 transactions.slice(1, 3),
                 transactions.slice(1, 4),
@@ -503,7 +503,7 @@ RSpec.describe Ledger::Content do
 
           let(:result) do
             [
-              Ledger::Analyse.new(
+              Ledger::Analysis.new(
                 'Global',
                 exchanged_transaction,
                 exchanged_transaction,
@@ -524,7 +524,7 @@ RSpec.describe Ledger::Content do
 
           let(:result) do
             [
-              Ledger::Analyse.new(
+              Ledger::Analysis.new(
                 'Global',
                 exchanged_transaction + transactions.slice(1, 3),
                 exchanged_transaction + transactions.slice(1, 4),
@@ -545,7 +545,7 @@ RSpec.describe Ledger::Content do
 
           let(:result) do
             [
-              Ledger::Analyse.new(
+              Ledger::Analysis.new(
                 'Global',
                 exchanged_transaction + transactions.slice(1, 3),
                 exchanged_transaction + transactions.slice(1, 4),

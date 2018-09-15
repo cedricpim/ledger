@@ -9,7 +9,7 @@ module Ledger
     # Methods that are forwarded to content
     CONTENT_METHODS = %i[
       transactions accounts currencies current
-      trips reports analysis comparisons
+      trips reports analyses comparisons
       accounts_currency filtered_transactions excluded_transactions periods
     ].freeze
 

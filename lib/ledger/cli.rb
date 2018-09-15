@@ -3,7 +3,7 @@ module Ledger
   # from command-line.
   class Cli < Thor
     COMMANDS = {
-      analyse: 'List all transactions on the ledger for the specified category',
+      analysis: 'List all transactions on the ledger for the specified category',
       balance: 'List the current balance of each account',
       book: 'Add a transaction to the ledger',
       commands: 'List commands available in Ledger',
@@ -63,16 +63,16 @@ module Ledger
       Printer.new(parsed_options).balance
     end
 
-    desc 'analyse [CATEGORY]', COMMANDS[:analyse]
-    map 'a' => :analyse
+    desc 'analysis [CATEGORY]', COMMANDS[:analysis]
+    map 'a' => :analysis
     method_option :year, type: :numeric, default: -> { Date.today.cwyear }, aliases: '-y'
     method_option :month, type: :numeric, default: -> { Date.today.month }, aliases: '-m'
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
     method_option :global, type: :boolean, default: true, aliases: '-g'
     method_option :currency, type: :string, aliases: '-c'
-    def analyse(category)
-      Printer.new(parsed_options).analyse(category)
+    def analysis(category)
+      Printer.new(parsed_options).analysis(category)
     end
 
     desc 'report', COMMANDS[:report]

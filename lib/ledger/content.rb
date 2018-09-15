@@ -58,12 +58,12 @@ module Ledger
       end
     end
 
-    def analysis(category)
+    def analyses(category)
       if options[:global]
-        [Analyse.new('Global', category_transactions(category), period_transactions, relevant_transactions)]
+        [Analysis.new('Global', category_transactions(category), period_transactions, relevant_transactions)]
       else
         category_transactions(category).group_by(&:account).map do |a, trs|
-          Analyse.new(a, trs, period_transactions, relevant_transactions)
+          Analysis.new(a, trs, period_transactions, relevant_transactions)
         end
       end
     end
