@@ -585,17 +585,11 @@ RSpec.describe Ledger::Content do
     context 'with currency defined' do
       let(:options) { {currency: 'USD'} }
 
-      it { is_expected.to eq transactions.slice(0, 5) }
-
-      context 'with global option defined' do
-        let(:options) { super().merge(global: true) }
-
-        let(:exchanged_transaction) do
-          [t(account: 'A', category: 'C', date: '20/06/2017', amount: '-10.00', currency: 'USD')]
-        end
-
-        it { is_expected.to eq exchanged_transaction + transactions.slice(1, 4) }
+      let(:exchanged_transaction) do
+        [t(account: 'A', category: 'C', date: '20/06/2017', amount: '-10.00', currency: 'USD')]
       end
+
+      it { is_expected.to eq exchanged_transaction + transactions.slice(1, 4) }
     end
 
     context 'within a period' do
@@ -675,17 +669,11 @@ RSpec.describe Ledger::Content do
     context 'with currency defined' do
       let(:options) { super().merge(currency: 'USD') }
 
-      it { is_expected.to eq transactions.slice(0, 4) }
-
-      context 'with global option defined' do
-        let(:options) { super().merge(global: true) }
-
-        let(:exchanged_transaction) do
-          [t(account: 'A', category: 'C', date: '20/06/2017', amount: '-10.00', currency: 'USD')]
-        end
-
-        it { is_expected.to eq exchanged_transaction + transactions.slice(1, 3) }
+      let(:exchanged_transaction) do
+        [t(account: 'A', category: 'C', date: '20/06/2017', amount: '-10.00', currency: 'USD')]
       end
+
+      it { is_expected.to eq exchanged_transaction + transactions.slice(1, 3) }
     end
 
     context 'within a period' do

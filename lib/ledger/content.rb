@@ -86,7 +86,7 @@ module Ledger
       @relevant_transactions ||= transactions.map do |t|
         next if CONFIG.excluded_categories.any? { |c| c.casecmp(t.category).zero? }
 
-        options[:global] && currency ? t.exchange_to(currency) : t
+        currency ? t.exchange_to(currency) : t
       end.compact
     end
 

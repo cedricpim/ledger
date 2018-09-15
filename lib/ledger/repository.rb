@@ -52,6 +52,12 @@ module Ledger
       encryption.wrap { |file| system("#{ENV['EDITOR']} #{file.path}#{line}") }
     end
 
+    def show
+      encryption.wrap do |file|
+        system("echo '#{filtered_transactions.map(&:to_ledger).join}' > #{options[:output]}")
+      end
+    end
+
     private
 
     def encryption

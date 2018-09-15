@@ -55,7 +55,7 @@ module Ledger
       totals
     end
 
-    def trips
+    def trip
       repository.trips.each do |trip|
         title(trip.travel)
 

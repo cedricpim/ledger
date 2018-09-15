@@ -101,6 +101,10 @@ RSpec.describe Ledger::Cli do
     it_behaves_like 'repository receives', :book!
   end
 
+  describe '#show' do
+    it_behaves_like 'repository receives', :show
+  end
+
   describe '#balance' do
     let(:options_attrs) { {date: '2018/10/28'} }
     let(:parsed_options_attrs) { {date: Date.new(2018, 10, 28)} }
@@ -122,13 +126,13 @@ RSpec.describe Ledger::Cli do
     it_behaves_like 'printer receives', :report
   end
 
-  describe '#trips' do
+  describe '#trip' do
     let(:options_attrs) { {currency: -> { CONFIG.default_currency }} }
     let(:parsed_options_attrs) { {currency: 'USD'} }
 
     include_context 'has currency option'
 
-    it_behaves_like 'printer receives', :trips
+    it_behaves_like 'printer receives', :trip
   end
 
   describe '#version' do

@@ -11,8 +11,9 @@ module Ledger
       configure: 'Copy provided configuration file to the default location',
       create: 'Create a new ledger and copy default configuration file',
       edit: 'Open ledger in your editor',
-      report: 'Create a report about the transaction on the ledger according to any params provided',
-      trips: 'Create a report about the trips specified on the ledger',
+      report: 'Create a report about the transactions on the ledger according to any params provided',
+      show: 'Display all transactions',
+      trip: 'Create a report about the trips present on the ledger',
       version: 'Display installed Ledger version'
     }.freeze
 
@@ -69,7 +70,7 @@ module Ledger
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
     method_option :global, type: :boolean, default: true, aliases: '-g'
-    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
+    method_option :currency, type: :string, aliases: '-c'
     def analyse(category)
       Printer.new(parsed_options).analyse(category)
     end
@@ -82,18 +83,30 @@ module Ledger
     method_option :till, type: :string, aliases: '-t'
     method_option :categories, type: :array, aliases: '-C'
     method_option :global, type: :boolean, default: true, aliases: '-g'
-    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
+    method_option :currency, type: :string, aliases: '-c'
     def report
       Printer.new(parsed_options).report
     end
 
-    desc 'trips', COMMANDS[:trips]
-    map 't' => :trips
-    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
-    method_option :global, type: :boolean, default: true, aliases: '-g'
+    desc 'show', COMMANDS[:show]
+    map 's' => :show
+    method_option :year, type: :numeric, default: -> { Date.today.cwyear }, aliases: '-y'
+    method_option :month, type: :numeric, default: -> { Date.today.month }, aliases: '-m'
+    method_option :from, type: :string, aliases: '-f'
+    method_option :till, type: :string, aliases: '-t'
+    method_option :currency, type: :string, aliases: '-c'
+    method_option :output, type: :string, default: -> { '/dev/stdout' }, aliases: '-o'
+    def show
+      Repository.new(parsed_options).show
+    end
+
+    desc 'trip', COMMANDS[:trip]
+    map 't' => :trip
     method_option :trip, type: :string, aliases: '-t'
-    def trips
-      Printer.new(parsed_options).trips
+    method_option :global, type: :boolean, default: true, aliases: '-g'
+    method_option :currency, type: :string, aliases: '-c'
+    def trip
+      Printer.new(parsed_options).trip
     end
 
     desc 'version', COMMANDS[:version]
