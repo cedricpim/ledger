@@ -9,7 +9,7 @@ module Ledger
     # Methods that are forwarded to content
     CONTENT_METHODS = %i[
       transactions accounts currencies current
-      trips reports studies comparisons
+      trips reports analysis comparisons
       accounts_currency filtered_transactions excluded_transactions periods
     ].freeze
 
@@ -28,7 +28,7 @@ module Ledger
       encryption.wrap { |file| parse(file) }
     end
 
-    def add!
+    def book!
       transaction = TransactionBuilder.new(self).build!
 
       encryption.wrap do |file|

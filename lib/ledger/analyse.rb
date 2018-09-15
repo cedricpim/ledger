@@ -1,7 +1,7 @@
 module Ledger
   # Class responsible for doing the correct calculations to generate studies
   # related to a category and about its income/expenses of the account.
-  class Study
+  class Analyse
     # Space reserved for displaying the amount of entries
     SPACE_FOR_UNITS = 6
     # Space used by characters that enclose each side of the amount

@@ -1,4 +1,4 @@
-RSpec.describe Ledger::Study do
+RSpec.describe Ledger::Analyse do
   subject(:report) { described_class.new(account, transactions, period_transactions, total_transactions) }
 
   let(:account) { 'Account' }

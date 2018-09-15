@@ -52,8 +52,8 @@ RSpec.describe Ledger::Repository do
     end
   end
 
-  describe '#add!' do
-    subject { repository.add! }
+  describe '#book!' do
+    subject { repository.book! }
 
     let(:transaction) { instance_double('Ledger::Transaction', to_ledger: 'to_ledger') }
     let(:builder) { instance_double('Ledger::TransactionBuilder', build!: transaction) }
@@ -126,7 +126,7 @@ RSpec.describe Ledger::Repository do
     end
   end
 
-  (described_class::CONTENT_METHODS - %i[studies]).each do |method|
+  (described_class::CONTENT_METHODS - %i[analysis]).each do |method|
     describe "##{method}" do
       subject { repository.public_send(method) }
 
@@ -140,20 +140,20 @@ RSpec.describe Ledger::Repository do
     end
   end
 
-  describe '#studies' do
-    subject { repository.studies('A') }
+  describe '#analysis' do
+    subject { repository.analysis('A') }
 
     before { allow(repository).to receive(:load!) }
 
     specify do
-      expect_any_instance_of(Ledger::Content).to receive(:studies).with('A')
+      expect_any_instance_of(Ledger::Content).to receive(:analysis).with('A')
 
       subject
     end
   end
 
   describe '#content' do
-    let(:method) { (described_class::CONTENT_METHODS - %i[studies]).sample }
+    let(:method) { (described_class::CONTENT_METHODS - %i[analysis]).sample }
 
     it 'calls #load! only once independently of the number of calls' do
       expect(repository).to receive(:load!)

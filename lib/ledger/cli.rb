@@ -3,15 +3,15 @@ module Ledger
   # from command-line.
   class Cli < Thor
     COMMANDS = {
+      analyse: 'List all transactions on the ledger for the specified category',
+      balance: 'List the current balance of each account',
+      book: 'Add a transaction to the ledger',
       commands: 'List commands available in Ledger',
       compare: 'Compare multiple periods',
       configure: 'Copy provided configuration file to the default location',
       create: 'Create a new ledger and copy default configuration file',
       edit: 'Open ledger in your editor',
-      add: 'Add a transaction to the ledger',
-      balance: 'List the current balance of each account',
       report: 'Create a report about the transaction on the ledger according to any params provided',
-      study: 'List all transactions on the ledger for the specified category',
       trips: 'Create a report about the trips specified on the ledger',
       version: 'Display installed Ledger version'
     }.freeze
@@ -47,11 +47,11 @@ module Ledger
       Repository.new(parsed_options).edit!
     end
 
-    desc 'add', COMMANDS[:add]
-    map 'a' => :add
+    desc 'book', COMMANDS[:book]
+    map 'b' => :book
     method_option :transaction, type: :array, aliases: '-t'
-    def add
-      Repository.new(parsed_options).add!
+    def book
+      Repository.new(parsed_options).book!
     end
 
     desc 'balance', COMMANDS[:balance]
@@ -62,16 +62,16 @@ module Ledger
       Printer.new(parsed_options).balance
     end
 
-    desc 'study [CATEGORY]', COMMANDS[:study]
-    map 's' => :study
+    desc 'analyse [CATEGORY]', COMMANDS[:analyse]
+    map 'a' => :analyse
     method_option :year, type: :numeric, default: -> { Date.today.cwyear }, aliases: '-y'
     method_option :month, type: :numeric, default: -> { Date.today.month }, aliases: '-m'
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
     method_option :global, type: :boolean, default: true, aliases: '-g'
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
-    def study(category)
-      Printer.new(parsed_options).study(category)
+    def analyse(category)
+      Printer.new(parsed_options).analyse(category)
     end
 
     desc 'report', COMMANDS[:report]

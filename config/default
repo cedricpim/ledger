@@ -141,8 +141,8 @@
           :align: 'center'
         - :width: 15
           :align: 'center'
-    # Options related to how to display a study of a category
-    :study:
+    # Options related to how to display an analysis of a category
+    :analyse:
       :header:
           - Item
           - Amount

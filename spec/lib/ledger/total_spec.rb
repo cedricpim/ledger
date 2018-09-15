@@ -33,25 +33,25 @@ RSpec.describe Ledger::Total do
         let(:currency) { :USD }
         let(:transactions) { [] }
 
-        it { is_expected.to eq ['0.00$', width: 11, align: 'center', color: :black] }
+        it { is_expected.to eq ['0.00$', width: 17, align: 'right', color: :black] }
       end
 
       context 'when currency is USD' do
         let(:currency) { :USD }
 
-        it { is_expected.to eq ['290.00$', width: 11, align: 'center', color: :green] }
+        it { is_expected.to eq ['290.00$', width: 17, align: 'right', color: :green] }
       end
 
       context 'when currency is BBD' do
         let(:currency) { :BBD }
 
-        it { is_expected.to eq ['580.00$', width: 11, align: 'center', color: :green] }
+        it { is_expected.to eq ['580.00$', width: 17, align: 'right', color: :green] }
       end
 
       context 'when currency is EUR' do
         let(:currency) { :EUR }
 
-        it { is_expected.to eq ['249.92€', width: 11, align: 'center', color: :green] }
+        it { is_expected.to eq ['249.92€', width: 17, align: 'right', color: :green] }
       end
     end
 
@@ -62,25 +62,25 @@ RSpec.describe Ledger::Total do
         let(:currency) { :USD }
         let(:transactions) { [] }
 
-        it { is_expected.to eq ['0.00$', width: 11, align: 'center', color: :black] }
+        it { is_expected.to eq ['0.00$', width: 17, align: 'left', color: :black] }
       end
 
       context 'when currency is USD' do
         let(:currency) { :USD }
 
-        it { is_expected.to eq ['60.00$', width: 11, align: 'center', color: :red] }
+        it { is_expected.to eq ['60.00$', width: 17, align: 'left', color: :red] }
       end
 
       context 'when currency is BBD' do
         let(:currency) { :BBD }
 
-        it { is_expected.to eq ['120.00$', width: 11, align: 'center', color: :red] }
+        it { is_expected.to eq ['120.00$', width: 17, align: 'left', color: :red] }
       end
 
       context 'when currency is EUR' do
         let(:currency) { :EUR }
 
-        it { is_expected.to eq ['51.71€', width: 11, align: 'center', color: :red] }
+        it { is_expected.to eq ['51.71€', width: 17, align: 'left', color: :red] }
       end
     end
   end
@@ -171,7 +171,7 @@ RSpec.describe Ledger::Total do
     context 'when expense / income is NaN' do
       let(:transactions) { [] }
 
-      it { is_expected.to eq ['0.0%', width: 4, align: 'right', color: :black] }
+      it { is_expected.to eq ['0.0%', width: 8, align: 'right', color: :black] }
     end
 
     context 'when there is only expense' do
@@ -179,7 +179,7 @@ RSpec.describe Ledger::Total do
         [t(account: 'A', category: 'Z', date: '20/07/2018', amount: -400, currency: 'USD')]
       end
 
-      it { is_expected.to eq ['100.0%', width: 4, align: 'right', color: :red] }
+      it { is_expected.to eq ['100.0%', width: 8, align: 'right', color: :red] }
 
       context 'when there is a current value' do
         let(:transactions) { super() + other_transactions }
@@ -187,7 +187,7 @@ RSpec.describe Ledger::Total do
           [t(account: 'J', category: 'I', date: '20/07/2017', amount: 800, currency: 'USD')]
         end
 
-        it { is_expected.to eq ['50.0%', width: 4, align: 'right', color: :red] }
+        it { is_expected.to eq ['50.0%', width: 8, align: 'right', color: :red] }
       end
     end
 
@@ -196,7 +196,7 @@ RSpec.describe Ledger::Total do
         [t(account: 'A', category: 'Z', date: '20/07/2018', amount: 400, currency: 'USD')]
       end
 
-      it { is_expected.to eq ['100.0%', width: 4, align: 'right', color: :green] }
+      it { is_expected.to eq ['100.0%', width: 8, align: 'right', color: :green] }
 
       context 'when there is a current value' do
         let(:transactions) { super() + other_transactions }
@@ -204,7 +204,7 @@ RSpec.describe Ledger::Total do
           [t(account: 'J', category: 'I', date: '20/07/2017', amount: 800, currency: 'USD')]
         end
 
-        it { is_expected.to eq ['50.0%', width: 4, align: 'right', color: :green] }
+        it { is_expected.to eq ['50.0%', width: 8, align: 'right', color: :green] }
       end
     end
 
@@ -224,7 +224,7 @@ RSpec.describe Ledger::Total do
             [t(account: 'J', category: 'I', date: '20/07/2017', amount: 100, currency: 'USD')]
           end
 
-          it { is_expected.to eq ['300.0%', width: 4, align: 'right', color: :green] }
+          it { is_expected.to eq ['300.0%', width: 8, align: 'right', color: :green] }
         end
 
         context 'when the current is more than net result' do
@@ -232,7 +232,7 @@ RSpec.describe Ledger::Total do
             [t(account: 'J', category: 'I', date: '20/07/2017', amount: 800, currency: 'USD')]
           end
 
-          it { is_expected.to eq ['37.5%', width: 4, align: 'right', color: :green] }
+          it { is_expected.to eq ['37.5%', width: 8, align: 'right', color: :green] }
         end
       end
 
@@ -242,7 +242,7 @@ RSpec.describe Ledger::Total do
             [t(account: 'J', category: 'I', date: '20/07/2017', amount: -50, currency: 'USD')]
           end
 
-          it { is_expected.to eq ['600.0%', width: 4, align: 'right', color: :green] }
+          it { is_expected.to eq ['600.0%', width: 8, align: 'right', color: :green] }
         end
 
         context 'when the current is more than net result' do
@@ -250,7 +250,7 @@ RSpec.describe Ledger::Total do
             [t(account: 'J', category: 'I', date: '20/07/2017', amount: -1000, currency: 'USD')]
           end
 
-          it { is_expected.to eq ['30.0%', width: 4, align: 'right', color: :green] }
+          it { is_expected.to eq ['30.0%', width: 8, align: 'right', color: :green] }
         end
       end
     end
@@ -270,7 +270,7 @@ RSpec.describe Ledger::Total do
             [t(account: 'J', category: 'I', date: '20/07/2017', amount: 50, currency: 'USD')]
           end
 
-          it { is_expected.to eq ['300.0%', width: 4, align: 'right', color: :red] }
+          it { is_expected.to eq ['300.0%', width: 8, align: 'right', color: :red] }
         end
 
         context 'when the current is more than net result' do
@@ -278,7 +278,7 @@ RSpec.describe Ledger::Total do
             [t(account: 'J', category: 'I', date: '20/07/2017', amount: 1000, currency: 'USD')]
           end
 
-          it { is_expected.to eq ['15.0%', width: 4, align: 'right', color: :red] }
+          it { is_expected.to eq ['15.0%', width: 8, align: 'right', color: :red] }
         end
       end
 
@@ -288,7 +288,7 @@ RSpec.describe Ledger::Total do
             [t(account: 'J', category: 'I', date: '20/07/2017', amount: -50, currency: 'USD')]
           end
 
-          it { is_expected.to eq ['300.0%', width: 4, align: 'right', color: :red] }
+          it { is_expected.to eq ['300.0%', width: 8, align: 'right', color: :red] }
         end
 
         context 'when the current is more than net result' do
@@ -296,7 +296,7 @@ RSpec.describe Ledger::Total do
             [t(account: 'J', category: 'I', date: '20/07/2017', amount: -300, currency: 'USD')]
           end
 
-          it { is_expected.to eq ['50.0%', width: 4, align: 'right', color: :red] }
+          it { is_expected.to eq ['50.0%', width: 8, align: 'right', color: :red] }
         end
       end
     end

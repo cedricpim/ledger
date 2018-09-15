@@ -12,6 +12,16 @@ module Ledger
       @options = options
     end
 
+    def analyse(category)
+      repository.analysis(category).each do |analyse|
+        title(analyse.account)
+
+        build(analyse)
+      end
+
+      totals
+    end
+
     def balance
       title('Balance')
 
@@ -40,16 +50,6 @@ module Ledger
         title(report.account)
 
         build(report)
-      end
-
-      totals
-    end
-
-    def study(category)
-      repository.studies(category).each do |study|
-        title(study.account)
-
-        build(study)
       end
 
       totals
