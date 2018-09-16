@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+if [ ! -f "$1" ]; then
+  echo "Please specify the path to the configuration file"
+  exit 1
+fi
+
+pkg install ruby
+pkg install openssl
+
+gem_name=`gem build ledger.gemspec | grep 'File' | sed -E 's#  File: (.+)#\1#'`
+gem install $gem_name --no-rdoc --no-ri
+
+mkdir -p ~/.config/ledger
+
+ln -sf $1 ~/.config/ledger/config
