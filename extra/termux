@@ -14,3 +14,6 @@ gem install $gem_name --no-rdoc --no-ri
 mkdir -p ~/.config/ledger
 
 ln -sf $1 ~/.config/ledger/config
+
+mkdir -p ~/.shortcuts
+echo "ledger book" > ~/.shortcuts/ledger
