@@ -41,8 +41,8 @@ RSpec.describe Ledger::Transaction do
     it { is_expected.to be_income }
   end
 
-  describe '#to_ledger' do
-    subject { transaction.to_ledger }
+  describe '#to_file' do
+    subject { transaction.to_file }
 
     let(:attrs) do
       {

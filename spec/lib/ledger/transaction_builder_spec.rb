@@ -7,13 +7,13 @@ RSpec.describe Ledger::TransactionBuilder do
   before { allow(repository).to receive(:load!) }
 
   describe '#build!' do
-    subject { builder.build!.to_ledger }
+    subject { builder.build!.to_file }
 
     let(:keys) { %i[account date category description venue amount currency processed travel] }
     let(:options) { {transaction: ['Account', '21-07-2018', 'Cat', 'Desc', '', '10.0', 'USD', 'yes', '']} }
 
     let(:result) { t(keys.zip(options[:transaction]).to_h) }
 
-    it { is_expected.to eq result.to_ledger }
+    it { is_expected.to eq result.to_file }
   end
 end

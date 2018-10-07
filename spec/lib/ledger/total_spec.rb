@@ -5,8 +5,8 @@ RSpec.describe Ledger::Total do
   let(:repository) { Ledger::Repository.new(options) }
 
   before do
-    allow(repository).to receive(:current_transactions).and_return(transactions)
-    allow(repository).to receive(:load!)
+    allow(repository).to receive(:transaction_entries).and_return(transactions)
+    allow(repository).to receive(:load!).and_yield
   end
 
   describe '#for' do

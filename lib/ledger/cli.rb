@@ -98,6 +98,7 @@ module Ledger
     method_option :till, type: :string, aliases: '-t'
     method_option :currency, type: :string, aliases: '-c'
     method_option :output, type: :string, default: -> { '/dev/stdout' }, aliases: '-o'
+    method_option :networth, type: :boolean, default: false, aliases: '-n'
     def show
       Repository.new(parsed_options).show
     end

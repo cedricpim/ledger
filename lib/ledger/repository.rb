@@ -13,26 +13,27 @@ module Ledger
       accounts_currency filtered_transactions excluded_transactions periods
     ].freeze
 
-    def_delegators :content, *CONTENT_METHODS
+    # Methods that are forwarded to history
+    HISTORY_METHODS = %i[filtered_networth].freeze
 
-    attr_reader :current_transactions, :options
+    def_delegators :content, *CONTENT_METHODS
+    def_delegators :history, *HISTORY_METHODS
+
+    attr_reader :transaction_entries, :networth_entries, :options
     attr_accessor :counter
 
     def initialize(options = {})
-      @current_transactions = []
+      @transaction_entries = []
+      @networth_entries = []
       @options = options
       @counter = 1
-    end
-
-    def load!
-      encryption.wrap { |file| parse(file) }
     end
 
     def book!
       transaction = TransactionBuilder.new(self).build!
 
       encryption.wrap do |file|
-        File.open(file, 'a') { |f| f.write("#{transaction.to_ledger}\n") }
+        File.open(file, 'a') { |f| f.write("#{transaction.to_file}\n") }
         File.write(file, File.read(file).gsub(/\n+/, "\n"))
       end
     end
@@ -55,9 +56,8 @@ module Ledger
     end
 
     def show
-      encryption.wrap do |file|
-        system("echo \"#{filtered_transactions.map(&:to_ledger).join}\" > #{options[:output]}")
-      end
+      resources = networth? ? filtered_networth : filtered_transactions
+      system("echo \"#{resources.map(&:to_file).join}\" > #{options[:output]}")
     end
 
     private
@@ -71,16 +71,26 @@ module Ledger
     end
 
     def content
-      @content ||= begin
-        load!
-        Content.new(current_transactions, options)
-      end
+      @content ||= load! { Content.new(transaction_entries, options) }
+    end
+
+    def history
+      @history ||= load! { History.new(networth_entries, options) }
+    end
+
+    def load!
+      encryption.wrap { |file| parse(file) }
+      yield
     end
 
     def parse(file)
       CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
         self.counter += 1
-        current_transactions << Transaction.new(row.to_h)
+        if networth?
+          networth_entries << Networth.new(row.to_h)
+        else
+          transaction_entries << Transaction.new(row.to_h)
+        end
       end
     rescue OpenSSL::Cipher::CipherError => e
       raise e

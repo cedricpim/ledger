@@ -21,7 +21,7 @@ module Ledger
       !expense?
     end
 
-    def to_ledger
+    def to_file
       members.map { |member| ledger_format(member) }.join(',') + "\n"
     end
 
