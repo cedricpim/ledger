@@ -34,6 +34,8 @@ Ledger::Config.prepend(RSpecConfig)
 
 require 'ledger' # Load application
 
+Dir["./spec/support/**/*.rb"].sort.each { |f| require f }
+
 # Allow easy instantiation of a Ledger::Transaction on specs
 def t(**attrs)
   Ledger::Transaction.new(attrs)

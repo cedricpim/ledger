@@ -24,6 +24,9 @@ Money.default_bank = Money::Bank::OpenExchangeRatesBank.new.tap do |oxr|
   oxr.update_rates
 end
 
+require_relative 'ledger/modules/has_date'
+require_relative 'ledger/modules/has_money'
+
 require_relative 'ledger/analysis'
 require_relative 'ledger/cli'
 require_relative 'ledger/comparison'
