@@ -9,7 +9,7 @@ module Ledger
       commands: 'List commands available in Ledger',
       compare: 'Compare multiple periods',
       configure: 'Copy provided configuration file to the default location',
-      create: 'Create a new ledger/networth file and copy default configuration file',
+      create: 'Create a new ledger/networth file',
       edit: 'Open ledger/networth file in your editor',
       report: 'Create a report about the transactions on the ledger according to any params provided',
       show: 'Display all transactions',
