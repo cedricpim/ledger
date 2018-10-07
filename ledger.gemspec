@@ -21,8 +21,10 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.4'
 
   s.add_dependency 'command_line_reporter', '~> 4.0'
+  s.add_dependency 'faraday', '~> 0.15.3'
   s.add_dependency 'money', '~> 6.12'
   s.add_dependency 'money-open-exchange-rates', '~> 1.2'
+  s.add_dependency 'nokogiri', '~> 1.8.5'
   s.add_dependency 'openssl', '~> 2.1'
   s.add_dependency 'thor', '~> 0.20'
   s.add_dependency 'xdg', '~> 2.2'
@@ -32,4 +34,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'pry', '~> 0.11'
   s.add_development_dependency 'rspec', '~> 3.7'
   s.add_development_dependency 'rubocop', '~> 0.58'
+  s.add_development_dependency 'vcr', '~> 4.0.0'
 end

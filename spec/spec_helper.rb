@@ -18,6 +18,7 @@
 require 'pry'
 require 'thor'
 require 'ledger/config'
+require 'vcr'
 
 # Ensure that we will always use the same exchange rate file in specs and use
 # the fallback configuration file
@@ -36,6 +37,12 @@ require 'ledger' # Load application
 # Allow easy instantiation of a Ledger::Transaction on specs
 def t(**attrs)
   Ledger::Transaction.new(attrs)
+end
+
+VCR.configure do |config|
+  config.cassette_library_dir = "cassettes"
+  config.hook_into :faraday
+  config.configure_rspec_metadata!
 end
 
 RSpec.configure do |config|

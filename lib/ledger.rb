@@ -1,8 +1,10 @@
 require 'command_line_reporter'
 require 'csv'
+require 'faraday'
 require 'erb'
 require 'money'
 require 'money/bank/open_exchange_rates_bank'
+require 'nokogiri'
 require 'openssl'
 require 'readline'
 require 'tempfile'
@@ -38,6 +40,8 @@ require_relative 'ledger/transaction'
 require_relative 'ledger/transaction_builder'
 require_relative 'ledger/trip'
 require_relative 'ledger/version'
+
+require 'ledger/api/just_etf'
 
 # Namespace for the whole project
 module Ledger; end
