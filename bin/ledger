@@ -3,12 +3,12 @@
 $LOAD_PATH << File.expand_path('../lib/', __dir__)
 
 require 'thor'
-require 'ledger'
 
 begin
   require 'pry'
-rescue LoadError
-  nil # Ignore when running outside development
+rescue LoadError # Ignore when running outside development
 end
+
+require 'ledger'
 
 Ledger::Cli.start
