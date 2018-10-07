@@ -65,7 +65,7 @@ RSpec.describe Ledger::Content do
     end
 
     context 'when options[:date] is provided' do
-      let(:options) { {date: Date.new(2018, 07, 15)} }
+      let(:options) { {date: Date.new(2018, 7, 15)} }
 
       let(:result) { {'C' => Money.new(-500, 'CUP'), 'D' => Money.new(-5000, 'USD')} }
 
@@ -132,7 +132,9 @@ RSpec.describe Ledger::Content do
         let(:result) do
           [
             Ledger::Trip.new(
-              'Travel A', exchanged_transaction + transactions.slice(1, 1), exchanged_transaction + transactions.slice(1, 3)
+              'Travel A',
+              exchanged_transaction + transactions.slice(1, 1),
+              exchanged_transaction + transactions.slice(1, 3)
             ).list
           ]
         end

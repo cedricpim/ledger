@@ -34,7 +34,7 @@ Ledger::Config.prepend(RSpecConfig)
 
 require 'ledger' # Load application
 
-Dir["./spec/support/**/*.rb"].sort.each { |f| require f }
+Dir['./spec/support/**/*.rb'].sort.each { |f| require f }
 
 # Allow easy instantiation of a Ledger::Transaction on specs
 def t(**attrs)
@@ -42,7 +42,7 @@ def t(**attrs)
 end
 
 VCR.configure do |config|
-  config.cassette_library_dir = "cassettes"
+  config.cassette_library_dir = 'cassettes'
   config.hook_into :faraday
   config.configure_rspec_metadata!
 end

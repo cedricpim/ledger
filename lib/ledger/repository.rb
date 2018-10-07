@@ -86,14 +86,18 @@ module Ledger
     def parse(file)
       CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
         self.counter += 1
-        if networth?
-          networth_entries << Networth.new(row.to_h)
-        else
-          transaction_entries << Transaction.new(row.to_h)
-        end
+        load_entry(row.to_h)
       end
     rescue OpenSSL::Cipher::CipherError => e
       raise e
+    end
+
+    def load_entry(attributes)
+      if networth?
+        networth_entries << Networth.new(attributes)
+      else
+        transaction_entries << Transaction.new(attributes)
+      end
     rescue StandardError
       raise IncorrectCSVFormatError, "A problem reading line #{counter} has occurred"
     end

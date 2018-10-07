@@ -1,7 +1,7 @@
 module Ledger
   # Class responsible for handling all the commands that Ledger can execute
   # from command-line.
-  class Cli < Thor
+  class Cli < Thor # rubocop:disable Metrics/ClassLength
     COMMANDS = {
       analysis: 'List all transactions on the ledger for the specified category',
       balance: 'List the current balance of each account',

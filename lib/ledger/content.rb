@@ -20,9 +20,7 @@ module Ledger
 
     def accounts
       @accounts ||= transactions.group_by(&:account).each_with_object({}) do |(acc, ts), result|
-        total = ts.sum do |t|
-          options[:date] && t.parsed_date > options[:date] ? 0 : t.exchange_to(accounts_currency[acc]).money
-        end
+        total = ts.sum { |transaction| exchange_on_date(transaction, acc) }
         result[acc] = total if options[:all] || !total.zero?
       end
     end
@@ -101,6 +99,12 @@ module Ledger
 
     def transactions_for_comparison
       @transactions_for_comparison ||= relevant_transactions.select { |t| t.parsed_date > periods.first.first }
+    end
+
+    def exchange_on_date(transaction, acc)
+      return Money.new(0, accounts_currency[acc]) if options[:date] && transaction.parsed_date > options[:date]
+
+      transaction.exchange_to(accounts_currency[acc]).money
     end
 
     def exclude_categories

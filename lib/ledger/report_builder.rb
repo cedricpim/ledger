@@ -48,13 +48,19 @@ module Ledger
 
     def total_current_row(with_period:)
       row(CONFIG.color(:header)) do
-        repository.currencies.each.with_index do |currency, i|
-          config = CONFIG.output(:totals, :"total#{i}") || CONFIG.output(:totals, :total)
-          column(MoneyHelper.display(repository.current.exchange_to(currency)), config)
+        repository.currencies.each.with_index do |currency, index|
+          column(*display_value(currency, index))
         end
 
         column(*total.total_percentage) if with_period
       end
+    end
+
+    def column_value(currency, index)
+      [
+        MoneyHelper.display(repository.current.exchange_to(currency)),
+        CONFIG.output(:totals, :"total#{index}") || CONFIG.output(:totals, :total)
+      ]
     end
 
     def balance_row(account, total)

@@ -2,7 +2,7 @@ lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'ledger/version'
 
-Gem::Specification.new do |s|
+Gem::Specification.new do |s| # rubocop:disable Metrics/BlockLength
   s.name          = 'ledger'
   s.version       = Ledger::VERSION
   s.authors       = ['cedricpim']

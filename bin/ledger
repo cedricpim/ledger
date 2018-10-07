@@ -6,7 +6,8 @@ require 'thor'
 
 begin
   require 'pry'
-rescue LoadError # Ignore when running outside development
+rescue LoadError
+  nil # Ignore when running outside development
 end
 
 require 'ledger'
