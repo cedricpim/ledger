@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.summary       = 'Quickly create a ledger and manage it from the command line'
   s.license       = 'GPL-3.0'
 
-  s.files         = Dir['lib/**/*', 'spec/**/*', 'bin/*']
+  s.files         = Dir['lib/**/*', 'spec/**/*', 'bin/*', 'config/*']
   s.executables   = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
   s.test_files    = s.files.grep(%r{^(test|spec|features)/})
   s.require_paths = ['lib']
