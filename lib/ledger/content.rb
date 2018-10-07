@@ -2,12 +2,11 @@ module Ledger
   # Class holding the transactions read from the ledger and used to query the
   # content of the ledger.
   class Content # rubocop:disable Metrics/ClassLength
-    attr_reader :transactions, :options
+    include Modules::HasDateFiltering
+    include Modules::HasDateSorting
+    include Modules::HasCurrencyConversion
 
-    def initialize(transactions, options)
-      @transactions = transactions.sort_by(&:parsed_date)
-      @options = options
-    end
+    alias transactions list
 
     def currencies
       @currencies ||= transactions.group_by(&:currency).reject { |_cur, ts| ts.sum(&:money).zero? }.keys
@@ -83,11 +82,9 @@ module Ledger
     private
 
     def relevant_transactions
-      @relevant_transactions ||= transactions.map do |t|
-        next if CONFIG.excluded_categories.any? { |c| c.casecmp(t.category).zero? }
-
-        currency ? t.exchange_to(currency) : t
-      end.compact
+      @relevant_transactions ||= exchanged_list.reject do |t|
+        CONFIG.excluded_categories.any? { |c| c.casecmp(t.category).zero? }
+      end
     end
 
     def period_transactions
@@ -103,29 +100,7 @@ module Ledger
     end
 
     def transactions_for_comparison
-      @transactions_for_comparison ||= relevant_transactions.map do |t|
-        next unless t.parsed_date > periods.first.first
-
-        t.exchange_to(currency)
-      end.compact
-    end
-
-    def period
-      if filter_with_date_range?
-        [options.fetch(:from, -Float::INFINITY), options.fetch(:till, Float::INFINITY)]
-      elsif options[:month] && options[:year]
-        [build_date(1), build_date(-1)]
-      else
-        [-Float::INFINITY, Float::INFINITY]
-      end
-    end
-
-    def build_date(day)
-      Date.new(options[:year], options[:month], day)
-    end
-
-    def filter_with_date_range?
-      options[:from] || options[:till]
+      @transactions_for_comparison ||= relevant_transactions.select { |t| t.parsed_date > periods.first.first }
     end
 
     def exclude_categories
@@ -152,10 +127,6 @@ module Ledger
 
     def range(year, month)
       [Date.new(year, month, 1), Date.new(year, month, -1)]
-    end
-
-    def currency
-      options[:currency]
     end
   end
 end

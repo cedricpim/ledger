@@ -26,6 +26,9 @@ end
 
 require_relative 'ledger/modules/has_date'
 require_relative 'ledger/modules/has_money'
+require_relative 'ledger/modules/has_date_filtering'
+require_relative 'ledger/modules/has_date_sorting'
+require_relative 'ledger/modules/has_currency_conversion'
 
 require_relative 'ledger/analysis'
 require_relative 'ledger/cli'
