@@ -4,7 +4,7 @@ RSpec.describe Ledger::TransactionBuilder do
   let(:options) { {} }
   let(:repository) { Ledger::Repository.new(options) }
 
-  before { allow(repository).to receive(:load!) }
+  before { allow(repository).to receive(:load!).and_yield }
 
   describe '#build!' do
     subject { builder.build!.to_file }
