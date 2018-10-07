@@ -57,6 +57,12 @@ RSpec.describe Ledger::Config do
     it { is_expected.to eq "#{XDG['CONFIG']}/ledger/ledger.csv" }
   end
 
+  describe '#networth' do
+    subject { config.networth }
+
+    it { is_expected.to eq "#{XDG['CONFIG']}/ledger/networth.csv" }
+  end
+
   describe '#exchange' do
     subject { config.exchange }
 

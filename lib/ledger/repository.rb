@@ -38,11 +38,13 @@ module Ledger
     end
 
     def create!
-      filepath = File.expand_path(CONFIG.ledger)
+      filepath = File.expand_path(networth? ? CONFIG.networth : CONFIG.ledger)
 
       return if File.exist?(filepath)
 
-      CSV.open(filepath, 'wb') { |csv| csv << CONFIG.transaction_fields.map(&:capitalize) }
+      CSV.open(filepath, 'wb') do |csv|
+        csv << (networth? ? Networth.members : CONFIG.transaction_fields).map(&:capitalize)
+      end
 
       encryption.encrypt!
     end
@@ -61,7 +63,11 @@ module Ledger
     private
 
     def encryption
-      @encryption ||= Encryption.new
+      @encryption ||= Encryption.new(networth?)
+    end
+
+    def networth?
+      options[:networth]
     end
 
     def content

@@ -73,12 +73,13 @@ RSpec.describe Ledger::Repository do
   describe '#create!' do
     subject { repository.create! }
 
-    let(:config) { File.join(ENV['HOME'], 'ledger-config-file.yml') }
+    let(:filepath) { File.join(ENV['HOME'], 'file.csv') }
+    let(:method) { :ledger }
 
-    before { expect_any_instance_of(Ledger::Config).to receive(:ledger).and_return(config) }
+    before { allow_any_instance_of(Ledger::Config).to receive(method).and_return(filepath) }
 
     context 'when file exists' do
-      before { allow(File).to receive(:exist?).with(config).and_return(true) }
+      before { allow(File).to receive(:exist?).with(filepath).and_return(true) }
 
       specify do
         expect(CSV).not_to receive(:open)
@@ -87,16 +88,30 @@ RSpec.describe Ledger::Repository do
     end
 
     context 'when file does not exist' do
-      before { allow(File).to receive(:exist?).with(config).and_return(false) }
-
       let(:csv) { instance_double('CSV') }
 
+      before { allow(File).to receive(:exist?).with(filepath).and_return(false) }
+
       specify do
-        expect(CSV).to receive(:open).with(config, 'wb').and_yield(csv)
+        expect(CSV).to receive(:open).with(filepath, 'wb').and_yield(csv)
         expect(csv).to receive(:<<).with(keys.map(&:capitalize).map(&:to_sym))
         expect_any_instance_of(Ledger::Encryption).to receive(:encrypt!)
 
         subject
+      end
+
+      context 'when networth file does not exist' do
+        let(:method) { :networth }
+        let(:options) { {networth: true} }
+        let(:keys) { %w[date amount currency] }
+
+        specify do
+          expect(CSV).to receive(:open).with(filepath, 'wb').and_yield(csv)
+          expect(csv).to receive(:<<).with(keys.map(&:capitalize).map(&:to_sym))
+          expect_any_instance_of(Ledger::Encryption).to receive(:encrypt!)
+
+          subject
+        end
       end
     end
   end

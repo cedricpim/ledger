@@ -9,8 +9,8 @@ module Ledger
       commands: 'List commands available in Ledger',
       compare: 'Compare multiple periods',
       configure: 'Copy provided configuration file to the default location',
-      create: 'Create a new ledger and copy default configuration file',
-      edit: 'Open ledger in your editor',
+      create: 'Create a new ledger/networth file and copy default configuration file',
+      edit: 'Open ledger/networth file in your editor',
       report: 'Create a report about the transactions on the ledger according to any params provided',
       show: 'Display all transactions',
       trip: 'Create a report about the trips present on the ledger',
@@ -37,13 +37,15 @@ module Ledger
     end
 
     desc 'create', COMMANDS[:create]
+    method_option :networth, type: :boolean, default: false, aliases: '-n'
     def create
-      Repository.new.create!
+      Repository.new(parsed_options).create!
     end
 
     desc 'edit', COMMANDS[:edit]
     map 'e' => :edit
     method_option :line, type: :numeric, aliases: '-l'
+    method_option :networth, type: :boolean, default: false, aliases: '-n'
     def edit
       Repository.new(parsed_options).edit!
     end
@@ -119,6 +121,7 @@ module Ledger
 
     def parsed_options
       options.each_with_object(Thor::CoreExt::HashWithIndifferentAccess.new) do |(k, v), h|
+        next if k == 'networth' && !CONFIG.networth?
         next h[k] = Date.parse(v) if %w[from till date].include?(k)
         next h[k] = v.call if v.is_a?(Proc)
         h[k] = v

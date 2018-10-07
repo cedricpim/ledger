@@ -33,6 +33,11 @@ module Ledger
       @ledger ||= config.fetch(:ledger)
     end
 
+    def networth
+      @networth ||= config.dig(:networth, :file)
+    end
+    alias networth? networth
+
     def exchange
       @exchange ||= config.fetch(:exchange)
     end

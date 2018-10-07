@@ -2,6 +2,12 @@ module Ledger
   # Class responsible for holding all the logic related to encrypting and
   # decrypting the ledger file.
   class Encryption
+    attr_reader :networth
+
+    def initialize(networth)
+      @networth = networth
+    end
+
     # Rescue from OpenSSL::Cipher::CipherError when trying to decrypt an already
     # decrypted file.
     def wrap
@@ -35,7 +41,7 @@ module Ledger
     end
 
     def file
-      @file ||= File.new(File.expand_path(CONFIG.ledger))
+      @file ||= File.new(File.expand_path(networth ? CONFIG.networth : CONFIG.ledger))
     end
 
     def tempfile

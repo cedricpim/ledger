@@ -55,12 +55,29 @@ RSpec.describe Ledger::Cli do
 
   RSpec.shared_examples 'repository receives' do |method|
     let(:repository) { instance_double('Ledger::Repository') }
+    let(:options_attrs) { {networth: true} }
+    let(:parsed_options_attrs) { {networth: true} }
+
+    before { allow(cli).to receive(:options).and_return(options) }
 
     specify do
-      expect(Ledger::Repository).to receive(:new).and_return(repository)
+      expect(Ledger::Repository).to receive(:new).with(parsed_options).and_return(repository)
       expect(repository).to receive(method)
 
       cli.public_send(method.to_s.chomp('!'))
+    end
+
+    context 'when CONFIG does not have networth' do
+      let(:parsed_options_attrs) { {} }
+
+      before { allow_any_instance_of(Ledger::Config).to receive(:networth?).and_return(false) }
+
+      specify do
+        expect(Ledger::Repository).to receive(:new).with(parsed_options).and_return(repository)
+        expect(repository).to receive(method)
+
+        cli.public_send(method.to_s.chomp('!'))
+      end
     end
   end
 
