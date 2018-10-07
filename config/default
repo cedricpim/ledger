@@ -212,16 +212,15 @@
       :display:
         :sign_positive: true
         :decimal_mark: '.'
-        :symbol_after_without_space: true
-        :symbol_position: :after
+        :thousands_separator: ','
+        :format: '%n%u'
       # Format of the money when writing it to the ledger
       :ledger:
         :sign_positive: true
         :decimal_mark: '.'
-        :symbol_after_without_space: true
-        :symbol_position: :after
-        :symbol: false
         :thousands_separator: ''
+        :format: '%n%u'
+        :symbol: false
 
 # Values for configuring encryption on the ledger file
 :encryption:

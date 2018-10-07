@@ -10,7 +10,7 @@ require 'readline'
 require 'tempfile'
 require 'xdg'
 
-I18n.enforce_available_locales = false
+Money.locale_backend = nil
 
 require_relative 'ledger/config'
 

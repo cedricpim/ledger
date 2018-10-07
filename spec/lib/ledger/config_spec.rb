@@ -190,9 +190,7 @@ RSpec.describe Ledger::Config do
   end
 
   describe '#money_format' do
-    let(:result) do
-      {sign_positive: true, decimal_mark: '.', symbol_after_without_space: true, symbol_position: :after}
-    end
+    let(:result) { {sign_positive: true, decimal_mark: '.', thousands_separator: ',', format: '%n%u'} }
 
     context 'for display' do
       subject { config.money_format(type: :display) }
