@@ -51,6 +51,20 @@ RSpec.describe Ledger::Config do
     end
   end
 
+  describe '#default?' do
+    subject { config.default? }
+
+    before { stub_const("#{described_class}::DEFAULT_CONFIG", File.join(File.expand_path('../../', __dir__))) }
+
+    it { is_expected.to eq true }
+
+    context 'when default file does not exist' do
+      before { stub_const("#{described_class}::DEFAULT_CONFIG", rand.to_s) }
+
+      it { is_expected.to eq false }
+    end
+  end
+
   describe '#ledger' do
     subject { config.ledger }
 

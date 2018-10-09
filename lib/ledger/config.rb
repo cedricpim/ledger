@@ -29,6 +29,10 @@ module Ledger
       @config = YAML.safe_load(ERB.new(File.read(file)).result, [Symbol]).freeze
     end
 
+    def default?
+      File.exist?(DEFAULT_CONFIG)
+    end
+
     def ledger
       @ledger ||= config.fetch(:ledger)
     end

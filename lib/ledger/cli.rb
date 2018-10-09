@@ -32,7 +32,7 @@ module Ledger
     end
 
     desc 'configure', COMMANDS[:configure]
-    map '-c' => :configure
+    map 'C' => :configure
     def configure
       Config.configure
     end
@@ -52,6 +52,7 @@ module Ledger
     end
 
     desc 'book', COMMANDS[:book]
+    map 'B' => :book
     method_option :transaction, type: :array, aliases: '-t'
     def book
       Repository.new(parsed_options).book!
