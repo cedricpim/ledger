@@ -11,26 +11,32 @@ module Ledger
     end
 
     def networth
-      Networth.new(date: Date.today.to_s, amount: amount.to_s, currency: currency)
+      Networth.new(date: Date.today.to_s, amount: amount.to_s, currency: currency).tap do |worth|
+        worth.valuation = valuation
+      end
     end
 
     private
 
     def amount
-      cash + evaluation
+      cash + valuation.values.sum
     end
 
     def cash
       current.exchange_to(currency)
     end
 
-    def evaluation
-      investments_with_shares.sum { |isin, shares| quotes[isin] * shares }
+    def valuation
+      investments_with_shares.each_with_object({}) do |(isin, shares), res|
+        title, quote = quotes[isin]
+        res[title || isin] = quote * shares
+      end
     end
 
     def quotes
       @quotes ||= investments_with_shares.keys.map.with_object({}) do |isin, res|
-        res[isin] = API::JustETF.new(isin: isin).quote.exchange_to(currency)
+        api = API::JustETF.new(isin: isin)
+        res[isin] = [api.title, api.quote.exchange_to(currency)]
       end
     end
 

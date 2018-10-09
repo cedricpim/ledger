@@ -176,13 +176,24 @@
           :align: 'center'
         - :width: 10
           :align: 'center'
-    :globaltrips:
+    :globaltrip:
       :header:
         - Trip
         - Amount
         - (%)
       :options:
         - :width: 20
+        - :width: 20
+          :align: 'center'
+        - :width: 10
+          :align: 'center'
+    :networth:
+      :header:
+        - Description
+        - Amount
+        - (%)
+      :options:
+        - :width: 30
         - :width: 20
           :align: 'center'
         - :width: 10

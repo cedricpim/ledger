@@ -3,10 +3,16 @@ RSpec.describe Ledger::API::JustETF do
 
   let(:isin) { 'IE00B945VV12' }
 
+  describe '#title', vcr: {cassette_name: 'just_etf'} do
+    subject { just_etf.title }
+
+    it { is_expected.to eq 'Vanguard FTSE Developed Europe UCITS ETF' }
+  end
+
   describe '#quote' do
     subject { just_etf.quote }
 
-    context 'when valid response', vcr: {cassette_name: 'just_etf_quote'} do
+    context 'when valid response', vcr: {cassette_name: 'just_etf'} do
       it { is_expected.to eq Money.new(2970, 'EUR') }
     end
 

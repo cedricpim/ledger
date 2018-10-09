@@ -49,7 +49,7 @@ module Ledger
     def total_current_row(with_period:)
       row(CONFIG.color(:header)) do
         repository.currencies.each.with_index do |currency, index|
-          column(*display_value(currency, index))
+          column(*column_value(currency, index))
         end
 
         column(*total.total_percentage) if with_period

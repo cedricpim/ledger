@@ -64,13 +64,15 @@ module Ledger
     end
 
     def networth
-      puts MoneyHelper.display(repository.current_networth.money)
+      title('Networth Balance')
+
+      build(repository.current_networth, width: :auto)
     end
 
     private
 
-    def build(entity)
-      table do
+    def build(entity, **options)
+      table(options) do
         main_header(from: entity.class.to_s.split('::').last.downcase.to_sym)
 
         print(entity.list)

@@ -1,11 +1,12 @@
 module Ledger
   # Module responsible for encapsulating queries to other services
   module API
-    # Class responsible for fetching the page of justetf service for a given
+    # Class responsible for fetching the page of justETF service for a given
     # ETF and get the current code by parsing the HTML response
     class JustETF
       ENDPOINT = 'https://www.justetf.com/de-en/etf-profile.html'.freeze
-      CSS = 'div.val span'.freeze
+      TITLE_CSS = 'h1'.freeze
+      QUOTE_CSS = 'div.val span'.freeze
 
       class InvalidResponseError < StandardError; end
       class MissingQuoteError < StandardError; end
@@ -16,8 +17,12 @@ module Ledger
         @isin = isin
       end
 
+      def title
+        document.css(TITLE_CSS).first.content.split("\n").first
+      end
+
       def quote
-        currency, value = document.css(CSS).first(2).map(&:content)
+        currency, value = document.css(QUOTE_CSS).first(2).map(&:content)
 
         raise MissingQuoteError, "#{value} #{currency}" unless valid_info?(currency, value)
 

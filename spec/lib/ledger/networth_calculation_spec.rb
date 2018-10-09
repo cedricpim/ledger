@@ -17,9 +17,9 @@ RSpec.describe Ledger::NetworthCalculation do
 
   let(:quotes) do
     [
-      instance_double('Ledger::API::JustETF', quote: Money.new(5000, 'USD')),
-      instance_double('Ledger::API::JustETF', quote: Money.new(500, 'USD')),
-      instance_double('Ledger::API::JustETF', quote: Money.new(50000, 'USD'))
+      instance_double('Ledger::API::JustETF', quote: Money.new(5000, 'USD'), title: 'A'),
+      instance_double('Ledger::API::JustETF', quote: Money.new(500, 'USD'), title: 'B'),
+      instance_double('Ledger::API::JustETF', quote: Money.new(50000, 'USD'), title: 'C')
     ]
   end
 
@@ -28,6 +28,14 @@ RSpec.describe Ledger::NetworthCalculation do
 
     let(:amount) { Money.new('221000', 'USD') }
 
+    let(:valuation) do
+      {
+        'A' => Money.new(15000, 'USD'),
+        'B' => Money.new(5000, 'USD'),
+        'C' => Money.new(200000, 'USD')
+      }
+    end
+
     before do
       allow(Ledger::API::JustETF).to receive(:new).with(isin: 'ISINA').and_return(quotes[0])
       allow(Ledger::API::JustETF).to receive(:new).with(isin: 'ISINB').and_return(quotes[1])
@@ -35,6 +43,12 @@ RSpec.describe Ledger::NetworthCalculation do
     end
 
     it { is_expected.to eq Ledger::Networth.new(date: Date.today.to_s, amount: amount.to_s, currency: currency) }
+
+    context 'valuation' do
+      subject { calculation.networth.valuation }
+
+      it { is_expected.to eq valuation }
+    end
 
     context 'when JustETF raises an exception' do
       before { allow(Ledger::API::JustETF).to receive(:new).with(isin: 'ISINA').and_raise(StandardError) }
