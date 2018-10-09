@@ -19,7 +19,7 @@ RSpec.describe Ledger::NetworthCalculation do
     [
       instance_double('Ledger::API::JustETF', quote: Money.new(5000, 'USD'), title: 'A'),
       instance_double('Ledger::API::JustETF', quote: Money.new(500, 'USD'), title: 'B'),
-      instance_double('Ledger::API::JustETF', quote: Money.new(50000, 'USD'), title: 'C')
+      instance_double('Ledger::API::JustETF', quote: Money.new(50_000, 'USD'), title: 'C')
     ]
   end
 
@@ -30,9 +30,9 @@ RSpec.describe Ledger::NetworthCalculation do
 
     let(:valuation) do
       {
-        'A' => Money.new(15000, 'USD'),
+        'A' => Money.new(15_000, 'USD'),
         'B' => Money.new(5000, 'USD'),
-        'C' => Money.new(200000, 'USD')
+        'C' => Money.new(200_000, 'USD')
       }
     end
 

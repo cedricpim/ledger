@@ -21,9 +21,9 @@ RSpec.describe Ledger::Networth do
 
     let(:valuation) do
       {
-        'ISINA' => Money.new(15000, 'USD'),
+        'ISINA' => Money.new(15_000, 'USD'),
         'ISINB' => Money.new(5000, 'USD'),
-        'ISINC' => Money.new(200000, 'USD')
+        'ISINC' => Money.new(200_000, 'USD')
       }
     end
 
