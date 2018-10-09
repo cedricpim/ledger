@@ -114,12 +114,12 @@ RSpec.describe Ledger::Repository do
       [
         t(
           keys.map(&:to_sym).zip(
-            ['Main', '23-06-2018', 'Category B', 'Initial Balance', nil, '+15.50', 'USD', 'yes', 'Travel D']
+            ['Main', '2018-06-23', 'Category B', 'Initial Balance', nil, '+15.50', 'USD', 'yes', 'Travel D']
           ).to_h
         ),
         t(
           keys.map(&:to_sym).zip(
-            ['Euro', '23-07-2018', 'Category A', 'Description C', 'Venue E', '-10.00', 'EUR', 'no', nil]
+            ['Euro', '2018-07-23', 'Category A', 'Description C', 'Venue E', '-10.00', 'EUR', 'no', nil]
           ).to_h
         )
       ]
@@ -164,8 +164,8 @@ RSpec.describe Ledger::Repository do
       let(:path) { File.join('spec', 'fixtures', 'example-networth.csv') }
       let(:result) do
         [
-          Ledger::Networth.new(date: '23-06-2018', amount: '+15.50', currency: 'USD'),
-          Ledger::Networth.new(date: '23-07-2018', amount: '-10.00', currency: 'USD')
+          Ledger::Networth.new(date: '2018-06-23', amount: '+15.50', currency: 'USD'),
+          Ledger::Networth.new(date: '2018-07-23', amount: '-10.00', currency: 'USD')
         ].map(&:to_file).join
       end
 
