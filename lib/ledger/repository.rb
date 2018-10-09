@@ -8,16 +8,16 @@ module Ledger
 
     # Methods that are forwarded to content
     CONTENT_METHODS = %i[
-      transactions accounts currencies current
-      trips reports analyses comparisons
-      accounts_currency filtered_transactions excluded_transactions periods
+      transactions accounts currencies current trips reports analyses
+      comparisons accounts_currency filtered_transactions
+      excluded_transactions periods current_networth
     ].freeze
 
-    # Methods that are forwarded to history
-    HISTORY_METHODS = %i[filtered_networth].freeze
+    # Methods that are forwarded to networth content
+    NETWORTH_CONTENT_METHODS = %i[filtered_networth].freeze
 
     def_delegators :content, *CONTENT_METHODS
-    def_delegators :history, *HISTORY_METHODS
+    def_delegators :networth_content, *NETWORTH_CONTENT_METHODS
 
     attr_reader :transaction_entries, :networth_entries, :options
     attr_accessor :counter
@@ -32,55 +32,52 @@ module Ledger
     def book!
       transaction = TransactionBuilder.new(self).build!
 
-      encryption.wrap do |file|
-        File.open(file, 'a') { |f| f.write("#{transaction.to_file}\n") }
-        File.write(file, File.read(file).gsub(/\n+/, "\n"))
-      end
+      Encryption.new(CONFIG.ledger).wrap { |file| save!(transaction, file) }
     end
 
     def create!
-      filepath = File.expand_path(networth? ? CONFIG.networth : CONFIG.ledger)
+      filepath = File.expand_path(resource)
 
       return if File.exist?(filepath)
 
       CSV.open(filepath, 'wb') do |csv|
-        csv << (networth? ? Networth.members : CONFIG.transaction_fields).map(&:capitalize)
+        csv << (options[:networth] ? Networth.members : CONFIG.transaction_fields).map(&:capitalize)
       end
 
-      encryption.encrypt!
+      Encryption.new(resource).encrypt!
     end
 
     def edit!
       line = ":#{options[:line]}" if options[:line]
-      encryption.wrap { |file| system("#{ENV['EDITOR']} #{file.path}#{line}") }
+      Encryption.new(resource).wrap { |file| system("#{ENV['EDITOR']} #{file.path}#{line}") }
+    end
+
+    def networth!
+      Encryption.new(CONFIG.networth).wrap { |file| save!(current_networth, file) }
     end
 
     def show
-      resources = networth? ? filtered_networth : filtered_transactions
+      resources = options[:networth] ? filtered_networth : filtered_transactions
       system("echo \"#{resources.map(&:to_file).join}\" > #{options[:output]}")
     end
 
     private
 
-    def encryption
-      @encryption ||= Encryption.new(networth?)
-    end
-
-    def networth?
-      options[:networth]
+    def resource
+      options[:networth] ? CONFIG.networth : CONFIG.ledger
     end
 
     def content
-      @content ||= load! { Content.new(transaction_entries, options) }
+      @content ||= load!(CONFIG.ledger) { Content.new(transaction_entries, options) }
     end
 
-    def history
-      @history ||= load! { History.new(networth_entries, options) }
+    def networth_content
+      @networth_content ||= load!(CONFIG.networth) { NetworthContent.new(networth_entries, options) }
     end
 
-    def load!
-      encryption.wrap { |file| parse(file) }
-      yield
+    def load!(filepath)
+      Encryption.new(filepath).wrap { |file| parse(file) }
+      yield if block_given?
     end
 
     def parse(file)
@@ -93,13 +90,18 @@ module Ledger
     end
 
     def load_entry(attributes)
-      if networth?
+      if options[:networth]
         networth_entries << Networth.new(attributes)
       else
         transaction_entries << Transaction.new(attributes)
       end
     rescue StandardError
       raise IncorrectCSVFormatError, "A problem reading line #{counter} has occurred"
+    end
+
+    def save!(entity, file)
+      File.open(file, 'a') { |f| f.write("#{entity.to_file}\n") }
+      File.write(file, File.read(file).gsub(/\n+/, "\n"))
     end
   end
 end

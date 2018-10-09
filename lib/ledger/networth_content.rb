@@ -1,7 +1,7 @@
 module Ledger
   # Class holding the networth entries read from the networth file and used to
   # query it.
-  class History
+  class NetworthContent
     include Modules::HasDateFiltering
     include Modules::HasDateSorting
     include Modules::HasCurrencyConversion

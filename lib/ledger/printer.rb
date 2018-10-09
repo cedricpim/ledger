@@ -63,6 +63,10 @@ module Ledger
       end
     end
 
+    def networth
+      puts MoneyHelper.display(repository.current_networth.money)
+    end
+
     private
 
     def build(entity)

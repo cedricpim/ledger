@@ -38,6 +38,10 @@ module Ledger
     end
     alias networth? networth
 
+    def investments
+      @investments ||= config.dig(:networth, :investments) || []
+    end
+
     def exchange
       @exchange ||= config.fetch(:exchange)
     end

@@ -1,4 +1,4 @@
-RSpec.describe Ledger::History do
+RSpec.describe Ledger::NetworthContent do
   subject(:history) do
     described_class.new(networth_entries, Thor::CoreExt::HashWithIndifferentAccess.new(options))
   end

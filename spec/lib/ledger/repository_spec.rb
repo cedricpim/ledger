@@ -2,26 +2,12 @@ RSpec.describe Ledger::Repository do
   subject(:repository) { described_class.new(options) }
 
   let(:options) { {} }
-
   let(:keys) { %w[account date category description venue amount currency processed travel] }
-  let(:transactions) do
-    [
-      t(
-        keys.map(&:to_sym).zip(
-          ['Main', '23-06-2018', 'Category B', 'Initial Balance', nil, '+15.50', 'USD', 'yes', 'Travel D']
-        ).to_h
-      ),
-      t(
-        keys.map(&:to_sym).zip(
-          ['Euro', '23-07-2018', 'Category A', 'Description C', 'Venue E', '-10.00', 'EUR', 'no', nil]
-        ).to_h
-      )
-    ]
-  end
-
   let(:path) { File.join('spec', 'fixtures', 'example.csv') }
 
   before do
+    allow(File).to receive(:new).and_return(path)
+
     allow_any_instance_of(Ledger::Encryption)
       .to receive(:wrap)
       .and_yield(path)
@@ -64,13 +50,16 @@ RSpec.describe Ledger::Repository do
 
     context 'when file does not exist' do
       let(:csv) { instance_double('CSV') }
+      let(:encryption) { instance_double('Ledger::Encryption', encrypt!: nil) }
 
-      before { allow(File).to receive(:exist?).with(filepath).and_return(false) }
+      before do
+        allow(File).to receive(:exist?).with(filepath).and_return(false)
+      end
 
       specify do
         expect(CSV).to receive(:open).with(filepath, 'wb').and_yield(csv)
         expect(csv).to receive(:<<).with(keys.map(&:capitalize).map(&:to_sym))
-        expect_any_instance_of(Ledger::Encryption).to receive(:encrypt!)
+        expect(Ledger::Encryption).to receive(:new).with(filepath).and_return(encryption)
 
         subject
       end
@@ -83,7 +72,7 @@ RSpec.describe Ledger::Repository do
         specify do
           expect(CSV).to receive(:open).with(filepath, 'wb').and_yield(csv)
           expect(csv).to receive(:<<).with(keys.map(&:capitalize).map(&:to_sym))
-          expect_any_instance_of(Ledger::Encryption).to receive(:encrypt!)
+          expect(Ledger::Encryption).to receive(:new).with(filepath).and_return(encryption)
 
           subject
         end
@@ -120,6 +109,21 @@ RSpec.describe Ledger::Repository do
     subject { repository.show }
 
     let(:options) { {output: '/dev/stdout'} }
+
+    let(:transactions) do
+      [
+        t(
+          keys.map(&:to_sym).zip(
+            ['Main', '23-06-2018', 'Category B', 'Initial Balance', nil, '+15.50', 'USD', 'yes', 'Travel D']
+          ).to_h
+        ),
+        t(
+          keys.map(&:to_sym).zip(
+            ['Euro', '23-07-2018', 'Category A', 'Description C', 'Venue E', '-10.00', 'EUR', 'no', nil]
+          ).to_h
+        )
+      ]
+    end
 
     specify do
       expect_any_instance_of(Kernel)
@@ -175,6 +179,36 @@ RSpec.describe Ledger::Repository do
     end
   end
 
+  describe '#analyses' do
+    subject { repository.analyses('A') }
+
+    before { allow(repository).to receive(:load!).and_yield }
+
+    specify do
+      expect_any_instance_of(Ledger::Content).to receive(:analyses).with('A')
+
+      subject
+    end
+  end
+
+  describe '#networth!' do
+    subject { repository.networth! }
+
+    let(:networth) { instance_double('Ledger::Networth', to_file: 'to_file') }
+    let(:file) { instance_double('File') }
+
+    specify do
+      expect_any_instance_of(Ledger::Content).to receive(:current_networth).and_return(networth)
+      expect(CSV).to receive(:foreach)
+      expect(File).to receive(:open).with(path, 'a').and_yield(file)
+      expect(file).to receive(:write).with("to_file\n")
+      expect(File).to receive(:read).with(path).and_return("something\n\nother\nanother\n\n")
+      expect(File).to receive(:write).with(path, "something\nother\nanother\n")
+
+      subject
+    end
+  end
+
   (described_class::CONTENT_METHODS - %i[analyses]).each do |method|
     describe "##{method}" do
       subject { repository.public_send(method) }
@@ -189,29 +223,17 @@ RSpec.describe Ledger::Repository do
     end
   end
 
-  described_class::HISTORY_METHODS.each do |method|
+  described_class::NETWORTH_CONTENT_METHODS.each do |method|
     describe "##{method}" do
       subject { repository.public_send(method) }
 
       before { allow(repository).to receive(:load!).and_yield }
 
       specify do
-        expect_any_instance_of(Ledger::History).to receive(method)
+        expect_any_instance_of(Ledger::NetworthContent).to receive(method)
 
         subject
       end
-    end
-  end
-
-  describe '#analyses' do
-    subject { repository.analyses('A') }
-
-    before { allow(repository).to receive(:load!).and_yield }
-
-    specify do
-      expect_any_instance_of(Ledger::Content).to receive(:analyses).with('A')
-
-      subject
     end
   end
 

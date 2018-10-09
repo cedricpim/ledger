@@ -768,4 +768,22 @@ RSpec.describe Ledger::Content do
       it { is_expected.to eq periods }
     end
   end
+
+  describe '#current_networth' do
+    subject { content.current_networth }
+
+    let(:calculation) { instance_double('Ledger::NetworthCalculation') }
+    let(:options) { {currency: 'USD'} }
+    let(:current) { Money.new(-21_973, 'USD') }
+
+    it 'calls NetworthCalculation#networth' do
+      expect(Ledger::NetworthCalculation)
+        .to receive(:new)
+        .with(transactions.sort_by(&:parsed_date), current, 'USD')
+        .and_return(calculation)
+      expect(calculation).to receive(:networth)
+
+      subject
+    end
+  end
 end

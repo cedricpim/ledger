@@ -23,7 +23,9 @@ require 'vcr'
 # Ensure that we will always use the same exchange rate file in specs and use
 # the fallback configuration file
 module RSpecConfig
-  DEFAULT_CONFIG = File.join('tmp', 'non-existent', 'config').freeze
+  def initialize(file = nil)
+    super(file || Ledger::Config::FALLBACK_CONFIG)
+  end
 
   def exchange
     {cache_file: File.join('spec', 'fixtures', 'exchange-cache.json')}
@@ -42,7 +44,7 @@ def t(**attrs)
 end
 
 VCR.configure do |config|
-  config.cassette_library_dir = 'cassettes'
+  config.cassette_library_dir = 'spec/cassettes'
   config.hook_into :faraday
   config.configure_rspec_metadata!
 end

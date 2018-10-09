@@ -11,6 +11,7 @@ module Ledger
       configure: 'Copy provided configuration file to the default location',
       create: 'Create a new ledger/networth file',
       edit: 'Open ledger/networth file in your editor',
+      networth: 'Calculate current networth',
       report: 'Create a report about the transactions on the ledger according to any params provided',
       show: 'Display all transactions',
       trip: 'Create a report about the trips present on the ledger',
@@ -51,7 +52,6 @@ module Ledger
     end
 
     desc 'book', COMMANDS[:book]
-    map 'b' => :book
     method_option :transaction, type: :array, aliases: '-t'
     def book
       Repository.new(parsed_options).book!
@@ -112,6 +112,18 @@ module Ledger
       Printer.new(parsed_options).trip
     end
 
+    desc 'networth', COMMANDS[:networth]
+    map 'n' => :networth
+    method_option :store, type: :boolean, default: false, aliases: '-s'
+    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
+    def networth
+      if parsed_options[:store]
+        Repository.new(parsed_options).networth!
+      else
+        Printer.new(parsed_options).networth
+      end
+    end
+
     desc 'version', COMMANDS[:version]
     map '-v' => :version
     def version
@@ -125,6 +137,7 @@ module Ledger
         next if k == 'networth' && !CONFIG.networth?
         next h[k] = Date.parse(v) if %w[from till date].include?(k)
         next h[k] = v.call if v.is_a?(Proc)
+
         h[k] = v
       end.freeze
     end

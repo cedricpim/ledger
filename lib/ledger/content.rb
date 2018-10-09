@@ -77,6 +77,10 @@ module Ledger
       @periods ||= (current_period + previous_periods).sort
     end
 
+    def current_networth
+      NetworthCalculation.new(transactions, current, currency).networth
+    end
+
     private
 
     def relevant_transactions

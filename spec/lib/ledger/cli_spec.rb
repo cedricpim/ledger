@@ -55,8 +55,8 @@ RSpec.describe Ledger::Cli do
 
   RSpec.shared_examples 'repository receives' do |method|
     let(:repository) { instance_double('Ledger::Repository') }
-    let(:options_attrs) { {networth: true} }
-    let(:parsed_options_attrs) { {networth: true} }
+    let(:options_attrs) { super().merge(networth: true) }
+    let(:parsed_options_attrs) { super().merge(networth: true) }
 
     before { allow(cli).to receive(:options).and_return(options) }
 
@@ -68,7 +68,7 @@ RSpec.describe Ledger::Cli do
     end
 
     context 'when CONFIG does not have networth' do
-      let(:parsed_options_attrs) { {} }
+      let(:parsed_options_attrs) { super().tap { |h| h.delete(:networth) } }
 
       before { allow_any_instance_of(Ledger::Config).to receive(:networth?).and_return(false) }
 
@@ -150,6 +150,17 @@ RSpec.describe Ledger::Cli do
     include_context 'has currency option'
 
     it_behaves_like 'printer receives', :trip
+  end
+
+  describe '#networth' do
+    it_behaves_like 'printer receives', :networth
+
+    context 'when store is defined' do
+      let(:options_attrs) { {store: true} }
+      let(:parsed_options_attrs) { {store: true} }
+
+      it_behaves_like 'repository receives', :networth!
+    end
   end
 
   describe '#version' do

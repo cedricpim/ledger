@@ -63,6 +63,18 @@ RSpec.describe Ledger::Config do
     it { is_expected.to eq "#{XDG['CONFIG']}/ledger/networth.csv" }
   end
 
+  describe '#investments' do
+    subject { config.investments }
+
+    it { is_expected.to eq ['Investment'] }
+
+    context 'when there are no investments defined' do
+      before { expect(config).to receive(:config).and_return(networth: {file: 'some file'}) }
+
+      it { is_expected.to eq [] }
+    end
+  end
+
   describe '#exchange' do
     subject { config.exchange }
 
