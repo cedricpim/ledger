@@ -1,6 +1,6 @@
 RSpec.describe Ledger::Transaction do
   it_behaves_like 'has date'
-  it_behaves_like 'has money'
+  it_behaves_like 'has money', with_investment: false
 
   describe '#to_file' do
     subject { described_class.new(attrs).to_file }

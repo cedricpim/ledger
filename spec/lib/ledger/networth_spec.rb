@@ -4,12 +4,12 @@ RSpec.describe Ledger::Networth do
   let(:attrs) { {} }
 
   it_behaves_like 'has date'
-  it_behaves_like 'has money'
+  it_behaves_like 'has money', with_investment: true
 
   describe '#to_file' do
     subject { described_class.new(attrs).to_file }
 
-    let(:attrs) { {date: '21/07/2018', amount: '-10.00', currency: 'USD'} }
+    let(:attrs) { {date: '21/07/2018', investment: '-5.00', amount: '-10.00', currency: 'USD'} }
 
     it { is_expected.to eq attrs.values.join(',') + "\n" }
   end
@@ -19,7 +19,7 @@ RSpec.describe Ledger::Networth do
 
     let(:attrs) { {amount: '5000', currency: 'USD'} }
 
-    let(:valuation) do
+    let(:valuations) do
       {
         'ISINA' => Money.new(15_000, 'USD'),
         'ISINB' => Money.new(5000, 'USD'),
@@ -36,7 +36,7 @@ RSpec.describe Ledger::Networth do
       ]
     end
 
-    before { networth.valuation = valuation }
+    before { networth.valuations = valuations }
 
     it { is_expected.to eq result }
   end

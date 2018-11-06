@@ -1,10 +1,20 @@
-RSpec.shared_examples 'has money' do
+RSpec.shared_examples 'has money' do |with_investment:|
   describe '#money' do
     subject { described_class.new(attrs).money }
 
     let(:attrs) { {amount: '+10', currency: 'USD'} }
 
-    it { is_expected.to eq Money.new(1000) }
+    it { is_expected.to eq Money.new('1000', 'USD') }
+  end
+
+  if with_investment
+    describe '#valuation' do
+      subject { described_class.new(attrs).valuation }
+
+      let(:attrs) { {investment: '+10', currency: 'USD'} }
+
+      it { is_expected.to eq Money.new('1000', 'USD') }
+    end
   end
 
   describe '#expense?' do
@@ -28,8 +38,16 @@ RSpec.shared_examples 'has money' do
 
     %w[+ -].each do |signal|
       context "for signal #{signal}" do
-        let(:attrs) { {amount: "#{signal}10", currency: 'USD'} }
-        let(:result) { described_class.new(amount: "#{signal}8.62", currency: 'EUR') }
+        let(:attrs) do
+          {amount: "#{signal}10", currency: 'USD'}.tap do |obj|
+            obj[:investment] = "#{signal}5" if with_investment
+          end
+        end
+        let(:result) do
+          described_class.new(amount: "#{signal}8.62", currency: 'EUR').tap do |obj|
+            obj.investment = "#{signal}4.31" if with_investment
+          end
+        end
 
         it { is_expected.to eq result }
 
@@ -37,6 +55,14 @@ RSpec.shared_examples 'has money' do
           subject { described_class.new(attrs).exchange_to('EUR').money }
 
           it { is_expected.to eq result.money }
+        end
+
+        if with_investment
+          context 'for investment instance' do
+            subject { described_class.new(attrs).exchange_to('EUR').investment }
+
+            it { is_expected.to eq result.investment }
+          end
         end
       end
     end

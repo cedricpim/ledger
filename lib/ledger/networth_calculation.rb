@@ -11,22 +11,26 @@ module Ledger
     end
 
     def networth
-      Networth.new(date: Date.today.to_s, amount: amount.to_s, currency: currency).tap do |worth|
-        worth.valuation = valuation
+      Networth.new(date: Date.today.to_s, investment: investment.to_s, amount: amount.to_s, currency: currency).tap do |worth|
+        worth.valuations = valuations
       end
     end
 
     private
 
     def amount
-      cash + valuation.values.sum
+      cash + investment
     end
 
     def cash
       current.exchange_to(currency)
     end
 
-    def valuation
+    def investment
+      valuations.values.sum
+    end
+
+    def valuations
       investments_with_shares.each_with_object({}) do |(isin, shares), res|
         title, quote = quotes[isin]
         res[title || isin] = quote * shares

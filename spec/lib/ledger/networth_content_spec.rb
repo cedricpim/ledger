@@ -5,9 +5,9 @@ RSpec.describe Ledger::NetworthContent do
 
   let(:networth_entries) do
     [
-      Ledger::Networth.new(date: '19/07/2018', amount: -20, currency: 'USD'),
-      Ledger::Networth.new(date: '20/07/2018', amount: -20, currency: 'USD'),
-      Ledger::Networth.new(date: '21/07/2018', amount: -75, currency: 'USD')
+      Ledger::Networth.new(date: '19/07/2018', investment: '+10.00', amount: '-20.00', currency: 'USD'),
+      Ledger::Networth.new(date: '20/07/2018', investment: '+40.00', amount: '-20.00', currency: 'USD'),
+      Ledger::Networth.new(date: '21/07/2018', investment: '+5.00', amount: '-75.00', currency: 'USD')
     ]
   end
   let(:options) { {} }
@@ -22,9 +22,9 @@ RSpec.describe Ledger::NetworthContent do
 
       let(:exchanged_networth_entries) do
         [
-          Ledger::Networth.new(date: '19/07/2018', amount: '-40.00', currency: 'BBD'),
-          Ledger::Networth.new(date: '20/07/2018', amount: '-40.00', currency: 'BBD'),
-          Ledger::Networth.new(date: '21/07/2018', amount: '-150.00', currency: 'BBD')
+          Ledger::Networth.new(date: '19/07/2018', investment: '+20.00', amount: '-40.00', currency: 'BBD'),
+          Ledger::Networth.new(date: '20/07/2018', investment: '+80.00', amount: '-40.00', currency: 'BBD'),
+          Ledger::Networth.new(date: '21/07/2018', investment: '+10.00', amount: '-150.00', currency: 'BBD')
         ]
       end
 

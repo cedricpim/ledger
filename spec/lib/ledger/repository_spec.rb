@@ -67,7 +67,7 @@ RSpec.describe Ledger::Repository do
       context 'when networth file does not exist' do
         let(:method) { :networth }
         let(:options) { {networth: true} }
-        let(:keys) { %w[date amount currency] }
+        let(:keys) { %w[date investment amount currency] }
 
         specify do
           expect(CSV).to receive(:open).with(filepath, 'wb').and_yield(csv)
@@ -164,8 +164,8 @@ RSpec.describe Ledger::Repository do
       let(:path) { File.join('spec', 'fixtures', 'example-networth.csv') }
       let(:result) do
         [
-          Ledger::Networth.new(date: '2018-06-23', amount: '+15.50', currency: 'USD'),
-          Ledger::Networth.new(date: '2018-07-23', amount: '-10.00', currency: 'USD')
+          Ledger::Networth.new(date: '2018-06-23', investment: '+5.00', amount: '+15.50', currency: 'USD'),
+          Ledger::Networth.new(date: '2018-07-23', investment: '+4.50', amount: '-10.00', currency: 'USD')
         ].map(&:to_file).join
       end
 

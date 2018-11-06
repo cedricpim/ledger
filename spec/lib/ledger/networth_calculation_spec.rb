@@ -12,28 +12,33 @@ RSpec.describe Ledger::NetworthCalculation do
     ]
   end
 
-  let(:current) { Money.new(1000, 'USD') }
+  let(:current) { Money.new('1000', 'USD') }
   let(:currency) { 'USD' }
 
   let(:quotes) do
     [
-      instance_double('Ledger::API::JustETF', quote: Money.new(5000, 'USD'), title: 'A'),
-      instance_double('Ledger::API::JustETF', quote: Money.new(500, 'USD'), title: 'B'),
-      instance_double('Ledger::API::JustETF', quote: Money.new(50_000, 'USD'), title: 'C')
+      instance_double('Ledger::API::JustETF', quote: Money.new('5000', 'USD'), title: 'A'),
+      instance_double('Ledger::API::JustETF', quote: Money.new('500', 'USD'), title: 'B'),
+      instance_double('Ledger::API::JustETF', quote: Money.new('50000', 'USD'), title: 'C')
     ]
   end
 
   describe '#networth' do
     subject { calculation.networth }
 
-    let(:amount) { Money.new('221000', 'USD') }
+    let(:amount) { Money.new('221000', currency) }
+    let(:investment) { Money.new('220000', currency) }
 
-    let(:valuation) do
+    let(:valuations) do
       {
-        'A' => Money.new(15_000, 'USD'),
-        'B' => Money.new(5000, 'USD'),
-        'C' => Money.new(200_000, 'USD')
+        'A' => Money.new('15000', currency),
+        'B' => Money.new('5000', currency),
+        'C' => Money.new('200000', currency)
       }
+    end
+
+    let(:attributes) do
+      {date: Date.today.to_s, investment: investment.to_s, amount: amount.to_s, currency: currency}
     end
 
     before do
@@ -42,12 +47,12 @@ RSpec.describe Ledger::NetworthCalculation do
       allow(Ledger::API::JustETF).to receive(:new).with(isin: 'ISINC').and_return(quotes[2])
     end
 
-    it { is_expected.to eq Ledger::Networth.new(date: Date.today.to_s, amount: amount.to_s, currency: currency) }
+    it { is_expected.to eq Ledger::Networth.new(attributes) }
 
-    context 'valuation' do
-      subject { calculation.networth.valuation }
+    context 'valuations' do
+      subject { calculation.networth.valuations }
 
-      it { is_expected.to eq valuation }
+      it { is_expected.to eq valuations }
     end
 
     context 'when JustETF raises an exception' do
@@ -58,10 +63,14 @@ RSpec.describe Ledger::NetworthCalculation do
 
     context 'when currency is different' do
       let(:currency) { 'EUR' }
+      let(:investment) { Money.new('189597', currency) }
+      let(:amount) { Money.new('190459', currency) }
 
-      let(:amount) { Money.new('190459', 'EUR') }
+      let(:attributes) do
+        {date: Date.today.to_s, investment: investment.to_s, amount: amount.to_s, currency: currency}
+      end
 
-      it { is_expected.to eq Ledger::Networth.new(date: Date.today.to_s, amount: amount.to_s, currency: currency) }
+      it { is_expected.to eq Ledger::Networth.new(attributes) }
     end
   end
 end

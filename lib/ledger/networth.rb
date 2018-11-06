@@ -1,11 +1,11 @@
 module Ledger
   # Class representing the net worth on a given date. It also contains some
   # methods related to print the information to different sources.
-  Networth = Struct.new(:date, :amount, :currency, keyword_init: true) do
+  Networth = Struct.new(:date, :investment, :amount, :currency, keyword_init: true) do
     include Modules::HasDate
     include Modules::HasMoney
 
-    attr_accessor :valuation
+    attr_accessor :valuations
 
     def list
       (balances + [other]).map do |elem|
@@ -20,7 +20,7 @@ module Ledger
     private
 
     def balances
-      @balances ||= valuation.map { |title, value| [title, value, (value / money * 100).round(2)] }
+      @balances ||= valuations.map { |title, value| [title, value, (value / money * 100).round(2)] }
     end
 
     def other
