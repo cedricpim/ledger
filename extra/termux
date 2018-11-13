@@ -5,8 +5,7 @@ if [ ! -f "$1" ]; then
   exit 1
 fi
 
-pkg install ruby
-pkg install openssl
+pkg install ruby openssl ruby-dev libxml2-dev libxslt-dev pkg-config make clang
 
 gem_name=`gem build ledger.gemspec | grep 'File' | sed -E 's#  File: (.+)#\1#'`
 gem install $gem_name --no-rdoc --no-ri
