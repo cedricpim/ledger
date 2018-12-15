@@ -62,12 +62,6 @@
     :values:
       - EUR
       - USD
-  :processed:
-    :default: 'yes'
-    :presence: true
-    :values:
-      - 'yes'
-      - 'no'
   :travel:
     :default: ''
     :presence: false
@@ -108,12 +102,6 @@
           :color: :black
         :positive:
           :color: :green
-      # Color according to the value of the processed field
-      :processed:
-        'yes':
-          :color: :white
-        'no':
-          :color: :black
     # Options on how to print the title of a table
     :title:
       :width: 70

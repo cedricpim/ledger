@@ -9,8 +9,8 @@ RSpec.describe Ledger::TransactionBuilder do
   describe '#build!' do
     subject { builder.build!.to_file }
 
-    let(:keys) { %i[account date category description venue amount currency processed travel] }
-    let(:options) { {transaction: ['Account', '21-07-2018', 'Cat', 'Desc', '', '10.0', 'USD', 'yes', '']} }
+    let(:keys) { %i[account date category description venue amount currency travel] }
+    let(:options) { {transaction: ['Account', '21-07-2018', 'Cat', 'Desc', '', '10.0', 'USD', '']} }
 
     let(:result) { t(keys.zip(options[:transaction]).to_h) }
 

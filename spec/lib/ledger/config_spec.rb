@@ -114,7 +114,6 @@ RSpec.describe Ledger::Config do
         currency: {default: 'EUR', presence: true, values: %w[EUR USD]},
         date: {default: '2018-07-22', presence: true},
         description: {default: '', presence: false},
-        processed: {default: 'yes', presence: true, values: %w[yes no]},
         travel: {default: '', presence: false},
         venue: {default: '', presence: false}
       }
@@ -128,7 +127,7 @@ RSpec.describe Ledger::Config do
   describe '#transaction_fields' do
     subject { config.transaction_fields }
 
-    let(:keys) { %i[account date category description venue amount currency processed travel] }
+    let(:keys) { %i[account date category description venue amount currency travel] }
 
     it { is_expected.to eq keys }
   end

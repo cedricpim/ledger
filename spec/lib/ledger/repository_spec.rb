@@ -2,7 +2,7 @@ RSpec.describe Ledger::Repository do
   subject(:repository) { described_class.new(options) }
 
   let(:options) { {} }
-  let(:keys) { %w[account date category description venue amount currency processed travel] }
+  let(:keys) { %w[account date category description venue amount currency travel] }
   let(:path) { File.join('spec', 'fixtures', 'example.csv') }
 
   before do
@@ -114,12 +114,12 @@ RSpec.describe Ledger::Repository do
       [
         t(
           keys.map(&:to_sym).zip(
-            ['Main', '2018-06-23', 'Category B', 'Initial Balance', nil, '+15.50', 'USD', 'yes', 'Travel D']
+            ['Main', '2018-06-23', 'Category B', 'Initial Balance', nil, '+15.50', 'USD', 'Travel D']
           ).to_h
         ),
         t(
           keys.map(&:to_sym).zip(
-            ['Euro', '2018-07-23', 'Category A', 'Description C', 'Venue E', '-10.00', 'EUR', 'no', nil]
+            ['Euro', '2018-07-23', 'Category A', 'Description C', 'Venue E', '-10.00', 'EUR', nil]
           ).to_h
         )
       ]
