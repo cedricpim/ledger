@@ -11,7 +11,7 @@ RSpec.describe Ledger::Networth do
 
     let(:attrs) { {date: '21/07/2018', investment: '-5.00', amount: '-10.00', currency: 'USD'} }
 
-    it { is_expected.to eq attrs.values.join(',') + "\n" }
+    it { is_expected.to eq attrs.values.join(',') }
   end
 
   describe '#list' do

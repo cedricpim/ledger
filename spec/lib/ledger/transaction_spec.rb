@@ -18,7 +18,7 @@ RSpec.describe Ledger::Transaction do
       }
     end
 
-    it { is_expected.to eq attrs.values.join(',') + "\n" }
+    it { is_expected.to eq attrs.values.join(',') }
   end
 
   describe '#investment?' do

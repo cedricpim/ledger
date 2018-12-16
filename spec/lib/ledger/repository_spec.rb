@@ -31,6 +31,46 @@ RSpec.describe Ledger::Repository do
     end
   end
 
+  describe '#convert!' do
+    subject { repository.convert! }
+
+    let(:path) { File.join('spec', 'fixtures', 'multiple-currencies.csv') }
+    let(:filepath) { File.join(ENV['HOME'], 'file.csv') }
+    let(:file) { instance_double('File') }
+    let(:csv) { instance_double('CSV') }
+
+    let(:transactions) do
+      [
+        t(
+          keys.map(&:to_sym).zip(
+            ['Main', '2018-06-23', 'Category B', 'Initial Balance', nil, '+15.50', 'USD', 'Travel D']
+          ).to_h
+        ),
+        t(
+          keys.map(&:to_sym).zip(
+            ['Main', '2018-07-23', 'Category A', 'Description C', 'Venue E', '-11.60', 'USD', nil]
+          ).to_h
+        )
+      ]
+    end
+
+    before do
+      allow_any_instance_of(Ledger::Config).to receive(:ledger).and_return(filepath)
+      allow(CSV).to receive(:open).with(path, Hash).and_call_original
+      allow(File).to receive(:open).with(path, String, Hash).and_call_original
+    end
+
+    specify do
+      expect(CSV).to receive(:open).with(path, 'wb').and_yield(csv).once
+      expect(csv).to receive(:<<).with(keys.map(&:capitalize).map(&:to_sym))
+
+      expect(File).to receive(:open).with(path, 'a').and_yield(file).twice
+      transactions.each { |transaction| expect(file).to receive(:write).with("#{transaction.to_file}\n") }
+
+      subject
+    end
+  end
+
   describe '#create!' do
     subject { repository.create! }
 

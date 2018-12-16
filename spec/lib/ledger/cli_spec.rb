@@ -106,6 +106,10 @@ RSpec.describe Ledger::Cli do
     end
   end
 
+  describe '#convert' do
+    it_behaves_like 'repository receives', :convert!
+  end
+
   describe '#create' do
     it_behaves_like 'repository receives', :create!
   end

@@ -24,7 +24,7 @@ module Ledger
       end
 
       def to_file
-        members.map { |member| ledger_format(member) }.join(',') + "\n"
+        members.map { |member| ledger_format(member) }.join(',')
       end
 
       def exchange_to(currency)

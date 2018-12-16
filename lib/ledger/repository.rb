@@ -35,6 +35,17 @@ module Ledger
       Encryption.new(CONFIG.ledger).wrap { |file| save!(transaction, file) }
     end
 
+    def convert!
+      Encryption.new(CONFIG.ledger).wrap do |file|
+        CSV.open(file, 'wb') { |csv| csv << CONFIG.transaction_fields.map(&:capitalize) }
+
+        transactions.each do |transaction|
+          exchanged = transaction.exchange_to(accounts_currency[transaction.account])
+          save!(exchanged, file)
+        end
+      end
+    end
+
     def create!
       filepath = File.expand_path(resource)
 

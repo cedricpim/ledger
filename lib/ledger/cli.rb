@@ -9,6 +9,7 @@ module Ledger
       commands: 'List commands available in Ledger',
       compare: 'Compare multiple periods',
       configure: 'Copy provided configuration file to the default location',
+      convert: 'Convert other currencies to main currency of the account',
       create: 'Create a new ledger/networth file',
       edit: 'Open ledger/networth file in your editor',
       networth: 'Calculate current networth',
@@ -35,6 +36,11 @@ module Ledger
     map 'C' => :configure
     def configure
       Config.configure
+    end
+
+    desc 'convert', COMMANDS[:convert]
+    def convert
+      Repository.new(parsed_options).convert!
     end
 
     desc 'create', COMMANDS[:create]
