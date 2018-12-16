@@ -69,7 +69,7 @@ module Ledger
 
     def show
       resources = options[:networth] ? filtered_networth : filtered_transactions
-      system("echo \"#{resources.map(&:to_file).join}\" > #{options[:output]}")
+      system("echo \"#{resources.map(&:to_file).join("\n")}\" > #{options[:output]}")
     end
 
     private
