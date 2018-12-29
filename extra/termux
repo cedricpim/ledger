@@ -10,9 +10,10 @@ pkg install ruby openssl ruby-dev libxml2-dev libxslt-dev pkg-config make clang
 gem_name=`gem build ledger.gemspec | grep 'File' | sed -E 's#  File: (.+)#\1#'`
 gem install $gem_name --no-rdoc --no-ri
 
-mkdir -p ~/.config/ledger
+mkdir -p $HOME/.config/ledger
 
-ln -sf $1 ~/.config/ledger/config
+ln -sf $1 $HOME/.config/ledger/config
 
-mkdir -p ~/.shortcuts
-echo "ledger book" > ~/.shortcuts/ledger
+mkdir -p $HOME/.shortcuts
+echo "ledger book" > $HOME/.shortcuts/ledger
+echo "alias lg=\"EDITOR=vim ledger\"" >> $PREFIX/etc/bash.bashrc
