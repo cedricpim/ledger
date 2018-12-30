@@ -18,7 +18,7 @@ RSpec.describe Ledger::Cli do
 
     let(:options_attrs) do
       super().merge(
-        year: -> { Date.today.cwyear },
+        year: -> { Date.today.year },
         month: -> { Date.today.month },
         from: '21/07/2018',
         till: '22/07/2018',

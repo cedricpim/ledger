@@ -74,7 +74,7 @@ module Ledger
 
     desc 'analysis [CATEGORY]', COMMANDS[:analysis]
     map 'a' => :analysis
-    method_option :year, type: :numeric, default: -> { Date.today.cwyear }, aliases: '-y'
+    method_option :year, type: :numeric, default: -> { Date.today.year }, aliases: '-y'
     method_option :month, type: :numeric, default: -> { Date.today.month }, aliases: '-m'
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
@@ -86,7 +86,7 @@ module Ledger
 
     desc 'report', COMMANDS[:report]
     map 'r' => :report
-    method_option :year, type: :numeric, default: -> { Date.today.cwyear }, aliases: '-y'
+    method_option :year, type: :numeric, default: -> { Date.today.year }, aliases: '-y'
     method_option :month, type: :numeric, default: -> { Date.today.month }, aliases: '-m'
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
