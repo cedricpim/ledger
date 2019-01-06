@@ -3,17 +3,19 @@ RSpec.describe Ledger::NetworthCalculation do
 
   let(:investments) do
     [
-      t(category: 'Investment', description: 'ISINA - 2'),
-      t(category: 'Investment', description: 'ISINA'),
-      t(category: 'Investment', description: 'ISINB - 10'),
-      t(category: 'Investment', description: 'ISINC - 2'),
-      t(category: 'Investment', description: 'ISINC - 2'),
-      t(category: 'Something', description: 'Else')
+      t(category: 'Investment', amount: 1, currency: 'USD', date: '2019-01-04', description: 'ISINA - 2'),
+      t(category: 'Investment', amount: 1, currency: 'USD', date: '2019-01-02', description: 'ISINA'),
+      t(category: 'Investment', amount: 1, currency: 'USD', date: '2019-01-05', description: 'ISINB - 10'),
+      t(category: 'Investment', amount: 1, currency: 'USD', date: '2019-01-03', description: 'ISINC - 2'),
+      t(category: 'Investment', amount: 1, currency: 'USD', date: '2019-01-04', description: 'ISINC - 2'),
+      t(category: 'Something', amount: 1, currency: 'USD', date: '2019-01-04', description: 'Else')
     ]
   end
 
   let(:current) { Money.new('1000', 'USD') }
   let(:currency) { 'USD' }
+
+  before { allow(Date).to receive(:today).and_return('2019-01-04') }
 
   let(:quotes) do
     [
@@ -38,7 +40,7 @@ RSpec.describe Ledger::NetworthCalculation do
     end
 
     let(:attributes) do
-      {date: Date.today.to_s, investment: investment.to_s, amount: amount.to_s, currency: currency}
+      {date: '2019-01-04', invested: Money.new(200, currency), investment: investment.to_s, amount: amount.to_s, currency: currency}
     end
 
     before do
@@ -67,7 +69,7 @@ RSpec.describe Ledger::NetworthCalculation do
       let(:amount) { Money.new('190459', currency) }
 
       let(:attributes) do
-        {date: Date.today.to_s, investment: investment.to_s, amount: amount.to_s, currency: currency}
+        {date: '2019-01-04', invested: Money.new(200, currency), investment: investment.to_s, amount: amount.to_s, currency: currency}
       end
 
       it { is_expected.to eq Ledger::Networth.new(attributes) }

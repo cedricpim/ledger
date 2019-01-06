@@ -20,13 +20,11 @@ module Ledger
     def_delegators :networth_content, *NETWORTH_CONTENT_METHODS
 
     attr_reader :transaction_entries, :networth_entries, :options
-    attr_accessor :counter
 
     def initialize(options = {})
       @transaction_entries = []
       @networth_entries = []
       @options = options
-      @counter = 1
     end
 
     def book!
@@ -64,7 +62,17 @@ module Ledger
     end
 
     def networth!
-      Encryption.new(CONFIG.networth).wrap { |file| save!(current_networth, file) }
+      load!
+
+      Encryption.new(CONFIG.networth).wrap do |file|
+        CSV.open(file, 'wb') { |csv| csv << Networth.members.map(&:capitalize) }
+
+        networth_entries.each do |entry|
+          entry.calculate_invested!(transaction_entries)
+
+          save!(entry, file)
+        end
+      end
     end
 
     def show
@@ -79,35 +87,36 @@ module Ledger
     end
 
     def content
-      @content ||= load!(CONFIG.ledger) { Content.new(transaction_entries, options) }
+      @content ||= load! { Content.new(transaction_entries, options) }
     end
 
     def networth_content
-      @networth_content ||= load!(CONFIG.networth) { NetworthContent.new(networth_entries, options) }
+      @networth_content ||= load! { NetworthContent.new(networth_entries, options) }
     end
 
-    def load!(filepath)
-      Encryption.new(filepath).wrap { |file| parse(file) }
+    def load!
+      Encryption.new(CONFIG.ledger).wrap { |file| parse(file, networth: false) }
+      Encryption.new(CONFIG.networth).wrap { |file| parse(file, networth: true) }
       yield if block_given?
     end
 
-    def parse(file)
-      CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-        self.counter += 1
-        load_entry(row.to_h)
+    # @note index starts at 2, since the file lines start at 1, and the first line is the header
+    def parse(file, networth: false)
+      CSV.foreach(file, headers: true, header_converters: :symbol).with_index(2) do |row, index|
+        load_entry(row.to_h, index, networth: networth)
       end
     rescue OpenSSL::Cipher::CipherError => e
       raise e
     end
 
-    def load_entry(attributes)
-      if options[:networth]
+    def load_entry(attributes, index, networth: false)
+      if networth
         networth_entries << Networth.new(attributes)
       else
         transaction_entries << Transaction.new(attributes)
       end
     rescue StandardError
-      raise IncorrectCSVFormatError, "A problem reading line #{counter} has occurred"
+      raise IncorrectCSVFormatError, "A problem reading line #{index} has occurred"
     end
 
     def save!(entity, file)

@@ -1,7 +1,7 @@
 module Ledger
   # Class representing the net worth on a given date. It also contains some
   # methods related to print the information to different sources.
-  Networth = Struct.new(:date, :investment, :amount, :currency, keyword_init: true) do
+  Networth = Struct.new(:date, :invested, :investment, :amount, :currency, keyword_init: true) do
     include Modules::HasDate
     include Modules::HasMoney
 
@@ -15,6 +15,11 @@ module Ledger
 
     def total
       ['Total', MoneyHelper.display(money), 100.0]
+    end
+
+    def calculate_invested!(transactions)
+      total = transactions.select(&:investment?).sum { |investment| investment.date == date ? investment.money.cents : 0 }.abs
+      self.invested = Money.new(total, currency)
     end
 
     private

@@ -48,6 +48,7 @@ module Ledger
         case member
         when :amount     then MoneyHelper.display(money, type: :ledger)
         when :investment then MoneyHelper.display(valuation, type: :ledger)
+        when :invested   then MoneyHelper.display(invested, type: :ledger)
         when :currency   then money.currency.iso_code
         else value
         end

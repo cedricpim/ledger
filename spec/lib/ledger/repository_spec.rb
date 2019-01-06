@@ -4,13 +4,26 @@ RSpec.describe Ledger::Repository do
   let(:options) { {} }
   let(:keys) { %w[account date category description venue amount currency travel] }
   let(:path) { File.join('spec', 'fixtures', 'example.csv') }
+  let(:networth_path) { File.join('spec', 'fixtures', 'example-networth.csv') }
+  let(:encryption) { instance_double('Ledger::Encryption') }
+  let(:networth_encryption) { instance_double('Ledger::Encryption') }
 
   before do
-    allow(File).to receive(:new).and_return(path)
+    allow(File).to receive(:new).and_return(path, networth_path)
 
-    allow_any_instance_of(Ledger::Encryption)
-      .to receive(:wrap)
-      .and_yield(path)
+    allow_any_instance_of(Ledger::Config).to receive(:ledger).and_return(path)
+    allow_any_instance_of(Ledger::Config).to receive(:networth).and_return(networth_path)
+
+    allow(Ledger::Encryption).to receive(:new).with(path).and_return(encryption)
+    allow(encryption).to receive(:wrap).and_yield(path)
+
+    allow(Ledger::Encryption).to receive(:new).with(networth_path).and_return(networth_encryption)
+    allow(networth_encryption).to receive(:wrap).and_yield(networth_path)
+
+    allow(CSV).to receive(:open).with(path, Hash).and_call_original
+    allow(File).to receive(:open).with(path, String, Hash).and_call_original
+    allow(CSV).to receive(:open).with(networth_path, Hash).and_call_original
+    allow(File).to receive(:open).with(networth_path, String, Hash).and_call_original
   end
 
   describe '#book!' do
@@ -35,7 +48,6 @@ RSpec.describe Ledger::Repository do
     subject { repository.convert! }
 
     let(:path) { File.join('spec', 'fixtures', 'multiple-currencies.csv') }
-    let(:filepath) { File.join(ENV['HOME'], 'file.csv') }
     let(:file) { instance_double('File') }
     let(:csv) { instance_double('CSV') }
 
@@ -52,12 +64,6 @@ RSpec.describe Ledger::Repository do
           ).to_h
         )
       ]
-    end
-
-    before do
-      allow_any_instance_of(Ledger::Config).to receive(:ledger).and_return(filepath)
-      allow(CSV).to receive(:open).with(path, Hash).and_call_original
-      allow(File).to receive(:open).with(path, String, Hash).and_call_original
     end
 
     specify do
@@ -107,7 +113,7 @@ RSpec.describe Ledger::Repository do
       context 'when networth file does not exist' do
         let(:method) { :networth }
         let(:options) { {networth: true} }
-        let(:keys) { %w[date investment amount currency] }
+        let(:keys) { %w[date invested investment amount currency] }
 
         specify do
           expect(CSV).to receive(:open).with(filepath, 'wb').and_yield(csv)
@@ -201,11 +207,10 @@ RSpec.describe Ledger::Repository do
 
     context 'when networth is defined' do
       let(:options) { super().merge(networth: true) }
-      let(:path) { File.join('spec', 'fixtures', 'example-networth.csv') }
       let(:result) do
         [
-          Ledger::Networth.new(date: '2018-06-23', investment: '+5.00', amount: '+15.50', currency: 'USD'),
-          Ledger::Networth.new(date: '2018-07-23', investment: '+4.50', amount: '-10.00', currency: 'USD')
+          Ledger::Networth.new(date: '2018-06-23', invested: '+1.00', investment: '+5.00', amount: '+15.50', currency: 'USD'),
+          Ledger::Networth.new(date: '2018-07-23', invested: '+0.00', investment: '+4.50', amount: '-10.00', currency: 'USD')
         ].map(&:to_file).join("\n")
       end
 
@@ -236,14 +241,22 @@ RSpec.describe Ledger::Repository do
 
     let(:networth) { instance_double('Ledger::Networth', to_file: 'to_file') }
     let(:file) { instance_double('File') }
+    let(:csv) { instance_double('CSV') }
+    let(:keys) { %w[date invested investment amount currency] }
+
+    let(:networth_entries) do
+      [
+        Ledger::Networth.new(keys.map(&:to_sym).zip(['2018-06-23', Money.new(0, 'USD'), '+5.00', '+15.50', 'USD']).to_h),
+        Ledger::Networth.new(keys.map(&:to_sym).zip(['2018-07-23', Money.new(0, 'USD'), '+4.50', '-10.00', 'USD']).to_h)
+      ]
+    end
 
     specify do
-      expect_any_instance_of(Ledger::Content).to receive(:current_networth).and_return(networth)
-      expect(CSV).to receive(:foreach)
-      expect(File).to receive(:open).with(path, 'a').and_yield(file)
-      expect(file).to receive(:write).with("to_file\n")
-      expect(File).to receive(:read).with(path).and_return("something\n\nother\nanother\n\n")
-      expect(File).to receive(:write).with(path, "something\nother\nanother\n")
+      expect(CSV).to receive(:open).with(networth_path, 'wb').and_yield(csv).once
+      expect(csv).to receive(:<<).with(keys.map(&:capitalize).map(&:to_sym))
+
+      expect(File).to receive(:open).with(networth_path, 'a').and_yield(file).twice
+      networth_entries.each { |entry| expect(file).to receive(:write).with("#{entry.to_file}\n") }
 
       subject
     end

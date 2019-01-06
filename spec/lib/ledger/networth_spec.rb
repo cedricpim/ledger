@@ -6,12 +6,29 @@ RSpec.describe Ledger::Networth do
   it_behaves_like 'has date'
   it_behaves_like 'has money', with_investment: true
 
-  describe '#to_file' do
-    subject { described_class.new(attrs).to_file }
+  describe '#calculate_invested!' do
+    subject { described_class.new(attrs).calculate_invested!(transactions) }
 
     let(:attrs) { {date: '21/07/2018', investment: '-5.00', amount: '-10.00', currency: 'USD'} }
 
-    it { is_expected.to eq attrs.values.join(',') }
+    let(:transactions) do
+      [
+        t(category: 'Investment', date: '21/07/2018', amount: 1, currency: 'USD'),
+        t(category: 'B', date: '21/07/2018', amount: -1, currency: 'USD'),
+        t(category: 'Investment', date: '20/07/2018', amount: 1, currency: 'USD'),
+        t(category: 'Investment', date: '21/07/2018', amount: 1, currency: 'USD')
+      ]
+    end
+
+    it { is_expected.to eq Money.new('200', 'USD') }
+  end
+
+  describe '#to_file' do
+    subject { described_class.new(attrs).to_file }
+
+    let(:attrs) { {date: '21/07/2018', invested: Money.new('300', 'USD'), investment: '-5.00', amount: '-10.00', currency: 'USD'} }
+
+    it { is_expected.to eq attrs.merge(invested: '+3.00').values.join(',') }
   end
 
   describe '#list' do

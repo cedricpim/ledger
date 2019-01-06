@@ -13,6 +13,7 @@ module Ledger
     def networth
       Networth.new(date: Date.today.to_s, investment: investment.to_s, amount: amount.to_s, currency: currency).tap do |worth|
         worth.valuations = valuations
+        worth.calculate_invested!(investments)
       end
     end
 
