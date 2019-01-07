@@ -62,7 +62,7 @@ module Ledger
     end
 
     def networth!
-      load!
+      current = current_networth
 
       Encryption.new(CONFIG.networth).wrap do |file|
         CSV.open(file, 'wb') { |csv| csv << Networth.members.map(&:capitalize) }
@@ -72,6 +72,8 @@ module Ledger
 
           save!(entry, file)
         end
+
+        save!(current, file)
       end
     end
 

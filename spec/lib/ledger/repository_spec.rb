@@ -252,11 +252,14 @@ RSpec.describe Ledger::Repository do
     end
 
     specify do
+      expect_any_instance_of(Ledger::Content).to receive(:current_networth).and_return(networth)
       expect(CSV).to receive(:open).with(networth_path, 'wb').and_yield(csv).once
       expect(csv).to receive(:<<).with(keys.map(&:capitalize).map(&:to_sym))
 
-      expect(File).to receive(:open).with(networth_path, 'a').and_yield(file).twice
+      expect(File).to receive(:open).with(networth_path, 'a').and_yield(file).exactly(3).times
       networth_entries.each { |entry| expect(file).to receive(:write).with("#{entry.to_file}\n") }
+
+      expect(file).to receive(:write).with("to_file\n")
 
       subject
     end
