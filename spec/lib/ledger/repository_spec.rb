@@ -174,7 +174,10 @@ RSpec.describe Ledger::Repository do
     specify do
       expect_any_instance_of(Kernel)
         .to receive(:system)
-        .with("echo \"#{transactions.map(&:to_file).join("\n")}\" > /dev/stdout")
+        .with("echo \"#{transactions[0].to_file}\" >> /dev/stdout")
+      expect_any_instance_of(Kernel)
+        .to receive(:system)
+        .with("echo \"#{transactions[1].to_file}\" >> /dev/stdout")
 
       subject
     end
@@ -185,7 +188,7 @@ RSpec.describe Ledger::Repository do
       specify do
         expect_any_instance_of(Kernel)
           .to receive(:system)
-          .with("echo \"#{transactions[1].to_file}\" > /dev/stdout")
+          .with("echo \"#{transactions[1].to_file}\" >> /dev/stdout")
 
         subject
       end
@@ -194,12 +197,15 @@ RSpec.describe Ledger::Repository do
     context 'when a currency is defined' do
       let(:options) { super().merge(currency: 'BBD') }
 
-      let(:result) { transactions.map { |t| t.exchange_to(options[:currency]).to_file }.join("\n") }
+      let(:result) { transactions.map { |t| t.exchange_to(options[:currency]).to_file } }
 
       specify do
         expect_any_instance_of(Kernel)
           .to receive(:system)
-          .with("echo \"#{result}\" > /dev/stdout")
+          .with("echo \"#{result[0]}\" >> /dev/stdout")
+        expect_any_instance_of(Kernel)
+          .to receive(:system)
+          .with("echo \"#{result[1]}\" >> /dev/stdout")
 
         subject
       end
@@ -211,13 +217,16 @@ RSpec.describe Ledger::Repository do
         [
           Ledger::Networth.new(date: '2018-06-23', invested: '+1.00', investment: '+5.00', amount: '+15.50', currency: 'USD'),
           Ledger::Networth.new(date: '2018-07-23', invested: '+0.00', investment: '+4.50', amount: '-10.00', currency: 'USD')
-        ].map(&:to_file).join("\n")
+        ].map(&:to_file)
       end
 
       specify do
         expect_any_instance_of(Kernel)
           .to receive(:system)
-          .with("echo \"#{result}\" > /dev/stdout")
+          .with("echo \"#{result[0]}\" >> /dev/stdout")
+        expect_any_instance_of(Kernel)
+          .to receive(:system)
+          .with("echo \"#{result[1]}\" >> /dev/stdout")
 
         subject
       end
