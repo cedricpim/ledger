@@ -26,7 +26,7 @@ module Ledger
     def initialize(file = self.class.file)
       puts 'Configuration file not found' or exit unless file
 
-      @config = YAML.safe_load(ERB.new(File.read(file)).result, [Symbol]).freeze
+      @config = YAML.safe_load(ERB.new(File.read(file)).result, permitted_classes: [Symbol]).freeze
     end
 
     def default?
