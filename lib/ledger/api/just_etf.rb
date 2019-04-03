@@ -5,7 +5,7 @@ module Ledger
     # ETF and get the current code by parsing the HTML response
     class JustETF
       ENDPOINT = 'https://www.justetf.com/de-en/etf-profile.html'.freeze
-      TITLE_CSS = 'h1'.freeze
+      TITLE_CSS = '.h1'.freeze
       QUOTE_CSS = 'div.val span'.freeze
 
       class InvalidResponseError < StandardError; end
@@ -18,7 +18,7 @@ module Ledger
       end
 
       def title
-        document.css(TITLE_CSS).first.content.split("\n").first
+        document.at(TITLE_CSS).content.split("\n").first
       end
 
       def quote
