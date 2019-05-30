@@ -79,7 +79,7 @@ module Ledger
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
     method_option :global, type: :boolean, default: true, aliases: '-g'
-    method_option :currency, type: :string, aliases: '-c'
+    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     def analysis(category)
       Printer.new(parsed_options).analysis(category)
     end
@@ -92,7 +92,7 @@ module Ledger
     method_option :till, type: :string, aliases: '-t'
     method_option :categories, type: :array, aliases: '-C'
     method_option :global, type: :boolean, default: true, aliases: '-g'
-    method_option :currency, type: :string, aliases: '-c'
+    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     def report
       Printer.new(parsed_options).report
     end
@@ -103,7 +103,7 @@ module Ledger
     method_option :month, type: :numeric, aliases: '-m'
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
-    method_option :currency, type: :string, aliases: '-c'
+    method_option :currency, default: -> { CONFIG.default_currency }, type: :string, aliases: '-c'
     method_option :output, type: :string, default: -> { '/dev/stdout' }, aliases: '-o'
     method_option :networth, type: :boolean, default: false, aliases: '-n'
     def show
@@ -114,7 +114,7 @@ module Ledger
     map 't' => :trip
     method_option :trip, type: :string, aliases: '-t'
     method_option :global, type: :boolean, default: true, aliases: '-g'
-    method_option :currency, type: :string, aliases: '-c'
+    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     def trip
       Printer.new(parsed_options).trip
     end
