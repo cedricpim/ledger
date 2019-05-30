@@ -1,3 +1,3 @@
 module Ledger
-  VERSION = '9.4.4'.freeze
+  VERSION = '10.0.0'.freeze
 end

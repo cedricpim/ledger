@@ -8,6 +8,8 @@ module Ledger
 
     alias transactions list
 
+    attr_reader :account_inclusion
+
     def currencies
       @currencies ||= transactions.group_by(&:currency).reject { |_cur, ts| ts.sum(&:money).zero? }.keys
     end
@@ -30,21 +32,25 @@ module Ledger
     end
 
     def trips
-      if options[:global] && !options[:trip]
-        [GlobalTrip.new('Global', travel_transactions, relevant_transactions)]
-      else
-        travel_transactions.group_by(&:travel).map do |t, tts|
-          Trip.new(t, tts, filtered_transactions)
-        end.sort_by(&:date)
+      including do
+        if options[:global] && !options[:trip]
+          [GlobalTrip.new('Global', travel_transactions, relevant_transactions)]
+        else
+          travel_transactions.group_by(&:travel).map do |t, tts|
+            Trip.new(t, tts, filtered_transactions)
+          end.sort_by(&:date)
+        end
       end
     end
 
     def comparisons
-      totals_comparison = Comparison.new('Totals', transactions_for_comparison, periods, currency)
+      including do
+        totals_comparison = Comparison.new('Totals', transactions_for_comparison, periods, currency)
 
-      transactions_for_comparison.group_by(&:category).map do |c, cts|
-        Comparison.new(c, cts, periods, currency)
-      end.sort_by(&:category) + [totals_comparison]
+        transactions_for_comparison.group_by(&:category).map do |c, cts|
+          Comparison.new(c, cts, periods, currency)
+        end.sort_by(&:category) + [totals_comparison]
+      end
     end
 
     def reports
@@ -78,15 +84,30 @@ module Ledger
     end
 
     def current_networth
+      excluded_accounts = CONFIG.exclusions(of: :networth)[:accounts].map(&:downcase)
+
+      current = accounts.sum { |key, value| excluded_accounts.include?(key.downcase) ? 0 : value.exchange_to(currencies.first) }
+
       NetworthCalculation.new(transactions, current, currency).networth
     end
 
     private
 
+    def including
+      @account_inclusion = true
+      result = yield
+      @account_inclusion = false
+      result
+    end
+
     def relevant_transactions
-      @relevant_transactions ||= exchanged_list.reject do |t|
-        CONFIG.excluded_categories.any? { |c| c.casecmp(t.category).zero? }
+      exchanged_list.reject do |t|
+        exclusions[:categories].include?(t.category.downcase) || (!account_inclusion && exclusions[:accounts].include?(t.account.downcase))
       end
+    end
+
+    def exclusions
+      @exclusions ||= CONFIG.exclusions(of: :report).transform_values { |values| values.map(&:downcase) }
     end
 
     def period_transactions

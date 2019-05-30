@@ -77,8 +77,11 @@ module Ledger
       CONFIG.output(:default)
     end
 
-    def excluded_categories
-      @excluded_categories ||= config.dig(:report, :exclude).fetch(:categories, [])
+    def exclusions(of:)
+      Hash(config.dig(of, :exclude)).tap do |exclusions|
+        exclusions[:categories] ||= []
+        exclusions[:accounts] ||= []
+      end
     end
 
     def color(*fields)

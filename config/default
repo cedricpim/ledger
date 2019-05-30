@@ -6,6 +6,9 @@
   :file: "<%= XDG['CONFIG'] %>/ledger/networth.csv"
   :investments:
     - 'Investment'
+  :exclude:
+    :accounts:
+      - 'Vacation'
 
 # Settings to be used by the gem that handles the exchange rates
 # For more information, see https://github.com/spk/money-open-exchange-rates#usage
@@ -71,6 +74,8 @@
   :exclude:
     :categories:
       - 'Exchange'
+    :accounts:
+      - 'Vacation'
 
 # Define the set of formats to be used across the application
 :format:
