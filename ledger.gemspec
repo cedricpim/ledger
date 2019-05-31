@@ -30,10 +30,11 @@ Gem::Specification.new do |s| # rubocop:disable Metrics/BlockLength
   s.add_dependency 'xdg', '~> 2.2'
   s.add_dependency 'bigdecimal', '~> 1.4'
 
-  s.add_development_dependency 'guard', '~> 2.14'
-  s.add_development_dependency 'guard-rspec', '~> 4.7'
-  s.add_development_dependency 'pry', '~> 0.11'
-  s.add_development_dependency 'rspec', '~> 3.8'
-  s.add_development_dependency 'rubocop', '~> 0.59'
-  s.add_development_dependency 'vcr', '~> 4.0.0'
+  s.add_development_dependency 'factory_bot'
+  s.add_development_dependency 'guard'
+  s.add_development_dependency 'guard-rspec'
+  s.add_development_dependency 'pry'
+  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'rubocop'
+  s.add_development_dependency 'vcr'
 end
