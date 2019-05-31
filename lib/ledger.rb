@@ -52,6 +52,8 @@ require_relative 'ledger/transaction_builder'
 require_relative 'ledger/trip'
 require_relative 'ledger/version'
 
+require_relative 'ledger/action/book'
+
 require 'ledger/api/just_etf'
 
 # Namespace for the whole project

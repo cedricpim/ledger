@@ -27,10 +27,12 @@ module Ledger
       @options = options
     end
 
-    def book!
-      transaction = TransactionBuilder.new(self).build!
-
-      Encryption.new(CONFIG.ledger).wrap { |file| save!(transaction, file) }
+    def add(transaction)
+      Encryption.new(CONFIG.ledger).wrap do |file|
+        file.seek(0, IO::SEEK_END)
+        file.puts(transaction.to_file)
+        file.rewind
+      end
     end
 
     def convert!

@@ -58,10 +58,9 @@ module Ledger
     end
 
     desc 'book', COMMANDS[:book]
-    map 'B' => :book
     method_option :transaction, type: :array, aliases: '-t'
     def book
-      Repository.new(parsed_options).book!
+      Action::Book.new(parsed_options).call
     end
 
     desc 'balance', COMMANDS[:balance]

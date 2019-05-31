@@ -1,19 +1,34 @@
 RSpec.describe Ledger::TransactionBuilder do
-  subject(:builder) { described_class.new(repository) }
+  subject(:builder) { described_class.new(values: values) }
 
-  let(:options) { {} }
-  let(:repository) { Ledger::Repository.new(options) }
+  let(:values) { nil }
 
-  before { allow(repository).to receive(:load!).and_yield }
+  let(:transaction) { build(:transaction) }
 
   describe '#build!' do
-    subject { builder.build!.to_file }
+    subject { builder.build! }
 
-    let(:keys) { %i[account date category description venue amount currency travel] }
-    let(:options) { {transaction: ['Account', '21-07-2018', 'Cat', 'Desc', '', '10.0', 'USD', '']} }
+    let(:values) { transaction.to_h.values }
 
-    let(:result) { t(keys.zip(options[:transaction]).to_h) }
+    it { is_expected.to eq transaction }
 
-    it { is_expected.to eq result.to_file }
+    context 'with values provided from STDIN' do
+      let(:values) { nil }
+
+      before do
+        expect(Readline).to receive(:readline).and_return(
+          transaction.account,
+          transaction.date.to_s,
+          transaction.category,
+          '',
+          '',
+          transaction.amount.to_s,
+          transaction.currency,
+          transaction.travel
+        )
+      end
+
+      it { is_expected.to eq build(:transaction, description: '', venue: '') }
+    end
   end
 end

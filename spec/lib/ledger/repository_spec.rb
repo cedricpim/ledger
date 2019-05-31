@@ -9,38 +9,36 @@ RSpec.describe Ledger::Repository do
   let(:networth_encryption) { instance_double('Ledger::Encryption') }
 
   before do
-    allow(File).to receive(:new).and_return(path, networth_path)
+    # allow(File).to receive(:new).and_return(path, networth_path)
 
     allow_any_instance_of(Ledger::Config).to receive(:ledger).and_return(path)
     allow_any_instance_of(Ledger::Config).to receive(:networth).and_return(networth_path)
 
-    allow(Ledger::Encryption).to receive(:new).with(path).and_return(encryption)
-    allow(encryption).to receive(:wrap).and_yield(path)
+    # allow(Ledger::Encryption).to receive(:new).with(path).and_return(encryption)
+    # allow(encryption).to receive(:wrap).and_yield(path)
 
-    allow(Ledger::Encryption).to receive(:new).with(networth_path).and_return(networth_encryption)
-    allow(networth_encryption).to receive(:wrap).and_yield(networth_path)
+    # allow(Ledger::Encryption).to receive(:new).with(networth_path).and_return(networth_encryption)
+    # allow(networth_encryption).to receive(:wrap).and_yield(networth_path)
 
-    allow(CSV).to receive(:open).with(path, Hash).and_call_original
-    allow(File).to receive(:open).with(path, String, Hash).and_call_original
-    allow(CSV).to receive(:open).with(networth_path, Hash).and_call_original
-    allow(File).to receive(:open).with(networth_path, String, Hash).and_call_original
+    # allow(CSV).to receive(:open).with(path, Hash).and_call_original
+    # allow(File).to receive(:open).with(path, String, Hash).and_call_original
+    # allow(CSV).to receive(:open).with(networth_path, Hash).and_call_original
+    # allow(File).to receive(:open).with(networth_path, String, Hash).and_call_original
   end
 
-  describe '#book!' do
-    subject { repository.book! }
+  describe '#add' do
+    let(:transaction) { build(:transaction) }
+    let(:file) { StringIO.new }
 
-    let(:transaction) { instance_double('Ledger::Transaction', to_file: 'to_file') }
-    let(:builder) { instance_double('Ledger::TransactionBuilder', build!: transaction) }
-    let(:file) { instance_double('File') }
+    before do
+      allow(Ledger::Encryption).to receive(:new).with(CONFIG.ledger).and_return(encryption)
+      allow(encryption).to receive(:wrap).and_yield(file)
+    end
 
-    specify do
-      expect(Ledger::TransactionBuilder).to receive(:new).with(repository).and_return(builder)
-      expect(File).to receive(:open).with(path, 'a').and_yield(file)
-      expect(file).to receive(:write).with("to_file\n")
-      expect(File).to receive(:read).with(path).and_return("something\n\nother\nanother\n\n")
-      expect(File).to receive(:write).with(path, "something\nother\nanother\n")
+    it 'writes the transaction to file' do
+      repository.add(transaction)
 
-      subject
+      expect(file.tap(&:rewind).read).to eq(transaction.to_file + "\n")
     end
   end
 

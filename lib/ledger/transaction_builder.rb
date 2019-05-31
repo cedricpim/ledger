@@ -5,22 +5,18 @@ module Ledger
   # such as default attributes and auto-complete.
   class TransactionBuilder
     DEFAULT = ''.freeze
-    AUTO_COMPLETE = %i[account category description venue currency travel].freeze
     ALLOWED_DATE_SEPARATORS = %r{-|/|\.}
 
-    attr_reader :repository, :options
+    attr_reader :transaction_values
 
-    def initialize(repository)
-      @repository = repository
-      @options = repository.options
+    def initialize(values: [])
+      @transaction_values = Array(values)
     end
 
     def build!
       CONFIG.fields.each_with_index do |(field, default_options), index|
         read(field, index, default_options)
       end
-
-      exchange_money
 
       transaction
     rescue Exception => e # rubocop:disable Lint/RescueException
@@ -33,18 +29,10 @@ module Ledger
       @transaction ||= Transaction.new
     end
 
-    def exchange_money
-      account_currency = repository.accounts_currency[transaction.account]
-
-      return unless account_currency
-
-      transaction.money = transaction.money.exchange_to(account_currency)
-    end
-
     def read(key, index, default: DEFAULT, presence: false, values: [])
       title = key.to_s.capitalize
 
-      value = provided_values[index] || handle_input(key, title, default, values)
+      value = transaction_values[index] || handle_input(key, title, default, values)
 
       puts "#{title} must be present" or exit if presence && value.empty?
 
@@ -52,8 +40,6 @@ module Ledger
     end
 
     def handle_input(key, title, default, values)
-      prepare_readline_completion(key, values)
-
       value = Readline.readline("#{title} [#{default}] ", true).strip
       process_input(key, default, value)
     end
@@ -67,23 +53,6 @@ module Ledger
       end.join('-')
 
       Date.parse(value) && value
-    end
-
-    # Include values on the list
-    def prepare_readline_completion(key, values)
-      completion_list = (AUTO_COMPLETE.include?(key) ? collect_values(key) : []).concat(values).uniq.sort
-
-      Readline.completion_proc = completion_list && proc do |s|
-        completion_list.grep(/^#{Regexp.escape(s)}/i)
-      end
-    end
-
-    def collect_values(key)
-      repository.transactions.map(&key).uniq.compact.sort
-    end
-
-    def provided_values
-      options[:transaction].to_a
     end
   end
 end
