@@ -27,22 +27,16 @@ module Ledger
       @options = options
     end
 
-    def add(transaction)
-      Encryption.new(CONFIG.ledger).wrap do |file|
-        file.seek(0, IO::SEEK_END)
-        file.puts(transaction.to_file)
-        file.rewind
-      end
+    def encryption
+      @encryption ||= Encryption.new(CONFIG.ledger)
     end
 
-    def convert!
-      Encryption.new(CONFIG.ledger).wrap do |file|
-        CSV.open(file, 'wb') { |csv| csv << CONFIG.transaction_fields.map(&:capitalize) }
-
-        transactions.each do |transaction|
-          exchanged = transaction.exchange_to(accounts_currency[transaction.account])
-          save!(exchanged, file)
-        end
+    def add(*transactions, reset: false)
+      encryption.wrap do |file|
+        file.seek(0, reset ? IO::SEEK_SET : IO::SEEK_END)
+        file.puts(Transaction.members.map(&:capitalize).join(",")) if reset
+        transactions.flatten.each { |transaction| file.puts(transaction.to_file) }
+        file.rewind
       end
     end
 
@@ -107,7 +101,7 @@ module Ledger
 
     # @note index starts at 2, since the file lines start at 1, and the first line is the header
     def parse(file, networth: false)
-      CSV.foreach(file, headers: true, header_converters: :symbol).with_index(2) do |row, index|
+      CSV.new(file, headers: true, header_converters: :symbol).each.with_index(2) do |row, index|
         load_entry(row.to_h, index, networth: networth)
       end
     rescue OpenSSL::Cipher::CipherError => e

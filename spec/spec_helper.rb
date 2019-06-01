@@ -56,6 +56,26 @@ RSpec.configure do |config|
   config.before(:suite) do
     FactoryBot.find_definitions
   end
+
+  config.before(:each, :file) do |example|
+    # example.metadata[:file]
+    def file
+      @file ||= StringIO.new(defined?(contents) ? contents : '')
+    end
+
+    def networth
+      @networth ||= StringIO.new
+    end
+
+    encryption = instance_double('Ledger::Encryption')
+    allow(Ledger::Encryption).to receive(:new).with(CONFIG.ledger).and_return(encryption)
+    allow(encryption).to receive(:wrap).and_yield(file)
+
+    networth_encryption = instance_double('Ledger::Encryption')
+    allow(Ledger::Encryption).to receive(:new).with(CONFIG.networth).and_return(networth_encryption)
+    allow(networth_encryption).to receive(:wrap).and_yield(networth)
+  end
+
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.

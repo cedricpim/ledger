@@ -40,7 +40,7 @@ module Ledger
 
     desc 'convert', COMMANDS[:convert]
     def convert
-      Repository.new(parsed_options).convert!
+      Action::Convert.new.call
     end
 
     desc 'create', COMMANDS[:create]

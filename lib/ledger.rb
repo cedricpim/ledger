@@ -53,6 +53,7 @@ require_relative 'ledger/trip'
 require_relative 'ledger/version'
 
 require_relative 'ledger/action/book'
+require_relative 'ledger/action/convert'
 
 require 'ledger/api/just_etf'
 

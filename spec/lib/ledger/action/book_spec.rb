@@ -3,16 +3,12 @@ RSpec.describe Ledger::Action::Book do
 
   let(:options) { {} }
 
-  describe '#call' do
+  describe '#call', :file do
     let(:transaction) { build(:transaction) }
     let(:options) { {transaction: transaction.to_h.values} }
-    let(:repository) { instance_double('Ledger::Repository') }
 
-    it 'adds the resulting transaction to Repository' do
-      expect(Ledger::Repository).to receive(:new).and_return(repository)
-      expect(repository).to receive(:add).with(transaction)
-
-      action.call
+    it 'adds the resulting transaction to file' do
+      expect { action.call }.to change { file.tap(&:rewind).read }.to(transaction.to_file + "\n")
     end
   end
 end
