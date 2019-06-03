@@ -54,7 +54,7 @@ module Ledger
     method_option :line, type: :numeric, aliases: '-l'
     method_option :networth, type: :boolean, default: false, aliases: '-n'
     def edit
-      Repository.new(parsed_options).edit!
+      Action::Edit.new(parsed_options).call
     end
 
     desc 'book', COMMANDS[:book]

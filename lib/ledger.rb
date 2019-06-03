@@ -54,6 +54,7 @@ require_relative 'ledger/version'
 
 require_relative 'ledger/action/book'
 require_relative 'ledger/action/convert'
+require_relative 'ledger/action/edit'
 
 require 'ledger/api/just_etf'
 

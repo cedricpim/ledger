@@ -19,25 +19,29 @@ module Ledger
     def_delegators :content, *CONTENT_METHODS
     def_delegators :networth_content, *NETWORTH_CONTENT_METHODS
 
-    attr_reader :transaction_entries, :networth_entries, :options
+    attr_reader :transaction_entries, :networth_entries, :options, :encryption
 
     def initialize(options = {})
       @transaction_entries = []
       @networth_entries = []
       @options = options
-    end
-
-    def encryption
-      @encryption ||= Encryption.new(CONFIG.ledger)
+      @encryption = {
+        ledger: Encryption.new(CONFIG.ledger),
+        networth: Encryption.new(CONFIG.networth)
+      }
     end
 
     def add(*transactions, reset: false)
-      encryption.wrap do |file|
+      open(:ledger) do |file|
         file.seek(0, reset ? IO::SEEK_SET : IO::SEEK_END)
         file.puts(Transaction.members.map(&:capitalize).join(",")) if reset
         transactions.flatten.each { |transaction| file.puts(transaction.to_file) }
         file.rewind
       end
+    end
+
+    def open(resource, &block)
+      encryption[resource].wrap(&block)
     end
 
     def create!
@@ -50,11 +54,6 @@ module Ledger
       end
 
       Encryption.new(resource).encrypt!
-    end
-
-    def edit!
-      line = ":#{options[:line]}" if options[:line]
-      Encryption.new(resource).wrap { |file| system("#{ENV['EDITOR']} #{file.path}#{line}") }
     end
 
     def networth!

@@ -124,31 +124,6 @@ RSpec.describe Ledger::Repository do
     end
   end
 
-  describe '#edit!' do
-    subject { repository.edit! }
-
-    let(:editor) { 'vim' }
-    let(:path) { instance_double('File', path: super()) }
-
-    before { ENV['EDITOR'] = editor }
-
-    specify do
-      expect_any_instance_of(Kernel).to receive(:system).with([editor, path.path].join(' '))
-
-      subject
-    end
-
-    context 'when a line is specified' do
-      let(:options) { {line: 10} }
-
-      specify do
-        expect_any_instance_of(Kernel).to receive(:system).with([editor, "#{path.path}:10"].join(' '))
-
-        subject
-      end
-    end
-  end
-
   describe '#show' do
     subject { repository.show }
 

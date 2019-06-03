@@ -28,6 +28,14 @@ module RSpecConfig
     super(file || Ledger::Config::FALLBACK_CONFIG)
   end
 
+  def ledger
+    File.join('spec', 'fixtures', 'example.csv')
+  end
+
+  def networth
+    File.join('spec', 'fixtures', 'example-networth.csv')
+  end
+
   def exchange
     {cache_file: File.join('spec', 'fixtures', 'exchange-cache.json')}
   end
@@ -57,23 +65,34 @@ RSpec.configure do |config|
     FactoryBot.find_definitions
   end
 
-  config.before(:each, :file) do |example|
-    # example.metadata[:file]
-    def file
-      @file ||= StringIO.new(defined?(contents) ? contents : '')
+  config.before(:each, /streaming|stubbing/) do |example|
+    @stubbing = example.metadata[:stubbing]
+
+    def ledger
+      @ledger ||=
+        if @stubbing
+          instance_double('Tempfile')
+        else
+          StringIO.new(defined?(ledger_content) ? ledger_content : '')
+        end
     end
 
     def networth
-      @networth ||= StringIO.new
+      @networth ||=
+        if @stubbing
+          instance_double('Tempfile')
+        else
+          StringIO.new(defined?(networth_content) ? networth_content : '')
+        end
     end
 
     encryption = instance_double('Ledger::Encryption')
     allow(Ledger::Encryption).to receive(:new).with(CONFIG.ledger).and_return(encryption)
-    allow(encryption).to receive(:wrap).and_yield(file)
+    allow(encryption).to receive(:wrap).and_yield(ledger)
 
-    networth_encryption = instance_double('Ledger::Encryption')
-    allow(Ledger::Encryption).to receive(:new).with(CONFIG.networth).and_return(networth_encryption)
-    allow(networth_encryption).to receive(:wrap).and_yield(networth)
+    nencryption = instance_double('Ledger::Encryption')
+    allow(Ledger::Encryption).to receive(:new).with(CONFIG.networth).and_return(nencryption)
+    allow(nencryption).to receive(:wrap).and_yield(networth)
   end
 
   # rspec-expectations config goes here. You can use an alternate
