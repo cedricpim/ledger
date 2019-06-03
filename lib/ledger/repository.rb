@@ -6,6 +6,12 @@ module Ledger
 
     class IncorrectCSVFormatError < StandardError; end
 
+    # Map of which type of file has which entity
+    ENTITIES = {
+      ledger: 'Ledger::Transaction',
+      networth: 'Ledger::Networth'
+    }.freeze
+
     # Methods that are forwarded to content
     CONTENT_METHODS = %i[
       transactions accounts currencies current trips reports analyses
@@ -31,29 +37,17 @@ module Ledger
       }
     end
 
-    def add(*transactions, reset: false)
-      open(:ledger) do |file|
+    def add(*transactions, type: :ledger, reset: false)
+      open(type) do |file|
         file.seek(0, reset ? IO::SEEK_SET : IO::SEEK_END)
-        file.puts(Transaction.members.map(&:capitalize).join(",")) if reset
-        transactions.flatten.each { |transaction| file.puts(transaction.to_file) }
+        file.puts(headers(type)) if reset
+        transactions.flatten.compact.each { |transaction| file.puts(transaction.to_file) }
         file.rewind
       end
     end
 
     def open(resource, &block)
       encryption[resource].wrap(&block)
-    end
-
-    def create!
-      filepath = File.expand_path(resource)
-
-      return if File.exist?(filepath)
-
-      CSV.open(filepath, 'wb') do |csv|
-        csv << (options[:networth] ? Networth.members : CONFIG.transaction_fields).map(&:capitalize)
-      end
-
-      Encryption.new(resource).encrypt!
     end
 
     def networth!
@@ -79,6 +73,10 @@ module Ledger
     end
 
     private
+
+    def headers(type)
+      ENTITIES[type].constantize.members.map(&:capitalize).join(",")
+    end
 
     def resource
       options[:networth] ? CONFIG.networth : CONFIG.ledger

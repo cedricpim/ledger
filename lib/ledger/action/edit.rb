@@ -4,13 +4,7 @@ module Ledger
   module Action
     # Class responsible for opening the file defined in the options with the
     # editor defined on EDITOR
-    class Edit
-      attr_reader :options
-
-      def initialize(options = {})
-        @options = options
-      end
-
+    class Edit < Base
       def call
         puts 'No editor defined ($EDITOR)' or return unless ENV['EDITOR']
 
@@ -24,10 +18,6 @@ module Ledger
 
       def resource
         options[:networth] ? :networth : :ledger
-      end
-
-      def repository
-        @repository ||= Repository.new
       end
     end
   end

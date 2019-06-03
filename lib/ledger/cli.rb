@@ -44,9 +44,8 @@ module Ledger
     end
 
     desc 'create', COMMANDS[:create]
-    method_option :networth, type: :boolean, default: false, aliases: '-n'
     def create
-      Repository.new(parsed_options).create!
+      Action::Create.new.call
     end
 
     desc 'edit', COMMANDS[:edit]

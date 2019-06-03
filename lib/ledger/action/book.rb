@@ -3,17 +3,11 @@ module Ledger
   # Ledger
   module Action
     # Class responsible for adding a transaction to the ledger
-    class Book
-      attr_reader :options
-
-      def initialize(options = {})
-        @options = options
-      end
-
+    class Book < Base
       def call
         transaction = TransactionBuilder.new(values: options[:transaction]).build!
 
-        Repository.new.add(transaction)
+        repository.add(transaction)
       end
     end
   end

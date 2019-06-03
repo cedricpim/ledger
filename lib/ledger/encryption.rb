@@ -2,10 +2,13 @@ module Ledger
   # Class responsible for holding all the logic related to encrypting and
   # decrypting the ledger file.
   class Encryption
+    FILE_MODE = 'r+'.freeze
+
     attr_reader :resource
 
     def initialize(resource)
-      @resource = File.new(File.expand_path(resource))
+      filepath = File.expand_path(resource)
+      @resource = File.new(filepath, 'a') && File.new(filepath, FILE_MODE)
     end
 
     # Rescue from OpenSSL::Cipher::CipherError when trying to decrypt an already

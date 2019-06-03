@@ -69,30 +69,32 @@ RSpec.configure do |config|
     @stubbing = example.metadata[:stubbing]
 
     def ledger
-      @ledger ||=
-        if @stubbing
-          instance_double('Tempfile')
-        else
-          StringIO.new(defined?(ledger_content) ? ledger_content : '')
-        end
+      @ledger ||= prepare(defined?(ledger_content) ? ledger_content : '', stubbed: @stubbing)
     end
 
     def networth
-      @networth ||=
-        if @stubbing
-          instance_double('Tempfile')
-        else
-          StringIO.new(defined?(networth_content) ? networth_content : '')
-        end
+      @networth ||= prepare(defined?(networth_content) ? networth_content : '', stubbed: @stubbing)
     end
 
-    encryption = instance_double('Ledger::Encryption')
-    allow(Ledger::Encryption).to receive(:new).with(CONFIG.ledger).and_return(encryption)
-    allow(encryption).to receive(:wrap).and_yield(ledger)
+    def prepare(content, stubbed:)
+      if stubbed
+        instance_double('Tempfile', size: content.length, read: content)
+      else
+        StringIO.new(content, Ledger::Encryption::FILE_MODE)
+      end
+    end
 
-    nencryption = instance_double('Ledger::Encryption')
-    allow(Ledger::Encryption).to receive(:new).with(CONFIG.networth).and_return(nencryption)
-    allow(nencryption).to receive(:wrap).and_yield(networth)
+    def stub_encryption_for(type)
+      resource = public_send(type)
+
+      encryption = instance_double('Ledger::Encryption', resource: resource)
+
+      allow(Ledger::Encryption).to receive(:new).with(CONFIG.public_send(type)).and_return(encryption)
+      allow(encryption).to receive(:wrap).and_yield(resource)
+    end
+
+    stub_encryption_for(:ledger)
+    stub_encryption_for(:networth)
   end
 
   # rspec-expectations config goes here. You can use an alternate
