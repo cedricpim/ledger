@@ -19,7 +19,7 @@ module Ledger
     CONTENT_METHODS = %i[
       transactions accounts currencies current trips reports analyses
       comparisons accounts_currency filtered_transactions
-      excluded_transactions periods current_networth
+      excluded_transactions periods
     ].freeze
 
     def_delegators :content, *CONTENT_METHODS

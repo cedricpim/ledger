@@ -8,13 +8,15 @@ module Ledger
           entry.exchange_to(currency).tap { |clone| clone.calculate_invested!(transactions) }
         end
 
-        repository.add(entries + [Content.new(transactions, options).current_networth], type: :networth, reset: true)
+        entries << NetworthCalculation.new(transactions, currency).networth
+
+        repository.add(entries, type: :networth, reset: true)
       end
 
       private
 
       def transactions
-        @transactions ||= repository.load(:ledger).to_a
+        @transactions ||= repository.load(:ledger)
       end
 
       def currency

@@ -66,7 +66,7 @@ module Ledger
     def networth
       title('Networth Balance')
 
-      build(repository.current_networth, width: :auto)
+      build(NetworthCalculation.new(repository.load(:ledger), options[:currency]).networth, width: :auto)
     end
 
     private

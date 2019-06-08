@@ -15,11 +15,9 @@ module Ledger
     # decrypted file.
     def wrap
       decrypt!(resource, tempfile)
-      yield(tempfile)
-      encrypt!(tempfile, resource)
+      yield(tempfile).tap { encrypt!(tempfile, resource) }
     rescue OpenSSL::Cipher::CipherError
-      yield(resource)
-      encrypt!
+      yield(resource).tap { encrypt! }
     end
 
     def encrypt!(source = resource, target = resource)

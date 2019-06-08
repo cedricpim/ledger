@@ -2,11 +2,10 @@ module Ledger
   # Class holding the transactions read from the ledger, retrieving the
   # investments and checking the current networth.
   class NetworthCalculation
-    attr_reader :investments, :current, :currency
+    attr_reader :transactions, :currency
 
-    def initialize(transactions, current, currency)
-      @investments = transactions.select(&:investment?)
-      @current = current
+    def initialize(transactions, currency)
+      @transactions = transactions
       @currency = currency
     end
 
@@ -20,11 +19,13 @@ module Ledger
     private
 
     def amount
-      cash + investment
+      current + investment
     end
 
-    def cash
-      current.exchange_to(currency)
+    def current
+      transactions.sum do |transaction|
+        excluded_accounts.include?(transaction.account.downcase) ? 0 : transaction.exchange_to(currency).money
+      end
     end
 
     def investment
@@ -32,7 +33,7 @@ module Ledger
     end
 
     def valuations
-      investments_with_shares.each_with_object({}) do |(isin, shares), res|
+      @valuations ||= investments_with_shares.each_with_object({}) do |(isin, shares), res|
         title, quote = quotes[isin]
         res[title || isin] = quote * shares
       end
@@ -46,9 +47,17 @@ module Ledger
     end
 
     def investments_with_shares
-      @investments_with_shares ||= investments.each_with_object(Hash.new { |h, k| h[k] = 0 }) do |t, res|
-        res[t.isin] += t.shares
+      @investments_with_shares ||= investments.each_with_object(Hash.new(0)) do |investment, res|
+        res[investment.isin] += investment.shares
       end
+    end
+
+    def investments
+      @investments ||= transactions.select(&:investment?)
+    end
+
+    def excluded_accounts
+      @excluded_accounts ||= CONFIG.exclusions(of: :networth)[:accounts].map(&:downcase)
     end
   end
 end

@@ -83,14 +83,6 @@ module Ledger
       @periods ||= (current_period + previous_periods).sort
     end
 
-    def current_networth
-      excluded_accounts = CONFIG.exclusions(of: :networth)[:accounts].map(&:downcase)
-
-      current = accounts.sum { |key, value| excluded_accounts.include?(key.downcase) ? 0 : value.exchange_to(currencies.first) }
-
-      NetworthCalculation.new(transactions, current, currency).networth
-    end
-
     private
 
     def including

@@ -42,7 +42,7 @@ RSpec.describe Ledger::Action::Networth do
         RSpecHelper.build_result(
           Ledger::Networth,
           build(:networth, currency: 'EUR', invested: '8.62', investment: '4.31', amount: '8.62', date: '2019-06-07'),
-          build(:networth, currency: 'EUR', invested: '17.24', investment: '103.42', amount: '137.89', date: '2019-06-08')
+          build(:networth, currency: 'EUR', invested: '17.24', investment: '103.42', amount: '137.90', date: '2019-06-08')
         )
       end
 
