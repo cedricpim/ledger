@@ -4,7 +4,7 @@ module Ledger
     # each account
     class Convert < Base
       def call
-        transactions = repository.transactions.map do |transaction|
+        transactions = repository.load(:ledger).map do |transaction|
           transaction.exchange_to(repository.accounts_currency[transaction.account])
         end
 

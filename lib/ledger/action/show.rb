@@ -4,7 +4,7 @@ module Ledger
     # options provided
     class Show < Base
       def call
-        repository.load(resource) do |entity|
+        repository.load(resource).each do |entity|
           system("echo \"#{entity.to_file}\" >> #{output.path}")
         end
       end
@@ -13,10 +13,6 @@ module Ledger
 
       def output
         @output ||= File.new(options[:output], 'a')
-      end
-
-      def resource
-        options[:networth] ? :networth : :ledger
       end
     end
   end

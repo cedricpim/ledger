@@ -10,6 +10,12 @@ module Ledger
         @options = options
         @repository = Repository.new
       end
+
+      private
+
+      def resource
+        options[:networth] ? :networth : :ledger
+      end
     end
   end
 end

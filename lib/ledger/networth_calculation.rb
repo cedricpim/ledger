@@ -5,7 +5,7 @@ module Ledger
     attr_reader :investments, :current, :currency
 
     def initialize(transactions, current, currency)
-      @investments = transactions.select(&:investment?).map { |transaction| transaction.exchange_to(currency) }
+      @investments = transactions.select(&:investment?)
       @current = current
       @currency = currency
     end

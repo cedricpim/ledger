@@ -20,7 +20,7 @@ module Ledger
     def calculate_invested!(transactions)
       self.day_investment = nil
       self.invested = transactions.sum do |transaction|
-        transaction.investment? && transaction.date == date ? transaction.money : 0
+        transaction.investment? && transaction.date == date ? transaction.exchange_to(currency).money : 0
       end.abs.to_s
     end
 

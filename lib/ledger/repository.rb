@@ -1,3 +1,6 @@
+require_relative 'transaction'
+require_relative 'networth'
+
 module Ledger
   # Class responsible for reading the ledger file into memory and loading all the
   # transactions, creating the ledger file or adding a new transaction.
@@ -8,8 +11,8 @@ module Ledger
 
     # Map of which type of file has which entity
     ENTITIES = {
-      ledger: 'Ledger::Transaction',
-      networth: 'Ledger::Networth'
+      ledger: Ledger::Transaction,
+      networth: Ledger::Networth
     }.freeze
 
     # Methods that are forwarded to content
@@ -21,14 +24,10 @@ module Ledger
 
     def_delegators :content, *CONTENT_METHODS
 
-    attr_reader :options, :entries, :encryption
+    attr_reader :options, :encryption
 
     def initialize(options = {})
       @options = options
-      @entries = {
-        ledger: [],
-        networth: []
-      }
       @encryption = {
         ledger: Encryption.new(CONFIG.ledger),
         networth: Encryption.new(CONFIG.networth)
@@ -44,44 +43,39 @@ module Ledger
       end
     end
 
-    def open(resource, &block)
-      encryption[resource].wrap(&block)
+    def load(resource)
+      open(resource) { |file| parse(file, resource: resource) }
     end
 
-    def load(resource, &block)
-      encryption[resource].wrap { |file| parse(file, resource: resource, &block) }
+    def open(resource, &block)
+      encryption[resource].wrap(&block)
     end
 
     private
 
     def headers(type)
-      Object.const_get(ENTITIES[type]).members.map(&:capitalize).join(",")
+      ENTITIES[type].members.map(&:capitalize).join(",")
     end
 
-    # @note index starts at 2, since the file lines start at 1, and the first line is the header
-    def parse(file, resource: :ledger, &block)
-      CSV.new(file, headers: true, header_converters: :symbol).each.with_index(2) do |row, index|
-        load_entry(row.to_h, index, resource: resource, &block)
+    # @note index starts at 1, since the first line is the header
+    def parse(file, resource: :ledger)
+      csv = CSV.new(file, headers: true, header_converters: :symbol).to_enum.with_index(1)
+
+      Enumerator.new { |yielder| iterator(yielder, csv, resource: resource) }
+    end
+
+    def iterator(yielder, csv, resource:)
+      while (elem, index = csv.next)
+        raise IncorrectCSVFormatError, "A problem reading line #{index + 1} has occurred" if elem.headers.include?(nil)
+
+        yielder.yield ENTITIES[resource].new(elem.to_h)
       end
-    rescue OpenSSL::Cipher::CipherError => e
-      raise e
-    end
-
-    def load_entry(attributes, index, resource:, &block)
-      entry = Object.const_get(ENTITIES[resource]).new(attributes)
-      block ? block.call(entry) : entries[resource] << entry
-    rescue StandardError
-      raise IncorrectCSVFormatError, "A problem reading line #{index} has occurred"
+    rescue StopIteration
+      csv.tap(&:rewind)
     end
 
     def content
-      @content ||= load! { Content.new(entries[:ledger], options) }
-    end
-
-    def load!
-      Encryption.new(CONFIG.ledger).wrap { |file| parse(file, resource: :ledger) }
-      Encryption.new(CONFIG.networth).wrap { |file| parse(file, resource: :networth) }
-      yield if block_given?
+      @content ||= Content.new(load(:ledger), options)
     end
   end
 end

@@ -8,14 +8,9 @@ module Ledger
 
         repository.open(resource) do |file|
           filepath = [file.path, options[:line]].compact.join(':')
-          system("#{ENV['EDITOR']} #{filepath}")
+
+          system([ENV['EDITOR'], filepath].compact.join(' '))
         end
-      end
-
-      private
-
-      def resource
-        options[:networth] ? :networth : :ledger
       end
     end
   end
