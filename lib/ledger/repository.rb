@@ -34,11 +34,12 @@ module Ledger
       }
     end
 
-    def add(*entries, type: :ledger, reset: false)
-      open(type) do |file|
+    def add(*entries, resource: :ledger, reset: false)
+      open(resource) do |file|
         file.seek(0, reset ? IO::SEEK_SET : IO::SEEK_END)
-        file.puts(headers(type)) if reset
+        file.puts(headers(resource)) if reset
         entries.flatten.compact.each { |entry| file.puts(entry.to_file) }
+        file.truncate(file.pos)
         file.rewind
       end
     end
@@ -59,7 +60,7 @@ module Ledger
 
     # @note index starts at 1, since the first line is the header
     def parse(file, resource: :ledger)
-      csv = CSV.new(file, headers: true, header_converters: :symbol).to_enum.with_index(1)
+      csv = CSV.new(file, headers: true, header_converters: :symbol, nil_value: '').to_enum.with_index(1)
 
       Enumerator.new { |yielder| iterator(yielder, csv, resource: resource) }
     end
@@ -72,6 +73,8 @@ module Ledger
       end
     rescue StopIteration
       csv.tap(&:rewind)
+    rescue CSV::MalformedCSVError => e
+      raise OpenSSL::Cipher::CipherError, e.message
     end
 
     def content

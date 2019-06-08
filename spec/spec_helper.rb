@@ -70,20 +70,22 @@ RSpec.configure do |config|
 
     def ledger
       @ledger ||= begin
-        content = defined?(ledger_content) ? [RSpecHelper.headers(Ledger::Transaction)] + ledger_content.map(&:to_file) : ''
+        content = defined?(ledger_content) ? [RSpecHelper.headers(Ledger::Transaction)] + ledger_content : []
         prepare(content, stubbed: @stubbing)
       end
     end
 
     def networth
       @networth ||= begin
-        content = defined?(networth_content) ? [RSpecHelper.headers(Ledger::Networth)] + networth_content.map(&:to_file) : ''
+        content = defined?(networth_content) ? [RSpecHelper.headers(Ledger::Networth)] + networth_content : []
         prepare(content, stubbed: @stubbing)
       end
     end
 
     def prepare(content, stubbed:)
-      content = content.join("\n") if content.is_a?(Array)
+      content = content.map { |entry| entry.respond_to?(:to_file) ? entry.to_file : entry }.join("\n")
+
+      content += "\n" unless content.empty?
 
       if stubbed
         instance_double('Tempfile', size: content.length, read: content)

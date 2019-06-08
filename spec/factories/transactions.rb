@@ -5,7 +5,7 @@ FactoryBot.define do
     category { 'Category' }
     sequence(:description) { |s| "Description ##{s}" }
     venue { 'Venue' }
-    amount { '10.0' }
+    amount { '+10.00' }
     currency { 'USD' }
     travel { '' }
   end

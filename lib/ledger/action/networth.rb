@@ -10,7 +10,7 @@ module Ledger
 
         entries << NetworthCalculation.new(transactions, currency).networth
 
-        repository.add(entries, type: :networth, reset: true)
+        repository.add(entries, resource: :networth, reset: true)
       end
 
       private

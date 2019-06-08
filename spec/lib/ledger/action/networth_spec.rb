@@ -32,7 +32,7 @@ RSpec.describe Ledger::Action::Networth do
     end
 
     it 'recalculates existing networths and add the new one' do
-      expect { action.call }.to change { networth.tap(&:rewind).read }.to(result + "\n")
+      expect { action.call }.to change { networth.tap(&:rewind).read }.to(result)
     end
 
     context 'when a different currency is given' do
@@ -47,7 +47,7 @@ RSpec.describe Ledger::Action::Networth do
       end
 
       it 'recalculates existing networths and add the new one' do
-        expect { action.call }.to change { networth.tap(&:rewind).read }.to(result + "\n")
+        expect { action.call }.to change { networth.tap(&:rewind).read }.to(result)
       end
     end
   end

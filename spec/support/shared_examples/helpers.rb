@@ -5,7 +5,7 @@ class RSpecHelper
     end
 
     def build_result(klass, *entries)
-      ([headers(klass)] + entries.map(&:to_file)).join("\n")
+      ([headers(klass)] + entries.map(&:to_file)).join("\n") + "\n"
     end
   end
 end
