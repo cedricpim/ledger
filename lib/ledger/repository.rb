@@ -19,17 +19,11 @@ module Ledger
       excluded_transactions periods current_networth
     ].freeze
 
-    # Methods that are forwarded to networth content
-    NETWORTH_CONTENT_METHODS = %i[filtered_networth].freeze
-
     def_delegators :content, *CONTENT_METHODS
-    def_delegators :networth_content, *NETWORTH_CONTENT_METHODS
 
-    attr_reader :transaction_entries, :networth_entries, :options, :encryption, :entries
+    attr_reader :options, :entries, :encryption
 
     def initialize(options = {})
-      @transaction_entries = []
-      @networth_entries = []
       @options = options
       @entries = {
         ledger: [],
@@ -41,11 +35,11 @@ module Ledger
       }
     end
 
-    def add(*transactions, type: :ledger, reset: false)
+    def add(*entries, type: :ledger, reset: false)
       open(type) do |file|
         file.seek(0, reset ? IO::SEEK_SET : IO::SEEK_END)
         file.puts(headers(type)) if reset
-        transactions.flatten.compact.each { |transaction| file.puts(transaction.to_file) }
+        entries.flatten.compact.each { |entry| file.puts(entry.to_file) }
         file.rewind
       end
     end
@@ -58,40 +52,10 @@ module Ledger
       encryption[resource].wrap { |file| parse(file, resource: resource, &block) }
     end
 
-    def networth!
-      current = current_networth
-
-      Encryption.new(CONFIG.networth).wrap do |file|
-        CSV.open(file, 'wb') { |csv| csv << Networth.members.map(&:capitalize) }
-
-        networth_entries.each do |entry|
-          entry.calculate_invested!(transaction_entries)
-
-          save!(entry, file)
-        end
-
-        save!(current, file)
-      end
-    end
-
     private
 
     def headers(type)
       Object.const_get(ENTITIES[type]).members.map(&:capitalize).join(",")
-    end
-
-    def content
-      @content ||= load! { Content.new(entries[:ledger], options) }
-    end
-
-    def networth_content
-      @networth_content ||= load! { NetworthContent.new(entries[:networth], options) }
-    end
-
-    def load!
-      Encryption.new(CONFIG.ledger).wrap { |file| parse(file, resource: :ledger) }
-      Encryption.new(CONFIG.networth).wrap { |file| parse(file, resource: :networth) }
-      yield if block_given?
     end
 
     # @note index starts at 2, since the file lines start at 1, and the first line is the header
@@ -110,9 +74,14 @@ module Ledger
       raise IncorrectCSVFormatError, "A problem reading line #{index} has occurred"
     end
 
-    def save!(entity, file)
-      File.open(file, 'a') { |f| f.write("#{entity.to_file}\n") }
-      File.write(file, File.read(file).gsub(/\n+/, "\n"))
+    def content
+      @content ||= load! { Content.new(entries[:ledger], options) }
+    end
+
+    def load!
+      Encryption.new(CONFIG.ledger).wrap { |file| parse(file, resource: :ledger) }
+      Encryption.new(CONFIG.networth).wrap { |file| parse(file, resource: :networth) }
+      yield if block_given?
     end
   end
 end

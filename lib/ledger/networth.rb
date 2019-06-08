@@ -18,8 +18,10 @@ module Ledger
     end
 
     def calculate_invested!(transactions)
-      total = transactions.select(&:investment?).sum { |investment| investment.date == date ? investment.money.cents : 0 }.abs
-      self.invested = Money.new(total, currency)
+      self.day_investment = nil
+      self.invested = transactions.sum do |transaction|
+        transaction.investment? && transaction.date == date ? transaction.money : 0
+      end.abs.to_s
     end
 
     private

@@ -4,16 +4,11 @@ RSpec.describe Ledger::Action::Show do
   let(:options) { {} }
 
   describe '#call', :streaming do
-    def headers(klass)
-      klass.members.map(&:capitalize).join(',')
-    end
-
     let(:output) { '/dev/stdout' }
     let(:options) { {output: output} }
 
     let(:entries) { build_list(:transaction, 2) }
-
-    let(:ledger_content) { ([headers(Ledger::Transaction)] + entries.map(&:to_file)).join("\n") }
+    let(:ledger_content) { entries }
 
     before do
       entries.each { |entry| expect(action).to receive(:system).with("echo \"#{entry.to_file}\" >> #{output}") }
@@ -35,8 +30,7 @@ RSpec.describe Ledger::Action::Show do
       let(:options) { super().merge(networth: true) }
 
       let(:entries) { build_list(:networth, 2) }
-
-      let(:networth_content) { ([headers(Ledger::Networth)] + entries.map(&:to_file)).join("\n") }
+      let(:networth_content) { entries }
 
       it 'shows each transaction' do
         action.call

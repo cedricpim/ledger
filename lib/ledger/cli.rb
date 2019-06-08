@@ -123,7 +123,7 @@ module Ledger
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     def networth
       if parsed_options[:store]
-        Repository.new(parsed_options).networth!
+        Action::Networth.new(parsed_options).call
       else
         Printer.new(parsed_options).networth
       end

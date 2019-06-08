@@ -1,6 +1,4 @@
 module Ledger
-  # Module responsible for encapsulating the actions that can be done to the
-  # Ledger
   module Action
     # Class responsible for opening the file defined in the options with the
     # editor defined on EDITOR

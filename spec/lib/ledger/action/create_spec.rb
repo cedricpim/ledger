@@ -2,13 +2,9 @@ RSpec.describe Ledger::Action::Create do
   subject(:action) { described_class.new }
 
   describe '#call', :streaming do
-    def headers(klass)
-      klass.members.map(&:capitalize).join(',')
-    end
-
     context 'when both files exist' do
-      let(:ledger_content) { 'something' }
-      let(:networth_content) { 'something else' }
+      let(:ledger_content) { [build(:transaction)] }
+      let(:networth_content) { [build(:networth)] }
 
       it 'does nothing' do
         expect do
@@ -22,20 +18,20 @@ RSpec.describe Ledger::Action::Create do
     context 'when no file exists yet' do
       it 'creates both files with proper headers' do
         expect { action.call }
-          .to change { ledger.tap(&:rewind).read }.to(headers(Ledger::Transaction) + "\n")
-          .and change { networth.tap(&:rewind).read }.to(headers(Ledger::Networth) + "\n")
+          .to change { ledger.tap(&:rewind).read }.to(RSpecHelper.headers(Ledger::Transaction) + "\n")
+          .and change { networth.tap(&:rewind).read }.to(RSpecHelper.headers(Ledger::Networth) + "\n")
       end
     end
 
     context 'when one file exists and the other does not' do
-      let(:ledger_content) { 'something' }
+      let(:ledger_content) { [build(:transaction)] }
 
       it 'creates missing file' do
         expect do
           expect do
             action.call
           end.not_to change { ledger.tap(&:rewind).read }
-        end.to change { networth.tap(&:rewind).read }.to(headers(Ledger::Networth) + "\n")
+        end.to change { networth.tap(&:rewind).read }.to(RSpecHelper.headers(Ledger::Networth) + "\n")
       end
     end
   end

@@ -69,14 +69,22 @@ RSpec.configure do |config|
     @stubbing = example.metadata[:stubbing]
 
     def ledger
-      @ledger ||= prepare(defined?(ledger_content) ? ledger_content : '', stubbed: @stubbing)
+      @ledger ||= begin
+        content = defined?(ledger_content) ? [RSpecHelper.headers(Ledger::Transaction)] + ledger_content.map(&:to_file) : ''
+        prepare(content, stubbed: @stubbing)
+      end
     end
 
     def networth
-      @networth ||= prepare(defined?(networth_content) ? networth_content : '', stubbed: @stubbing)
+      @networth ||= begin
+        content = defined?(networth_content) ? [RSpecHelper.headers(Ledger::Networth)] + networth_content.map(&:to_file) : ''
+        prepare(content, stubbed: @stubbing)
+      end
     end
 
     def prepare(content, stubbed:)
+      content = content.join("\n") if content.is_a?(Array)
+
       if stubbed
         instance_double('Tempfile', size: content.length, read: content)
       else
