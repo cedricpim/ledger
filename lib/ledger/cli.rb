@@ -105,7 +105,7 @@ module Ledger
     method_option :output, type: :string, default: -> { '/dev/stdout' }, aliases: '-o'
     method_option :networth, type: :boolean, default: false, aliases: '-n'
     def show
-      Repository.new(parsed_options).show
+      Action::Show.new(parsed_options).call
     end
 
     desc 'trip', COMMANDS[:trip]
