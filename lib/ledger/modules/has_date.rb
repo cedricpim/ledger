@@ -7,6 +7,8 @@ module Ledger
     module HasDate
       def parsed_date
         @parsed_date ||= date.is_a?(String) ? Date.parse(date) : date
+      rescue ArgumentError
+        nil
       end
     end
   end

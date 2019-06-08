@@ -88,13 +88,60 @@ RSpec.describe Ledger::Repository do
       end
     end
 
-    context 'when there is an error loading a file' do
-      let(:ledger_content) { build_list(:transaction, 2) + [build(:transaction).to_file + ',one other field'] }
+    context 'when a line is not valid' do
+      let(:line_number) { ledger_content.count + 1 }
+      let(:message) { "There was an invalid line while parsing the CSV (Line #{line_number})" }
 
-      let(:message) { "A problem reading line #{ledger_content.count + 1} has occurred" }
+      context 'when there is an extra field' do
+        let(:ledger_content) { build_list(:transaction, 2) + [build(:transaction).to_file + ',one other field'] }
 
-      specify do
-        expect { load.to_a }.to raise_error(described_class::IncorrectCSVFormatError, message)
+        specify do
+          expect { load.to_a }.to raise_error(described_class::LineError, message)
+        end
+      end
+
+      context 'when the date is invalid' do
+        let(:ledger_content) { build_list(:transaction, 2) + [build(:transaction, date: 'invalid_date').to_file] }
+
+        specify do
+          expect { load.to_a }.to raise_error(described_class::LineError, message)
+        end
+      end
+
+      context 'when the money value is invalid' do
+        let(:ledger_content) { build_list(:transaction, 2) + [build(:transaction, amount: '-').to_file] }
+
+        specify do
+          expect { load.to_a }.to raise_error(described_class::LineError, message)
+        end
+      end
+
+      context 'when the investment value is invalid' do
+        let(:resource) { :networth }
+        let(:networth_content) { build_list(:networth, 2) + [build(:networth, investment: 'aaa').to_file] }
+        let(:line_number) { networth_content.count + 1 }
+
+        specify do
+          expect { load.to_a }.to raise_error(described_class::LineError, message)
+        end
+      end
+
+      context 'when the invested value is missing' do
+        let(:resource) { :networth }
+        let(:networth_content) { build_list(:networth, 2) + [build(:networth, invested: nil).to_file] }
+        let(:line_number) { networth_content.count + 1 }
+
+        specify do
+          expect { load.to_a }.to raise_error(described_class::LineError, message)
+        end
+      end
+
+      context 'when the currency is invalid' do
+        let(:ledger_content) { build_list(:transaction, 2) + [build(:transaction, currency: 'x').to_file] }
+
+        specify do
+          expect { load.to_a }.to raise_error(described_class::LineError, message)
+        end
       end
     end
   end

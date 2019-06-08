@@ -5,6 +5,7 @@ module Ledger
   Transaction = Struct.new(*CONFIG.transaction_fields, keyword_init: true) do
     include Modules::HasDate
     include Modules::HasMoney
+    include Modules::HasValidations
 
     # Number of shares by default
     DEFAULT_SHARES = 1
@@ -26,6 +27,10 @@ module Ledger
 
       _, shares = description.split(SEPARATOR)
       (shares || DEFAULT_SHARES).to_i
+    end
+
+    def valid?
+      parsed_date && money && (account && !account.empty?) && (category && !category.empty?)
     end
   end
 end

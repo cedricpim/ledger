@@ -9,14 +9,20 @@ module Ledger
 
       def money
         @money ||= Money.new(BigDecimal(amount) * currency_info.subunit_to_unit, currency_info)
+      rescue ArgumentError, TypeError
+        nil
       end
 
       def valuation
         @valuation ||= Money.new(BigDecimal(investment) * currency_info.subunit_to_unit, currency_info)
+      rescue ArgumentError, TypeError
+        nil
       end
 
       def day_investment
         @day_investment ||= Money.new(BigDecimal(invested) * currency_info.subunit_to_unit, currency_info)
+      rescue ArgumentError, TypeError
+        nil
       end
 
       def expense?
@@ -58,7 +64,7 @@ module Ledger
         when :amount     then MoneyHelper.display(money, type: :ledger)
         when :investment then MoneyHelper.display(valuation, type: :ledger)
         when :invested   then MoneyHelper.display(day_investment, type: :ledger)
-        when :currency   then money.currency.iso_code
+        when :currency   then money && money.currency.iso_code
         else value
         end
       end

@@ -7,7 +7,7 @@ module Ledger
   class Repository
     extend Forwardable
 
-    class IncorrectCSVFormatError < StandardError; end
+    class LineError < StandardError; end
 
     # Map of which type of file has which entity
     ENTITIES = {
@@ -67,12 +67,12 @@ module Ledger
 
     def iterator(yielder, csv, resource:)
       while (elem, index = csv.next)
-        raise IncorrectCSVFormatError, "A problem reading line #{index + 1} has occurred" if elem.headers.include?(nil)
-
-        yielder.yield ENTITIES[resource].new(elem.to_h)
+        yielder.yield ENTITIES[resource].new(elem.to_h).tap(&:validate!)
       end
     rescue StopIteration
       csv.tap(&:rewind)
+    rescue LineError => e
+      raise e.class, e.message + " (Line #{index + 1})"
     rescue CSV::MalformedCSVError => e
       raise OpenSSL::Cipher::CipherError, e.message
     end
