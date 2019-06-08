@@ -1,5 +1,5 @@
 RSpec.describe Ledger::Networth do
-  subject(:networth) { described_class.new(attrs) }
+  subject(:entry) { described_class.new(attrs) }
 
   let(:attrs) { {} }
 
@@ -7,7 +7,7 @@ RSpec.describe Ledger::Networth do
   it_behaves_like 'has money', with_investment: true
 
   describe '#calculate_invested!' do
-    subject { described_class.new(attrs).calculate_invested!(transactions) }
+    subject(:calculate) { entry.calculate_invested!(transactions) }
 
     let(:attrs) { {date: '21/07/2018', investment: '-5.00', amount: '-10.00', currency: 'USD'} }
 
@@ -20,7 +20,11 @@ RSpec.describe Ledger::Networth do
       ]
     end
 
-    it { is_expected.to eq Money.new('200', 'USD') }
+    before { entry.day_investment = Money.new('300', 'USD') }
+
+    specify { expect { calculate }.to change { entry.invested }.to('2.00') }
+
+    specify { expect { calculate }.to change { entry.instance_variable_get('@day_investment') }.to(nil) }
   end
 
   describe '#to_file' do
@@ -32,7 +36,7 @@ RSpec.describe Ledger::Networth do
   end
 
   describe '#list' do
-    subject { networth.list }
+    subject { entry.list }
 
     let(:attrs) { {amount: '5000', currency: 'USD'} }
 
@@ -53,13 +57,13 @@ RSpec.describe Ledger::Networth do
       ]
     end
 
-    before { networth.valuations = valuations }
+    before { entry.valuations = valuations }
 
     it { is_expected.to eq result }
   end
 
   describe '#total' do
-    subject { networth.total }
+    subject { entry.total }
 
     let(:attrs) { {amount: '5000', currency: 'USD'} }
 
