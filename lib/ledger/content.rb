@@ -2,11 +2,12 @@ module Ledger
   # Class holding the transactions read from the ledger and used to query the
   # content of the ledger.
   class Content # rubocop:disable Metrics/ClassLength
-    include Modules::HasDateFiltering
-    include Modules::HasDateSorting
-    include Modules::HasCurrencyConversion
+    attr_reader :transactions, :options
 
-    alias transactions list
+    def initialize(transactions, options)
+      @transactions = transactions.sort_by(&:parsed_date)
+      @options = options
+    end
 
     attr_reader :account_inclusion
 
@@ -72,10 +73,20 @@ module Ledger
     end
 
     def filtered_transactions
+      # Filter.new(exchanged_list, filters: [
+      #   Filters::ExcludeCategory.new(options, :report),
+      #   Filters::ExcludeAccount.new(options, :report),
+      #   Filters::Period.new(options)
+      # ])
       @filtered_transactions ||= period_transactions.reject { |t| exclude_categories&.call(t) }
     end
 
     def excluded_transactions
+      # Filter.new(exchanged_list, filters: [
+      #   Filters::ExcludeCategory.new(options, :report),
+      #   Filters::ExcludeAccount.new(options, :report),
+      #   Filters::Period.new(options)
+      # ])
       @excluded_transactions ||= period_transactions.select { |t| exclude_categories&.call(t) }
     end
 
@@ -103,14 +114,31 @@ module Ledger
     end
 
     def period_transactions
+      # Filter.new(exchanged_list, filters: [
+      #   Filters::ExcludeCategory.new(options, :report),
+      #   Filters::ExcludeAccount.new(options, :report),
+      #   Filters::Period.new(options)
+      # ])
       @period_transactions ||= relevant_transactions.select { |t| t.parsed_date.between?(*period) }
     end
 
     def travel_transactions
+      # Filter.new(exchanged_list, filters: [
+      #   Filters::ExcludeCategory.new(options, :report),
+      #   Filters::ExcludeAccount.new(options, :report),
+      #   Filters::Period.new(options),
+      #   Filters::Travel.new(options)
+      # ])
       period_transactions.select { |t| t.travel && (options[:trip].nil? || t.travel.match?(/#{options[:trip]}/i)) }
     end
 
     def category_transactions(category)
+      # Filter.new(exchanged_list, filters: [
+      #   Filters::ExcludeCategory.new(options, :report),
+      #   Filters::ExcludeAccount.new(options, :report),
+      #   Filters::Period.new(options),
+      #   Filters::Category.new(options, category),
+      # ])
       period_transactions.select { |t| t.category.casecmp(category).zero? }
     end
 
@@ -148,6 +176,32 @@ module Ledger
 
     def range(year, month)
       [Date.new(year, month, 1), Date.new(year, month, -1)]
+    end
+
+    def period
+      if filter_with_date_range?
+        [options.fetch(:from, -Float::INFINITY), options.fetch(:till, Float::INFINITY)]
+      elsif options[:month] && options[:year]
+        [build_date(1), build_date(-1)]
+      else
+        [-Float::INFINITY, Float::INFINITY]
+      end
+    end
+
+    def build_date(day)
+      Date.new(options[:year], options[:month], day)
+    end
+
+    def filter_with_date_range?
+      options[:from] || options[:till]
+    end
+
+    def exchanged_list
+      @exchanged_list = transactions.map { |elem| currency ? elem.exchange_to(currency) : elem }
+    end
+
+    def currency
+      options[:currency]
     end
   end
 end

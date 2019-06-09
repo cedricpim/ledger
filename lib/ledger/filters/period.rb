@@ -1,10 +1,12 @@
 module Ledger
-  # Module responsible for encapsulating other modules that contain shared
-  # behaviour.
-  module Modules
-    # Module responsible for holding behaviour regarding classes that have
-    # date based filtering.
-    module HasDateFiltering
+  module Filters
+    # Class responsible for checking if a given entry should be filtered out or
+    # not, based in the parsed_date attribute.
+    class Period < Base
+      def call(entry)
+        entry.parsed_date.between?(*period)
+      end
+
       private
 
       def period

@@ -28,9 +28,6 @@ end
 
 require_relative 'ledger/modules/has_date'
 require_relative 'ledger/modules/has_money'
-require_relative 'ledger/modules/has_date_filtering'
-require_relative 'ledger/modules/has_date_sorting'
-require_relative 'ledger/modules/has_currency_conversion'
 require_relative 'ledger/modules/has_validations'
 
 require_relative 'ledger/analysis'
@@ -59,6 +56,13 @@ require_relative 'ledger/action/create'
 require_relative 'ledger/action/edit'
 require_relative 'ledger/action/networth'
 require_relative 'ledger/action/show'
+
+require_relative 'ledger/filters/base'
+require_relative 'ledger/filters/category'
+require_relative 'ledger/filters/exclude_account'
+require_relative 'ledger/filters/exclude_category'
+require_relative 'ledger/filters/period'
+require_relative 'ledger/filters/travel'
 
 require 'ledger/api/just_etf'
 
