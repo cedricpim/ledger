@@ -137,80 +137,6 @@ RSpec.describe Ledger::Content do
     end
   end
 
-  describe '#comparisons' do
-    subject { content.comparisons.map(&:list) }
-
-    let(:options) { {months: 1} }
-
-    let(:relevant) do
-      [
-        t(account: 'A', category: 'A', date: '20/05/2018', amount: -20, currency: 'BBD'),
-        t(account: 'A', category: 'A', date: '14/07/2018', amount: -20, currency: 'USD'),
-        t(account: 'B', category: 'B', date: '15/07/2018', amount: -50, currency: 'USD'),
-        t(account: 'B', category: 'B', date: '16/07/2018', amount: -50, currency: 'USD'),
-        t(account: 'Vacation', category: 'X', date: '18/07/2018', amount: -50, currency: 'USD')
-      ]
-    end
-
-    let(:transactions) do
-      relevant + [t(account: 'B', category: 'Exchange', date: '14/06/2018', amount: -50, currency: 'USD')]
-    end
-
-    let(:periods) do
-      [
-        [Date.new(2018, 6, 1), Date.new(2018, 6, 30)],
-        [Date.new(2018, 7, 1), Date.new(2018, 7, 31)]
-      ]
-    end
-
-    let(:result) do
-      [
-        Ledger::Comparison.new('A', relevant[1..1], periods, 'USD'),
-        Ledger::Comparison.new('B', relevant[2..3], periods, 'USD'),
-        Ledger::Comparison.new('X', relevant[4..4], periods, 'USD'),
-        Ledger::Comparison.new('Totals', relevant[1..-1], periods, 'USD')
-      ].map(&:list)
-    end
-
-    before { allow(Date).to receive(:today).and_return(Date.new(2018, 7, 22)) }
-
-    it { is_expected.to eq result }
-
-    context 'when months is set to 2' do
-      let(:options) { {months: 2} }
-
-      let(:periods) { super().unshift([Date.new(2018, 5, 1), Date.new(2018, 5, 31)]) }
-
-      let(:result) do
-        [
-          Ledger::Comparison.new('A', relevant[0..1], periods, 'USD'),
-          Ledger::Comparison.new('B', relevant[2..3], periods, 'USD'),
-          Ledger::Comparison.new('X', relevant[4..4], periods, 'USD'),
-          Ledger::Comparison.new('Totals', relevant[0..-1], periods, 'USD')
-        ].map(&:list)
-      end
-
-      it { is_expected.to eq result }
-
-      context 'when a specific currency is defined' do
-        let(:options) { super().merge(currency: 'USD') }
-
-        let(:exchanged_transaction) { [relevant[0].exchange_to(options[:currency])] }
-
-        let(:result) do
-          [
-            Ledger::Comparison.new('A', exchanged_transaction + relevant[1..1], periods, 'USD'),
-            Ledger::Comparison.new('B', relevant[2..3], periods, 'USD'),
-            Ledger::Comparison.new('X', relevant[4..4], periods, 'USD'),
-            Ledger::Comparison.new('Totals', exchanged_transaction + relevant[1..-1], periods, 'USD')
-          ].map(&:list)
-        end
-
-        it { is_expected.to eq result }
-      end
-    end
-  end
-
   describe '#reports' do
     subject { content.reports.map(&:list) }
 
@@ -572,47 +498,6 @@ RSpec.describe Ledger::Content do
       let(:exchanged_transaction) { [relevant[0].exchange_to(options[:currency])] }
 
       it { is_expected.to eq exchanged_transaction + transactions[1..3] }
-    end
-  end
-
-  describe '#periods' do
-    subject { content.periods }
-
-    before { allow(Date).to receive(:today).and_return(Date.new(2018, 7, 22)) }
-
-    context 'when number of months go to previous year' do
-      let(:options) { {months: 8} }
-
-      let(:periods) do
-        [
-          [Date.new(2017, 11, 1), Date.new(2017, 11, 30)],
-          [Date.new(2017, 12, 1), Date.new(2017, 12, 31)],
-          [Date.new(2018, 1, 1), Date.new(2018, 1, 31)],
-          [Date.new(2018, 2, 1), Date.new(2018, 2, 28)],
-          [Date.new(2018, 3, 1), Date.new(2018, 3, 31)],
-          [Date.new(2018, 4, 1), Date.new(2018, 4, 30)],
-          [Date.new(2018, 5, 1), Date.new(2018, 5, 31)],
-          [Date.new(2018, 6, 1), Date.new(2018, 6, 30)],
-          [Date.new(2018, 7, 1), Date.new(2018, 7, 31)]
-        ]
-      end
-
-      it { is_expected.to eq periods }
-    end
-
-    context 'when number of months do not go to previous year' do
-      let(:options) { {months: 3} }
-
-      let(:periods) do
-        [
-          [Date.new(2018, 4, 1), Date.new(2018, 4, 30)],
-          [Date.new(2018, 5, 1), Date.new(2018, 5, 31)],
-          [Date.new(2018, 6, 1), Date.new(2018, 6, 30)],
-          [Date.new(2018, 7, 1), Date.new(2018, 7, 31)]
-        ]
-      end
-
-      it { is_expected.to eq periods }
     end
   end
 end

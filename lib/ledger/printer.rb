@@ -36,15 +36,6 @@ module Ledger
       totals(with_period: false)
     end
 
-    def compare
-      comparisons = repository.comparisons
-      headers = build_comparison_header(comparisons.map(&:list))
-
-      title('Comparison', width: headers.sum { |_elem, options| options[:width] } + headers.count)
-
-      table { compare_rows(headers, comparisons) }
-    end
-
     def report
       repository.reports.each do |report|
         title(report.account)
@@ -87,37 +78,6 @@ module Ledger
       table do
         total_period_row(with_period: with_period)
         total_current_row(with_period: with_period) if CONFIG.show_totals?
-      end
-    end
-
-    def build_comparison_header(lists)
-      widths = Array.new(lists.first.count) { |i| lists.map { |list| list[i][0].length }.max }
-
-      widths.slice_after(&:zero?).map.with_index do |set, header_index|
-        build_comparison_header_columns(set, header_index)
-      end.flatten(1)
-    end
-
-    def build_comparison_header_columns(set, header_index)
-      set.map.with_index do |width, period_index|
-        next ['', width: 2] if width.zero?
-
-        title = build_column_title(header_index, period_index)
-        [title, width: [width, title.length].max + 1, align: 'center']
-      end
-    end
-
-    def build_column_title(header_index, period_index)
-      periods = repository.periods.flatten.map { |p| p.strftime('%m/%y') }.uniq
-      title, starting = Ledger::Comparison::HEADERS[header_index]
-      starting ? "#{title} (#{periods[period_index + starting]})" : title
-    end
-
-    def compare_rows(headers, comparisons)
-      add_colored_row(headers, CONFIG.color(:header))
-
-      comparisons.each do |comparison|
-        add_colored_row(comparison.list, CONFIG.color(:element))
       end
     end
   end

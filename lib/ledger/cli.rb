@@ -29,7 +29,7 @@ module Ledger
     method_option :months, type: :numeric, default: 1, aliases: '-m'
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     def compare
-      Printer.new(parsed_options).compare
+      Printers::Comparison.new(parsed_options).call
     end
 
     desc 'configure', COMMANDS[:configure]

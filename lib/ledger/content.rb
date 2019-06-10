@@ -44,16 +44,6 @@ module Ledger
       end
     end
 
-    def comparisons
-      including do
-        totals_comparison = Comparison.new('Totals', transactions_for_comparison, periods, currency)
-
-        transactions_for_comparison.group_by(&:category).map do |c, cts|
-          Comparison.new(c, cts, periods, currency)
-        end.sort_by(&:category) + [totals_comparison]
-      end
-    end
-
     def reports
       if options[:global]
         [Report.new('Global', filtered_transactions)]
@@ -88,10 +78,6 @@ module Ledger
       #   Filters::Period.new(options)
       # ])
       @excluded_transactions ||= period_transactions.select { |t| exclude_categories&.call(t) }
-    end
-
-    def periods
-      @periods ||= (current_period + previous_periods).sort
     end
 
     private
@@ -142,10 +128,6 @@ module Ledger
       period_transactions.select { |t| t.category.casecmp(category).zero? }
     end
 
-    def transactions_for_comparison
-      @transactions_for_comparison ||= relevant_transactions.select { |t| t.parsed_date > periods.first.first }
-    end
-
     def exchange_on_date(transaction, acc)
       return Money.new(0, accounts_currency[acc]) if options[:date] && transaction.parsed_date > options[:date]
 
@@ -156,26 +138,6 @@ module Ledger
       return unless options[:categories]
 
       ->(transaction) { options[:categories].map(&:downcase).include?(transaction.category.downcase) }
-    end
-
-    def current_period
-      [range(Date.today.year, Date.today.month)]
-    end
-
-    def previous_periods
-      current_year = Date.today.year
-      current_month = Date.today.month
-
-      Array.new(options[:months]) do
-        current_year, current_month =
-          current_month > 1 ? [current_year, current_month - 1] : [current_year - 1, 12]
-
-        range(current_year, current_month)
-      end
-    end
-
-    def range(year, month)
-      [Date.new(year, month, 1), Date.new(year, month, -1)]
     end
 
     def period

@@ -32,7 +32,6 @@ require_relative 'ledger/modules/has_validations'
 
 require_relative 'ledger/analysis'
 require_relative 'ledger/cli'
-require_relative 'ledger/comparison'
 require_relative 'ledger/content'
 require_relative 'ledger/encryption'
 require_relative 'ledger/global_trip'
@@ -57,12 +56,19 @@ require_relative 'ledger/action/edit'
 require_relative 'ledger/action/networth'
 require_relative 'ledger/action/show'
 
+require_relative 'ledger/filter'
 require_relative 'ledger/filters/base'
 require_relative 'ledger/filters/category'
 require_relative 'ledger/filters/exclude_account'
 require_relative 'ledger/filters/exclude_category'
 require_relative 'ledger/filters/period'
 require_relative 'ledger/filters/travel'
+
+require_relative 'ledger/reports/base'
+require_relative 'ledger/reports/comparison'
+
+require_relative 'ledger/printers/base'
+require_relative 'ledger/printers/comparison'
 
 require 'ledger/api/just_etf'
 
