@@ -10,6 +10,10 @@ module Ledger
       def initialize(options = {})
         @options = options
       end
+
+      def inverted?
+        options[:inverted]
+      end
     end
   end
 end

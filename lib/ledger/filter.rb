@@ -11,7 +11,13 @@ module Ledger
     end
 
     def call
-      filtered = entries.select { |entry| filters.all? { |filter| filter.call(entry) } }
+      filtered = entries.select do |entry|
+        filters.all? do |filter|
+          selected = filter.call(entry)
+
+          (!filter.inverted? && selected) || (filter.inverted? && !selected)
+        end
+      end
 
       return filtered unless currency
 

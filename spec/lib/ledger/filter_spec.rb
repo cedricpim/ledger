@@ -13,14 +13,20 @@ RSpec.describe Ledger::Filter do
     it { is_expected.to eq entries }
 
     context 'when some filters are provided' do
-      let(:filters) { [double(call: true), double(call: true)] }
+      let(:filters) { [double(call: true, inverted?: false), double(call: true, inverted?: false)] }
 
       it { is_expected.to eq entries }
 
       context 'when one of the filters return false' do
-        let(:filters) { [double(call: false), double(call: true)] }
+        let(:filters) { [double(call: false, inverted?: false), double(call: true, inverted?: false)] }
 
         it { is_expected.to eq [] }
+      end
+
+      context 'when the filter returning falsing is also inverted' do
+        let(:filters) { [double(call: false, inverted?: true), double(call: true, inverted?: false)] }
+
+        it { is_expected.to eq entries }
       end
     end
 
