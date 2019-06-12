@@ -1,55 +1,5 @@
 RSpec.describe Ledger::Config do
-  subject(:config) { described_class.new(described_class::FALLBACK_CONFIG) }
-
-  describe '.configure' do
-    subject { described_class.configure }
-
-    context 'default configuration exists' do
-      before { allow(File).to receive(:exist?).with(described_class::DEFAULT_CONFIG).and_return(true) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context 'default configuration does not exist' do
-      before { allow(File).to receive(:exist?).with(described_class::DEFAULT_CONFIG).and_return(false) }
-
-      specify do
-        expect(File).to receive(:dirname).with(described_class::DEFAULT_CONFIG).and_return('dirname')
-        expect(FileUtils).to receive(:mkdir_p).with('dirname')
-        expect(FileUtils).to receive(:cp).with(described_class::FALLBACK_CONFIG, described_class::DEFAULT_CONFIG)
-
-        subject
-      end
-    end
-  end
-
-  describe '.file' do
-    subject { described_class.file }
-
-    context 'default configuration exists' do
-      before { allow(File).to receive(:exist?).with(described_class::DEFAULT_CONFIG).and_return(true) }
-
-      it { is_expected.to eq described_class::DEFAULT_CONFIG }
-    end
-
-    context 'fallback configuration exists' do
-      before do
-        allow(File).to receive(:exist?).with(described_class::DEFAULT_CONFIG).and_return(false)
-        allow(File).to receive(:exist?).with(described_class::FALLBACK_CONFIG).and_return(true)
-      end
-
-      it { is_expected.to eq described_class::FALLBACK_CONFIG }
-    end
-
-    context 'no configuration exists' do
-      before do
-        allow(File).to receive(:exist?).with(described_class::DEFAULT_CONFIG).and_return(false)
-        allow(File).to receive(:exist?).with(described_class::FALLBACK_CONFIG).and_return(false)
-      end
-
-      it { is_expected.to be_nil }
-    end
-  end
+  subject(:config) { described_class.new(file: described_class::FALLBACK_CONFIG) }
 
   describe '#default?' do
     subject { config.default? }
@@ -68,13 +18,13 @@ RSpec.describe Ledger::Config do
   describe '#ledger' do
     subject { config.ledger }
 
-    it { is_expected.to eq "#{XDG['CONFIG']}/ledger/ledger.csv" }
+    it { is_expected.to eq 'spec/fixtures/example.csv' }
   end
 
   describe '#networth' do
     subject { config.networth }
 
-    it { is_expected.to eq "#{XDG['CONFIG']}/ledger/networth.csv" }
+    it { is_expected.to eq 'spec/fixtures/example-networth.csv' }
   end
 
   describe '#investments' do

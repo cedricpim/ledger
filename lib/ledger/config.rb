@@ -7,23 +7,9 @@ module Ledger
     DEFAULT_CONFIG = File.join(XDG['CONFIG'].to_s, 'ledger', 'config').freeze
     FALLBACK_CONFIG = File.join(File.expand_path('../../', __dir__), 'config', 'default').freeze
 
-    class << self
-      def configure
-        return if File.exist?(DEFAULT_CONFIG)
-
-        FileUtils.mkdir_p(File.dirname(DEFAULT_CONFIG))
-        FileUtils.cp(FALLBACK_CONFIG, DEFAULT_CONFIG)
-      end
-
-      def file
-        return DEFAULT_CONFIG if File.exist?(DEFAULT_CONFIG)
-        return FALLBACK_CONFIG if File.exist?(FALLBACK_CONFIG)
-      end
-    end
-
     attr_reader :config
 
-    def initialize(file = self.class.file)
+    def initialize(file: default)
       puts 'Configuration file not found' or exit unless file
 
       @config = YAML.safe_load(ERB.new(File.read(file)).result, permitted_classes: [Symbol]).freeze
@@ -101,6 +87,14 @@ module Ledger
     end
 
     private
+
+    def default
+      if File.exist?(DEFAULT_CONFIG)
+        DEFAULT_CONFIG
+      elsif File.exist?(FALLBACK_CONFIG)
+        FALLBACK_CONFIG
+      end
+    end
 
     def credential_value(key)
       value = encryption.dig(:credentials, key)

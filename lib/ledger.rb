@@ -51,6 +51,7 @@ require_relative 'ledger/version'
 
 require_relative 'ledger/action/base'
 require_relative 'ledger/action/book'
+require_relative 'ledger/action/configure'
 require_relative 'ledger/action/convert'
 require_relative 'ledger/action/create'
 require_relative 'ledger/action/edit'

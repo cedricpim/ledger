@@ -35,7 +35,7 @@ module Ledger
     desc 'configure', COMMANDS[:configure]
     map 'C' => :configure
     def configure
-      Config.configure
+      Action::Configure.new.call
     end
 
     desc 'convert', COMMANDS[:convert]
