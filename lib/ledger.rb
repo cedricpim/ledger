@@ -67,10 +67,15 @@ require_relative 'ledger/filters/period'
 require_relative 'ledger/filters/travel'
 
 require_relative 'ledger/reports/base'
+require_relative 'ledger/reports/balance'
 require_relative 'ledger/reports/comparison'
+require_relative 'ledger/reports/total'
+require_relative 'ledger/reports/total/period'
 
 require_relative 'ledger/printers/base'
+require_relative 'ledger/printers/balance'
 require_relative 'ledger/printers/comparison'
+require_relative 'ledger/printers/total'
 
 require 'ledger/api/just_etf'
 

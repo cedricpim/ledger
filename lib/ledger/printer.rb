@@ -22,20 +22,6 @@ module Ledger
       totals
     end
 
-    def balance
-      title('Balance')
-
-      table do
-        main_header(from: :balance)
-
-        repository.accounts.each_pair do |account, total|
-          balance_row(account, total)
-        end
-      end
-
-      totals(with_period: false)
-    end
-
     def report
       repository.reports.each do |report|
         title(report.account)

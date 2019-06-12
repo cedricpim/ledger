@@ -21,7 +21,7 @@ module Ledger
 
       def filters
         [
-          Filters::ExcludeCategory.new(options, :report),
+          Filters::IgnoreCategory.new(options, :report),
           Filters::Period.new(options.merge(from: periods.first.first))
         ]
       end

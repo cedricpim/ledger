@@ -11,10 +11,12 @@ RSpec.describe Ledger::Reports::Comparison, :streaming do
       build(:transaction, account: 'A', category: 'A', date: '20/06/2018', amount: '-20.00', currency: 'BBD'),
       build(:transaction, account: 'A', category: 'A', date: '14/07/2018', amount: '-20.00', currency: 'USD'),
       build(:transaction, account: 'B', category: 'B', date: '16/06/2018', amount: '-50.00', currency: 'USD'),
-      build(:transaction, account: 'Vacation', category: 'X', date: '18/07/2018', amount: '+50.00', currency: 'USD'),
-      build(:transaction, account: 'B', category: 'Exchange', date: '14/06/2018', amount: '-50.00', currency: 'USD')
+      build(:transaction, account: 'Ignore', category: 'X', date: '18/07/2018', amount: '+25.00', currency: 'USD'),
+      build(:transaction, account: 'B', category: 'Ignore', date: '14/06/2018', amount: '-50.00', currency: 'USD')
     ]
   end
+
+  before { allow(CONFIG).to receive(:exclusions).and_return(accounts: ['Ignore'], categories: ['Ignore']) }
 
   describe '#periods' do
     subject { report.periods }
@@ -74,8 +76,8 @@ RSpec.describe Ledger::Reports::Comparison, :streaming do
         },
         {
           title: 'X',
-          absolutes: [Money.new(0, 'USD'), Money.new(50 * 100, 'USD')],
-          diffs: [Money.new(50 * 100, 'USD')],
+          absolutes: [Money.new(0, 'USD'), Money.new(25 * 100, 'USD')],
+          diffs: [Money.new(25 * 100, 'USD')],
           percentages: [nil]
         }
       ]
@@ -104,9 +106,9 @@ RSpec.describe Ledger::Reports::Comparison, :streaming do
     let(:result) do
       {
         title: 'Totals',
-        absolutes: [Money.new(-120 * 100, 'BBD'), Money.new(105 * 100, 'USD')],
-        diffs: [Money.new(165 * 100, 'USD')],
-        percentages: [275.00]
+        absolutes: [Money.new(-120 * 100, 'BBD'), Money.new(80 * 100, 'USD')],
+        diffs: [Money.new(140 * 100, 'USD')],
+        percentages: [233.33]
       }
     end
 
@@ -115,7 +117,7 @@ RSpec.describe Ledger::Reports::Comparison, :streaming do
     context 'with currency' do
       let(:options) { super().merge(currency: 'USD') }
 
-      before { result[:absolutes] = [Money.new(-60 * 100, 'USD'), Money.new(105 * 100, 'USD')] }
+      before { result[:absolutes] = [Money.new(-60 * 100, 'USD'), Money.new(80 * 100, 'USD')] }
 
       it { is_expected.to eq result }
     end

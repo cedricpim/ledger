@@ -67,7 +67,7 @@ module Ledger
     method_option :all, type: :boolean, default: false, aliases: '-a'
     method_option :date, type: :string, aliases: '-d'
     def balance
-      Printer.new(parsed_options).balance
+      Printers::Balance.new(parsed_options).call
     end
 
     desc 'analysis [CATEGORY]', COMMANDS[:analysis]

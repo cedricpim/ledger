@@ -21,11 +21,19 @@ module Ledger
       end
 
       def transactions
-        @transactions ||= Filter.new(repository.load(:ledger), filters: filters, currency: currency).call
+        @transactions ||= Filter.new(ledger, filters: filters, currency: currency).call
+      end
+
+      def ledger
+        @ledger ||= repository.load(:ledger).sort_by(&:parsed_date)
       end
 
       def filters
         fail NotImplementedError, 'This method must be implemented in the child class'
+      end
+
+      def currency_for
+        @currency_for ||= ledger.group_by(&:account).transform_values { |ats| ats.first.currency }
       end
     end
   end

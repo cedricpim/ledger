@@ -31,7 +31,7 @@ module Ledger
           if value.is_a?(Money)
             [display(value), color(value)]
           elsif value
-            ["#{value}%", color(value)]
+            [display_percentage(value), color(value)]
           else
             [CONFIG.default_value, color(0)]
           end
@@ -51,6 +51,17 @@ module Ledger
       end
 
       private
+
+      def display_percentage(value)
+        value =
+          case
+          when value.nan?      then 0.0
+          when value.infinite? then (value.negative? ? -100.0 : 100.0)
+          else value
+          end
+
+        "#{value}%"
+      end
 
       def percentage_values(value, transactions)
         return unless value.is_a?(Money)

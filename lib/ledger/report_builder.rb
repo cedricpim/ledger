@@ -63,15 +63,6 @@ module Ledger
       ]
     end
 
-    def balance_row(account, total)
-      options = CONFIG.output(:balance, :options)
-
-      row(CONFIG.color(:element)) do
-        column(account, options[0])
-        column(*MoneyHelper.display_with_color(total, options[1]))
-      end
-    end
-
     def total
       @total ||= Total.new(repository)
     end

@@ -15,6 +15,10 @@ module Ledger
 
       private
 
+      def main_header(from:)
+        add_row(CONFIG.output(from, :header), CONFIG.output(from, :options), CONFIG.color(:header))
+      end
+
       def title(title, options = {})
         header(CONFIG.output(:title).merge(title: title).merge(options))
       end
@@ -23,6 +27,22 @@ module Ledger
         return unless lines
 
         row(CONFIG.color(type)) { lines.each { |line| column(*line) } }
+      end
+
+      def add_row(lines, column_options = [], **row_options)
+        return unless lines
+
+        row(row_options) do
+          lines.each_with_index { |value, index| column(value, column_options.fetch(index, {})) }
+        end
+      end
+
+      def total
+        @total ||= Total.new(options.merge(with_period: totals_with_period))
+      end
+
+      def totals_with_period
+        options[:with_period] || false
       end
     end
   end
