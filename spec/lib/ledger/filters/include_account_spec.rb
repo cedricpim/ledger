@@ -1,4 +1,4 @@
-RSpec.describe Ledger::Filters::IgnoreAccount do
+RSpec.describe Ledger::Filters::IncludeAccount do
   subject(:filter) { described_class.new(options, type) }
 
   let(:options) { {} }

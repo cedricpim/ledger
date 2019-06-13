@@ -2,7 +2,7 @@ module Ledger
   module Filters
     # Class responsible for checking if a given entry should be filtered out or
     # not, based in the category attribute and the categories exclusion options
-    class IgnoreCategory < Base
+    class IncludeCategory < Base
       attr_reader :type
 
       def initialize(options, type)

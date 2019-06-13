@@ -2,7 +2,7 @@ module Ledger
   module Filters
     # Class responsible for checking if a given entry should be filtered out or
     # not, based in the category attribute and the categories exclusion options
-    class ExcludeCategory < Base
+    class PresentCategory < Base
       def call(entry)
         !categories.include?(entry.category.downcase)
       end

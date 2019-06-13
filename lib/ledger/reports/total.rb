@@ -17,9 +17,9 @@ module Ledger
 
       def filters(inverted:)
         [
-          Filters::IgnoreCategory.new(options, :report),
-          Filters::IgnoreAccount.new(options, :report),
-          Filters::ExcludeCategory.new(options.merge(inverted: inverted)),
+          Filters::IncludeCategory.new(options, :report),
+          Filters::IncludeAccount.new(options, :report),
+          Filters::PresentCategory.new(options.merge(inverted: inverted)),
           Filters::Period.new(options)
         ]
       end
@@ -95,7 +95,7 @@ module Ledger
 
       def balances
         @balances ||= Balance.new.data.map do |title:, value:|
-          value unless value.nil? || !Filters::IgnoreAccount.new({}, :report).call(Transaction.new(account: title))
+          value if value && Filters::IncludeAccount.new({}, :report).call(Transaction.new(account: title))
         end.compact
       end
     end
