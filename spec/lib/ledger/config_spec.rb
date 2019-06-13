@@ -143,10 +143,14 @@ RSpec.describe Ledger::Config do
   describe '#exclusions' do
     subject { config.exclusions(of: :report) }
 
-    it { is_expected.to eq(accounts: %w[Vacation], categories: %w[Exchange]) }
+    let(:structure) { {accounts: ['Ignore'], categories: ['Ignore2']} }
+
+    before { expect(config).to receive(:config).and_return(report: {exclude: structure}) }
+
+    it { is_expected.to eq(accounts: %w[Ignore], categories: %w[Ignore2]) }
 
     context 'when there are no exclusions' do
-      before { expect(config).to receive(:config).and_return(report: {exclude: {}}) }
+      let(:structure) { {} }
 
       it { is_expected.to eq(accounts: [], categories: []) }
     end
