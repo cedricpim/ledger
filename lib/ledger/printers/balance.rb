@@ -24,23 +24,17 @@ module Ledger
       end
 
       def lines
-        @lines ||= report.data.map { |info| line(info) }.reject(&:empty?)
+        @lines ||= report.data.map { |info| line(info) }.compact
       end
 
       def line(info)
-        return [] unless info[:value]
+        return unless info[:value]
 
-        info.each_pair.with_object([]) do |(key, value), result|
-          if key == :title
-            result << [value, CONFIG.output(:balance, :options)[0]]
-          else
-            result << MoneyHelper.display_with_color(value, CONFIG.output(:balance, :options)[1])
-          end
+        info.each_pair.with_index.map do |(key, value), index|
+          options = CONFIG.output(:balance, :options)[index]
+
+          key == :title ? [value, options] : MoneyHelper.display_with_color(value, options)
         end
-      end
-
-      def totals_with_period
-        false
       end
     end
   end

@@ -42,7 +42,7 @@ module Ledger
       end
 
       def totals_with_period
-        options[:with_period] || false
+        false
       end
     end
   end

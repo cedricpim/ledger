@@ -10,7 +10,7 @@ module Ledger
       def call
         title(TITLE)
 
-        table { add_colored_row(period, type: :header) } if totals_with_period && period
+        table { add_colored_row(period, type: :header) } if with_period && period
 
         table { add_colored_row(total, type: :header) } if total && CONFIG.show_totals?
       end
@@ -44,11 +44,15 @@ module Ledger
       end
 
       def percentage(value:)
-        return unless totals_with_period
+        return unless with_period
 
         # TODO: move after refactoring
         options = CONFIG.output(:totals, :percentage).select { |key, _value| %i[width align].include?(key) }
         MoneyHelper.display_with_color(value, options)
+      end
+
+      def with_period
+        options[:with_period]
       end
     end
   end
