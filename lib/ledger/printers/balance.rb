@@ -20,7 +20,7 @@ module Ledger
       private
 
       def report
-        @report ||= Reports::Balance.new(options)
+        @report ||= Reports::Balance.new(options, ledger: ledger)
       end
 
       def lines
@@ -35,6 +35,10 @@ module Ledger
 
           key == :title ? [value, options] : MoneyHelper.display_with_color(value, options)
         end
+      end
+
+      def total
+        @total ||= Total.new(options.merge(with_period: false), ledger: report.ledger)
       end
     end
   end

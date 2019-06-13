@@ -33,7 +33,7 @@ module Ledger
       private
 
       def report
-        @report ||= Reports::Comparison.new(options)
+        @report ||= Reports::Comparison.new(options, ledger: ledger)
       end
 
       def lines

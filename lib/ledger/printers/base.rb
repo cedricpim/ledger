@@ -7,10 +7,11 @@ module Ledger
     class Base
       include CommandLineReporter
 
-      attr_reader :options
+      attr_reader :options, :ledger
 
-      def initialize(options)
+      def initialize(options, ledger: nil)
         @options = options
+        @ledger = ledger
       end
 
       private
@@ -35,14 +36,6 @@ module Ledger
         row(row_options) do
           lines.each_with_index { |value, index| column(value, column_options.fetch(index, {})) }
         end
-      end
-
-      def total
-        @total ||= Total.new(options.merge(with_period: totals_with_period))
-      end
-
-      def totals_with_period
-        false
       end
     end
   end

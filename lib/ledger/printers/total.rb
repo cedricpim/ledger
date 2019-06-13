@@ -18,7 +18,7 @@ module Ledger
       private
 
       def report
-        @report ||= Reports::Total.new(options)
+        @report ||= Reports::Total.new(options, ledger: ledger)
       end
 
       memoize def total

@@ -6,7 +6,7 @@ module Ledger
     # income and expense impacts the current total value.
     class Total < Base
       def period
-        @period ||= Period.new(options).period
+        @period ||= Period.new(options, ledger: ledger).period
       end
 
       def total
@@ -94,7 +94,7 @@ module Ledger
       end
 
       def balances
-        @balances ||= Balance.new.data.map do |title:, value:|
+        @balances ||= Balance.new(ledger: ledger).data.map do |title:, value:|
           value if value && Filters::IncludeAccount.new({}, :report).call(Transaction.new(account: title))
         end.compact
       end
