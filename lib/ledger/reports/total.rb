@@ -57,8 +57,6 @@ module Ledger
       end
 
       def percentage
-        return percentage_extremes if percentage_extremes
-
         (percentage_value * 100).round(2).abs * (difference.positive? ? 1 : -1)
       end
 
@@ -68,17 +66,6 @@ module Ledger
 
       def difference
         income - expense.abs
-      end
-
-      def percentage_extremes
-        @percentage_extremes ||=
-          if income.zero? && expense.zero?
-            BigDecimal::NAN
-          elsif income.zero?
-            -BigDecimal::INFINITY
-          elsif expense.zero?
-            BigDecimal::INFINITY
-          end
       end
 
       def currency

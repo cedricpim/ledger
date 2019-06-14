@@ -33,38 +33,5 @@ module Ledger
         list.each_with_index { |v, i| column(v, column_options.fetch(i, {})) }
       end
     end
-
-    def total_period_row(with_period:)
-      return unless with_period
-
-      row(CONFIG.color(:header)) do
-        repository.currencies.each do |currency|
-          %i[income expense].each { |type| column(*total.for(method: type, currency: currency)) }
-        end
-
-        column(*total.period_percentage)
-      end
-    end
-
-    def total_current_row(with_period:)
-      row(CONFIG.color(:header)) do
-        repository.currencies.each.with_index do |currency, index|
-          column(*column_value(currency, index))
-        end
-
-        column(*total.total_percentage) if with_period
-      end
-    end
-
-    def column_value(currency, index)
-      [
-        MoneyHelper.display(repository.current.exchange_to(currency)),
-        CONFIG.output(:totals, :"total#{index}") || CONFIG.output(:totals, :total)
-      ]
-    end
-
-    def total
-      @total ||= Total.new(repository)
-    end
   end
 end

@@ -12,16 +12,6 @@ module Ledger
       @options = options
     end
 
-    def report
-      repository.reports.each do |report|
-        title(report.account)
-
-        build(report)
-      end
-
-      totals
-    end
-
     def trip
       repository.trips.each do |trip|
         title(trip.travel)
@@ -45,15 +35,6 @@ module Ledger
         print(entity.list)
 
         add_row(entity.total, CONFIG.color(:total)) if entity.respond_to?(:total)
-      end
-    end
-
-    def totals(with_period: true)
-      title('Totals')
-
-      table do
-        total_period_row(with_period: with_period)
-        total_current_row(with_period: with_period) if CONFIG.show_totals?
       end
     end
   end

@@ -15,7 +15,15 @@ module Ledger
       private
 
       def percentage_value
-        difference.positive? ? 1 - (expense / income).abs : (expense / income)
+        if income.zero? && expense.zero?
+          BigDecimal::NAN
+        elsif income.zero?
+          -BigDecimal::INFINITY
+        elsif expense.zero?
+          BigDecimal::INFINITY
+        else
+          difference.positive? ? 1 - (expense / income).abs : (expense / income)
+        end
       end
     end
   end

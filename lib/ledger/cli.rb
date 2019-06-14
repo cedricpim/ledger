@@ -100,7 +100,11 @@ module Ledger
     method_option :global, type: :boolean, default: true, aliases: '-g'
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     def report
-      Printer.new(parsed_options).report
+      report = Reports::Report.new(parsed_options)
+
+      Printers::Report.new(parsed_options, total: total(report.ledger, with_period: true)).call(
+        parsed_options[:global] ? report.global : report.data
+      )
     end
 
     desc 'show', COMMANDS[:show]

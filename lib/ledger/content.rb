@@ -44,14 +44,6 @@ module Ledger
       end
     end
 
-    def reports
-      if options[:global]
-        [Report.new('Global', filtered_transactions)]
-      else
-        filtered_transactions.group_by(&:account).map { |acc, trs| Report.new(acc, trs) }
-      end
-    end
-
     def filtered_transactions
       # Filter.new(exchanged_list, filters: [
       #   Filters::ExcludeCategory.new(options, :report),
@@ -59,15 +51,6 @@ module Ledger
       #   Filters::Period.new(options)
       # ])
       @filtered_transactions ||= period_transactions.reject { |t| exclude_categories&.call(t) }
-    end
-
-    def excluded_transactions
-      # Filter.new(exchanged_list, filters: [
-      #   Filters::ExcludeCategory.new(options, :report),
-      #   Filters::ExcludeAccount.new(options, :report),
-      #   Filters::Period.new(options)
-      # ])
-      @excluded_transactions ||= period_transactions.select { |t| exclude_categories&.call(t) }
     end
 
     private

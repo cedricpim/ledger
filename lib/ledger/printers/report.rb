@@ -1,18 +1,15 @@
 module Ledger
   module Printers
-    # Class responsible for printing the table with an analysis of a provided
-    # category.
-    class Analysis < Base
+    # Class responsible for printing the table with the general report.
+    class Report < Base
       def call(data)
-        lines(data).each do |account, (*list, total)|
+        lines(data).each do |account, lines|
           title(account)
 
           table do
-            main_header(from: :analysis)
+            main_header(from: :report)
 
-            list.each { |line| add_row(line, CONFIG.color(:element)) }
-
-            add_row(total, CONFIG.color(:total))
+            lines.each { |line| add_row(line, CONFIG.color(:element)) }
           end
         end
 
@@ -29,7 +26,7 @@ module Ledger
         [
           padded_title(title: info[:title], amount: info[:amount]),
           MoneyHelper.display(info[:value]),
-          *info[:percentages]
+          info[:percentage]
         ]
       end
     end

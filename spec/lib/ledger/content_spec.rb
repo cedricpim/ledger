@@ -317,43 +317,4 @@ RSpec.describe Ledger::Content do
       it { is_expected.to eq exchanged_transaction + relevant[1..4] }
     end
   end
-
-  describe '#excluded_transactions' do
-    subject { content.excluded_transactions }
-
-    let(:options) { {categories: %w[c]} }
-
-    let(:relevant) do
-      [
-        t(account: 'A', category: 'C', date: '20/06/2017', amount: '-20.00', currency: 'BBD'),
-        t(account: 'A', category: 'C', date: '14/07/2018', amount: '-20.00', currency: 'USD'),
-        t(account: 'B', category: 'C', date: '15/07/2018', amount: '-50.00', currency: 'USD'),
-        t(account: 'B', category: 'C', date: '16/07/2018', amount: '-10.00', currency: 'USD'),
-        t(account: 'B', category: 'D', date: '18/07/2018', amount: '-50.00', currency: 'USD')
-      ]
-    end
-
-    let(:transactions) do
-      relevant + [
-        t(account: 'Vacation', category: 'C', date: '18/07/2018', amount: -50, currency: 'USD'),
-        t(account: 'A', category: 'Exchange', date: '14/06/2018', amount: -50, currency: 'USD')
-      ]
-    end
-
-    it { is_expected.to eq relevant[0..3] }
-
-    context 'without excluded categories' do
-      let(:options) { {} }
-
-      it { is_expected.to eq [] }
-    end
-
-    context 'with currency defined' do
-      let(:options) { super().merge(currency: 'USD') }
-
-      let(:exchanged_transaction) { [relevant[0].exchange_to(options[:currency])] }
-
-      it { is_expected.to eq exchanged_transaction + transactions[1..3] }
-    end
-  end
 end

@@ -7,6 +7,13 @@ module Ledger
     class Base
       include CommandLineReporter
 
+      # Space reserved for displaying the amount of entries
+      SPACE_FOR_UNITS = 6
+      # Space used by characters that enclose each side of the amount
+      ENCLOSING_UNIT = 1
+      # Space used to separate title and amount
+      WHITESPACE = ' '.freeze
+
       attr_reader :options, :total
 
       def initialize(options, total: nil)
@@ -36,6 +43,11 @@ module Ledger
         row(row_options) do
           cells.each_with_index { |cell, index| column(cell, column_options.fetch(index, {})) }
         end
+      end
+
+      def padded_title(title:, amount:)
+        whitespaces = SPACE_FOR_UNITS - (2 * ENCLOSING_UNIT) - amount.to_s.length
+        ["(#{amount})", WHITESPACE * whitespaces, title].join
       end
     end
   end

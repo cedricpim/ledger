@@ -17,8 +17,7 @@ module Ledger
 
     # Methods that are forwarded to content
     CONTENT_METHODS = %i[
-      transactions accounts currencies current trips reports
-      accounts_currency filtered_transactions excluded_transactions
+      transactions accounts currencies current trips accounts_currency filtered_transactions
     ].freeze
 
     def_delegators :content, *CONTENT_METHODS
