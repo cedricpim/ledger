@@ -100,7 +100,7 @@ RSpec.describe Ledger::Reports::Comparison, :streaming do
     end
   end
 
-  describe '#totals', :streaming do
+  describe '#totals' do
     subject { report.totals }
 
     let(:result) do

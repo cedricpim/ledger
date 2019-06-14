@@ -24,17 +24,17 @@ module Ledger
         header(CONFIG.output(:title).merge(title: title).merge(options))
       end
 
-      def add_colored_row(lines, type: :element)
-        return unless lines
+      def add_colored_row(cells, type: :element)
+        return unless cells
 
-        row(CONFIG.color(type)) { lines.each { |line| column(*line) } }
+        row(CONFIG.color(type)) { cells.each { |cell| column(*cell) } }
       end
 
-      def add_row(lines, column_options = [], **row_options)
-        return unless lines
+      def add_row(cells, column_options = [], **row_options)
+        return unless cells
 
         row(row_options) do
-          lines.each_with_index { |value, index| column(value, column_options.fetch(index, {})) }
+          cells.each_with_index { |cell, index| column(cell, column_options.fetch(index, {})) }
         end
       end
     end

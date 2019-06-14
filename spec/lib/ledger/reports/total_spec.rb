@@ -28,7 +28,7 @@ RSpec.describe Ledger::Reports::Total, :streaming do
       {
         values: [
           {income: Money.new(240 * 100, 'BBD'), expense: Money.new(-260 * 100, 'BBD')},
-          {income: Money.new(120 * 100, 'USD'), expense: Money.new(-130 * 100, 'USD')},
+          {income: Money.new(120 * 100, 'USD'), expense: Money.new(-130 * 100, 'USD')}
         ],
         percentage: -108.33
       }

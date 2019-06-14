@@ -4,7 +4,7 @@ module Ledger
     # account.
     class Balance < Base
       def data
-        @data ||= transactions.keys.map { |account| line(account) }
+        @data ||= transactions.keys.map { |account| balance(account) }
       end
 
       private
@@ -19,7 +19,7 @@ module Ledger
         @transactions ||= super.group_by(&:account).sort.to_h
       end
 
-      def line(account)
+      def balance(account)
         {title: account, value: sum(account)}
       end
 

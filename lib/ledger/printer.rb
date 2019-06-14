@@ -12,16 +12,6 @@ module Ledger
       @options = options
     end
 
-    def analysis(category)
-      repository.analyses(category).each do |analysis|
-        title(analysis.account)
-
-        build(analysis)
-      end
-
-      totals
-    end
-
     def report
       repository.reports.each do |report|
         title(report.account)

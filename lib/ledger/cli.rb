@@ -79,7 +79,7 @@ module Ledger
     method_option :global, type: :boolean, default: true, aliases: '-g'
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     def analysis(category)
-      Printer.new(parsed_options).analysis(category)
+      Printers::Analysis.new(parsed_options, category: category).call
     end
 
     desc 'report', COMMANDS[:report]

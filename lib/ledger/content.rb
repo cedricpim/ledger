@@ -52,16 +52,6 @@ module Ledger
       end
     end
 
-    def analyses(category)
-      if options[:global]
-        [Analysis.new('Global', category_transactions(category), period_transactions, relevant_transactions)]
-      else
-        category_transactions(category).group_by(&:account).map do |a, trs|
-          Analysis.new(a, trs, period_transactions, relevant_transactions)
-        end
-      end
-    end
-
     def filtered_transactions
       # Filter.new(exchanged_list, filters: [
       #   Filters::ExcludeCategory.new(options, :report),
@@ -116,16 +106,6 @@ module Ledger
       #   Filters::Travel.new(options)
       # ])
       period_transactions.select { |t| t.travel && (options[:trip].nil? || t.travel.match?(/#{options[:trip]}/i)) }
-    end
-
-    def category_transactions(category)
-      # Filter.new(exchanged_list, filters: [
-      #   Filters::ExcludeCategory.new(options, :report),
-      #   Filters::ExcludeAccount.new(options, :report),
-      #   Filters::Period.new(options),
-      #   Filters::Category.new(options, category),
-      # ])
-      period_transactions.select { |t| t.category.casecmp(category).zero? }
     end
 
     def exchange_on_date(transaction, acc)
