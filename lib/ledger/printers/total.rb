@@ -3,36 +3,33 @@ module Ledger
     # Class responsible for printing a table with the totals values of the
     # ledger.
     class Total < Base
-      extend Memoist
-
       TITLE = 'Totals'.freeze
 
-      def call
+      def call(period, total)
+        period = with_period && prepare_period(period)
+        total = CONFIG.show_totals? && prepare_total(total)
+
         title(TITLE)
 
-        table { add_colored_row(period, type: :header) } if with_period && period
+        table { add_colored_row(period, type: :header) } if period
 
-        table { add_colored_row(total, type: :header) } if total && CONFIG.show_totals?
+        table { add_colored_row(total, type: :header) } if total
       end
 
       private
 
-      def report
-        @report ||= Reports::Total.new(options, ledger: ledger)
-      end
-
-      memoize def total
-        line(report.total) do |values|
-          values.map.with_index do |value, index|
-            [MoneyHelper.display(value), CONFIG.output(:totals, :total)]
+      def prepare_period(data)
+        line(data) do |values|
+          values.flat_map do |element|
+            element.map { |key, value| MoneyHelper.display_with_color(value, CONFIG.output(:totals, key)) }
           end
         end
       end
 
-      memoize def period
-        line(report.period) do |values|
-          values.flat_map do |element|
-            element.map { |key, value| MoneyHelper.display_with_color(value, CONFIG.output(:totals, key)) }
+      def prepare_total(data)
+        line(data) do |values|
+          values.map.with_index do |value, index|
+            [MoneyHelper.display(value), CONFIG.output(:totals, :total)]
           end
         end
       end

@@ -22,7 +22,6 @@ Gem::Specification.new do |s| # rubocop:disable Metrics/BlockLength
 
   s.add_dependency 'command_line_reporter', '~> 4.0'
   s.add_dependency 'faraday', '~> 0.15.3'
-  s.add_dependency 'memoist', '~> 0.16'
   s.add_dependency 'money', '~> 6.13'
   s.add_dependency 'money-open-exchange-rates', '~> 1.2'
   s.add_dependency 'nokogiri', '~> 1.10'

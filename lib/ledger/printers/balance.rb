@@ -28,10 +28,6 @@ module Ledger
           key == :title ? [value, options] : MoneyHelper.display_with_color(value, options)
         end
       end
-
-      def with_period
-        false
-      end
     end
   end
 end

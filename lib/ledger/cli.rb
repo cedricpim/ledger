@@ -71,7 +71,7 @@ module Ledger
     def balance
       report = Reports::Balance.new(parsed_options)
 
-      Printers::Balance.new(parsed_options, ledger: report.ledger).call(report.data)
+      Printers::Balance.new(parsed_options, total: total(report.ledger, with_period: false)).call(report.data)
     end
 
     desc 'analysis [CATEGORY]', COMMANDS[:analysis]
@@ -85,8 +85,8 @@ module Ledger
     def analysis(category)
       report = Reports::Analysis.new(parsed_options, category: category)
 
-      Printers::Analysis.new(parsed_options, ledger: report.ledger).call(
-        options[:global] ? report.global : report.data
+      Printers::Analysis.new(parsed_options, total: total(report.ledger, with_period: true)).call(
+        parsed_options[:global] ? report.global : report.data
       )
     end
 
@@ -144,6 +144,12 @@ module Ledger
     end
 
     private
+
+    def total(ledger, with_period:)
+      report = Reports::Total.new(parsed_options, ledger: ledger)
+
+      proc { Printers::Total.new(with_period: with_period).call(report.period, report.total) }
+    end
 
     def parsed_options
       options.each_with_object(Thor::CoreExt::HashWithIndifferentAccess.new) do |(k, v), h|
