@@ -5,27 +5,19 @@ module Ledger
     class Balance < Base
       TITLE = 'Balance'
 
-      def call
+      def call(data)
         title(TITLE)
 
         table do
           main_header(from: :balance)
 
-          lines.each { |line| add_colored_row(line) }
+          data.map { |info| line(info) }.each { |line| add_colored_row(line) if line }
         end
 
         total.call
       end
 
       private
-
-      def report
-        @report ||= Reports::Balance.new(options, ledger: ledger)
-      end
-
-      def lines
-        @lines ||= report.data.map { |info| line(info) }.compact
-      end
 
       def line(info)
         return unless info[:value]
@@ -37,8 +29,8 @@ module Ledger
         end
       end
 
-      def total
-        @total ||= Total.new(options.merge(with_period: false), ledger: report.ledger)
+      def with_period
+        false
       end
     end
   end

@@ -37,6 +37,14 @@ module Ledger
           cells.each_with_index { |cell, index| column(cell, column_options.fetch(index, {})) }
         end
       end
+
+      def total
+        @total ||= Total.new(options.merge(with_period: with_period), ledger: ledger)
+      end
+
+      def with_period
+        true
+      end
     end
   end
 end

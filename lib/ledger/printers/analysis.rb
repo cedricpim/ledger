@@ -10,15 +10,8 @@ module Ledger
       # Space used to separate title and amount
       WHITESPACE = ' '.freeze
 
-      attr_reader :category
-
-      def initialize(options, ledger: nil, category:)
-        super(options, ledger: ledger)
-        @category = category
-      end
-
-      def call
-        lines.each do |account, (*list, total)|
+      def call(data)
+        lines(data).each do |account, (*list, total)|
           title(account)
 
           table do
@@ -35,14 +28,8 @@ module Ledger
 
       private
 
-      def report
-        @report ||= Reports::Analysis.new(options, ledger: ledger, category: category)
-      end
-
-      def lines
-        @lines ||= (options[:global] ? report.global : report.data).each.with_object({}) do |(account, list), result|
-          result[account] = list.map { |info| line(info) }
-        end
+      def lines(data)
+        data.each_with_object({}) { |(account, list), res| res[account] = list.map { |info| line(info) } }
       end
 
       def line(info)
@@ -56,10 +43,6 @@ module Ledger
       def padded_title(title:, amount:)
         whitespaces = SPACE_FOR_UNITS - (2 * ENCLOSING_UNIT) - amount.to_s.length
         ["(#{amount})", WHITESPACE * whitespaces, title].join
-      end
-
-      def total
-        @total ||= Total.new(options.merge(with_period: true), ledger: report.ledger)
       end
     end
   end

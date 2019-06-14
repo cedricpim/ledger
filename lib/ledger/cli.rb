@@ -29,7 +29,9 @@ module Ledger
     method_option :months, type: :numeric, default: 1, aliases: '-m'
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     def compare
-      Printers::Comparison.new(parsed_options).call
+      report = Reports::Comparison.new(parsed_options)
+
+      Printers::Comparison.new(parsed_options, ledger: report.ledger).call(report.periods, report.data, report.totals)
     end
 
     desc 'configure', COMMANDS[:configure]
@@ -67,7 +69,9 @@ module Ledger
     method_option :all, type: :boolean, default: false, aliases: '-a'
     method_option :date, type: :string, aliases: '-d'
     def balance
-      Printers::Balance.new(parsed_options).call
+      report = Reports::Balance.new(parsed_options)
+
+      Printers::Balance.new(parsed_options, ledger: report.ledger).call(report.data)
     end
 
     desc 'analysis [CATEGORY]', COMMANDS[:analysis]
@@ -79,7 +83,11 @@ module Ledger
     method_option :global, type: :boolean, default: true, aliases: '-g'
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     def analysis(category)
-      Printers::Analysis.new(parsed_options, category: category).call
+      report = Reports::Analysis.new(parsed_options, category: category)
+
+      Printers::Analysis.new(parsed_options, ledger: report.ledger).call(
+        options[:global] ? report.global : report.data
+      )
     end
 
     desc 'report', COMMANDS[:report]

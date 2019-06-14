@@ -18,13 +18,18 @@ module Ledger
         ['%', 1]
       ].freeze
 
-      def call
-        title(TITLE, width: table_width)
+      def call(periods, data, totals)
+        data = data.map { |info| line(info) }
+        totals = line(totals, totals: true)
+
+        headers = headers(periods, data, totals)
+
+        title(TITLE, width: table_width(headers))
 
         table do
           add_colored_row(headers, type: :header)
 
-          lines.each { |line| add_colored_row(line) }
+          data.each { |line| add_colored_row(line) }
 
           add_colored_row(totals)
         end
@@ -32,21 +37,9 @@ module Ledger
 
       private
 
-      def report
-        @report ||= Reports::Comparison.new(options, ledger: ledger)
-      end
-
-      def lines
-        @lines ||= report.data.map { |info| line(info) }
-      end
-
-      def totals
-        @totals ||= line(report.totals, totals: true)
-      end
-
-      def headers
-        @headers ||= widths.slice_after(&:zero?).map.with_index do |group, header_index|
-          build_header_columns(group, header_index)
+      def headers(periods, data, totals)
+        widths(data, totals).slice_after(&:zero?).map.with_index do |group, header_index|
+          build_header_columns(group, header_index, periods)
         end.flatten(1)
       end
 
@@ -62,25 +55,25 @@ module Ledger
         end
       end
 
-      def table_width
+      def table_width(headers)
         headers.sum { |_elem, width:, **options| width + 1 }
       end
 
-      def widths
-        Array.new(totals.count) { |index| (lines + [totals]).map { |line| line[index][0].length }.max }
+      def widths(data, totals)
+        Array.new(totals.count) { |index| (data + [totals]).map { |line| line[index][0].length }.max }
       end
 
-      def build_header_columns(group, header_index)
+      def build_header_columns(group, header_index, periods)
         group.map.with_index do |width, period_index|
           next WHITESPACE if width.zero?
 
-          title = build_column_title(header_index, period_index)
+          title = build_column_title(header_index, period_index, periods)
           [title, width: [width, title.length].max + 1, align: 'center']
         end
       end
 
-      def build_column_title(header_index, period_index)
-        dates = report.periods.flatten.map { |p| p.strftime('%m/%y') }.uniq
+      def build_column_title(header_index, period_index, periods)
+        dates = periods.flatten.map { |p| p.strftime('%m/%y') }.uniq
 
         title, starting = HEADERS[header_index]
 
