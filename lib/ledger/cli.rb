@@ -37,17 +37,17 @@ module Ledger
     desc 'configure', COMMANDS[:configure]
     map 'C' => :configure
     def configure
-      Action::Configure.new.call
+      Actions::Configure.new.call
     end
 
     desc 'convert', COMMANDS[:convert]
     def convert
-      Action::Convert.new.call
+      Actions::Convert.new.call
     end
 
     desc 'create', COMMANDS[:create]
     def create
-      Action::Create.new.call
+      Actions::Create.new.call
     end
 
     desc 'edit', COMMANDS[:edit]
@@ -55,13 +55,13 @@ module Ledger
     method_option :line, type: :numeric, aliases: '-l'
     method_option :networth, type: :boolean, default: false, aliases: '-n'
     def edit
-      Action::Edit.new(parsed_options).call
+      Actions::Edit.new(parsed_options).call
     end
 
     desc 'book', COMMANDS[:book]
     method_option :transaction, type: :array, aliases: '-t'
     def book
-      Action::Book.new(parsed_options).call
+      Actions::Book.new(parsed_options).call
     end
 
     desc 'balance', COMMANDS[:balance]
@@ -117,7 +117,7 @@ module Ledger
     method_option :output, type: :string, default: -> { '/dev/stdout' }, aliases: '-o'
     method_option :networth, type: :boolean, default: false, aliases: '-n'
     def show
-      Action::Show.new(parsed_options).call
+      Actions::Show.new(parsed_options).call
     end
 
     desc 'trip', COMMANDS[:trip]
@@ -139,7 +139,7 @@ module Ledger
       report = Reports::Networth.new(parsed_options)
 
       if parsed_options[:store]
-        Action::Networth.new(parsed_options).call(report.store)
+        Actions::Networth.new(parsed_options, ledger: report.ledger).call(report.store)
       else
         Printers::Networth.new(parsed_options).call(report.data)
       end
