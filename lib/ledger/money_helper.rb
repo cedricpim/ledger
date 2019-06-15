@@ -11,7 +11,7 @@ module Ledger
       def percentage(value, transactions = [], &block)
         value, total = percentage_values(value, transactions, &block)
 
-        return CONFIG.default_value unless total.is_a?(Money) && value.is_a?(Money)
+        return unless total.is_a?(Money) && value.is_a?(Money)
 
         ((value.abs / total.abs) * 100).to_f.round(2)
       end

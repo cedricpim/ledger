@@ -7,7 +7,7 @@ module Ledger
       WHITESPACE = ['', width: 2].freeze
 
       # Table title
-      TITLE = 'Comparison'
+      TITLE = 'Comparison'.freeze
 
       # Array of arrays with the first element being the title of the header and
       # the second element the starting point for the periods

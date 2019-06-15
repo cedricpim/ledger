@@ -126,7 +126,9 @@ module Ledger
     method_option :global, type: :boolean, default: true, aliases: '-g'
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     def trip
-      Printer.new(parsed_options).trip
+      report = Reports::Trip.new(parsed_options)
+
+      Printers::Trip.new(parsed_options).call(parsed_options[:global] ? report.global : report.data)
     end
 
     desc 'networth', COMMANDS[:networth]
@@ -157,7 +159,7 @@ module Ledger
 
     def parsed_options
       options.each_with_object(Thor::CoreExt::HashWithIndifferentAccess.new) do |(k, v), h|
-        next if k == 'networth' && !CONFIG.networth?
+        next if (k == 'networth' && !CONFIG.networth?) || (k == 'global' && options[:trip])
         next h[k] = Date.parse(v) if %w[from till date].include?(k)
         next h[k] = v.call if v.is_a?(Proc)
 
