@@ -136,10 +136,12 @@ module Ledger
     method_option :store, type: :boolean, default: false, aliases: '-s'
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
     def networth
+      report = Reports::Networth.new(parsed_options)
+
       if parsed_options[:store]
-        Action::Networth.new(parsed_options).call
+        Action::Networth.new(parsed_options).call(report.store)
       else
-        Printer.new(parsed_options).networth
+        Printers::Networth.new(parsed_options).call(report.data)
       end
     end
 

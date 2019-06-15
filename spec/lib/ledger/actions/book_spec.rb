@@ -1,4 +1,4 @@
-RSpec.describe Ledger::Action::Book do
+RSpec.describe Ledger::Actions::Book do
   subject(:action) { described_class.new(options) }
 
   let(:options) { {} }

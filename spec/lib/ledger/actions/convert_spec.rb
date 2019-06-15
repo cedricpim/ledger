@@ -1,4 +1,4 @@
-RSpec.describe Ledger::Action::Convert do
+RSpec.describe Ledger::Actions::Convert do
   subject(:action) { described_class.new }
 
   describe '#call', :streaming do

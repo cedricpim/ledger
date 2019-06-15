@@ -1,5 +1,5 @@
 module Ledger
-  module Action
+  module Actions
     # Class responsible for converting the transactions to the main currency of
     # each account
     class Convert < Base

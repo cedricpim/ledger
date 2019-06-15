@@ -5,8 +5,6 @@ module Ledger
   # Class responsible for reading the ledger file into memory and loading all the
   # transactions, creating the ledger file or adding a new transaction.
   class Repository
-    extend Forwardable
-
     class LineError < StandardError; end
 
     # Map of which type of file has which entity
@@ -15,17 +13,9 @@ module Ledger
       networth: Ledger::Networth
     }.freeze
 
-    # Methods that are forwarded to content
-    CONTENT_METHODS = %i[
-      transactions accounts currencies current trips accounts_currency filtered_transactions
-    ].freeze
+    attr_reader :encryption
 
-    def_delegators :content, *CONTENT_METHODS
-
-    attr_reader :options, :encryption
-
-    def initialize(options = {})
-      @options = options
+    def initialize
       @encryption = {
         ledger: Encryption.new(CONFIG.ledger),
         networth: Encryption.new(CONFIG.networth)
@@ -73,10 +63,6 @@ module Ledger
       raise e.class, e.message + " (Line #{index + 1})"
     rescue CSV::MalformedCSVError => e
       raise OpenSSL::Cipher::CipherError, e.message
-    end
-
-    def content
-      @content ||= Content.new(load(:ledger), options)
     end
   end
 end

@@ -1,5 +1,5 @@
 module Ledger
-  module Action
+  module Actions
     # Class responsible for creating the file defined in the options
     class Create < Base
       def call

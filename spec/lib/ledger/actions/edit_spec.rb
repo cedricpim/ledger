@@ -1,4 +1,4 @@
-RSpec.describe Ledger::Action::Edit do
+RSpec.describe Ledger::Actions::Edit do
   subject(:action) { described_class.new(options) }
 
   let(:options) { {} }

@@ -1,4 +1,4 @@
-RSpec.describe Ledger::Filters::Travel do
+RSpec.describe Ledger::Filters::Trip do
   subject(:filter) { described_class.new(options) }
 
   let(:options) { {} }

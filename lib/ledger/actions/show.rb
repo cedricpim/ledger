@@ -1,5 +1,5 @@
 module Ledger
-  module Action
+  module Actions
     # Class responsible for displaying all the transactions that match the
     # options provided
     class Show < Base

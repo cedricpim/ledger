@@ -6,18 +6,6 @@ module Ledger
     include Modules::HasMoney
     include Modules::HasValidations
 
-    attr_accessor :valuations
-
-    def list
-      (balances + [other]).map do |elem|
-        elem.tap { elem[1] = MoneyHelper.display(elem[1]) }
-      end
-    end
-
-    def total
-      ['Total', MoneyHelper.display(money), 100.0]
-    end
-
     def calculate_invested!(transactions)
       self.day_investment = nil
       self.invested = transactions.sum do |transaction|
@@ -27,20 +15,6 @@ module Ledger
 
     def valid?
       parsed_date && money && valuation && day_investment
-    end
-
-    private
-
-    def balances
-      @balances ||= valuations.map { |title, value| [title, value, (value / money * 100).round(2)] }
-    end
-
-    def other
-      @other ||= ['Other', calc(money, 1), calc(100, 2).round(2)]
-    end
-
-    def calc(total, index)
-      total - balances.sum { |balance| balance[index] }
     end
   end
 end

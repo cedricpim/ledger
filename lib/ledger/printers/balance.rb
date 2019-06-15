@@ -3,7 +3,7 @@ module Ledger
     # Class responsible for printing the table with the balance of each
     # account.
     class Balance < Base
-      TITLE = 'Balance'
+      TITLE = 'Balance'.freeze
 
       def call(data)
         title(TITLE)

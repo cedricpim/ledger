@@ -8,19 +8,19 @@ module Ledger
       attr_writer :money, :valuation, :day_investment
 
       def money
-        @money ||= Money.new(BigDecimal(amount) * currency_info.subunit_to_unit, currency_info)
+        @money ||= Money.new(BigDecimal(amount.to_s) * currency_info.subunit_to_unit, currency_info)
       rescue ArgumentError, TypeError
         nil
       end
 
       def valuation
-        @valuation ||= Money.new(BigDecimal(investment) * currency_info.subunit_to_unit, currency_info)
+        @valuation ||= Money.new(BigDecimal(investment.to_s) * currency_info.subunit_to_unit, currency_info)
       rescue ArgumentError, TypeError
         nil
       end
 
       def day_investment
-        @day_investment ||= Money.new(BigDecimal(invested) * currency_info.subunit_to_unit, currency_info)
+        @day_investment ||= Money.new(BigDecimal(invested.to_s) * currency_info.subunit_to_unit, currency_info)
       rescue ArgumentError, TypeError
         nil
       end

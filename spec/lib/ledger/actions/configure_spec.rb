@@ -1,4 +1,4 @@
-RSpec.describe Ledger::Action::Configure do
+RSpec.describe Ledger::Actions::Configure do
   subject(:action) { described_class.new }
 
   describe '#call' do

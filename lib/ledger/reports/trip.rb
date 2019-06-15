@@ -50,7 +50,7 @@ module Ledger
       end
 
       def transactions
-        @transactions ||= Filter.new(total_transactions, filters: filters + [Filters::Travel.new(options)]).call
+        @transactions ||= Filter.new(total_transactions, filters: filters + [Filters::Trip.new(options)]).call
       end
     end
   end

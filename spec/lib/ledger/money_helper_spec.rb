@@ -67,22 +67,6 @@ RSpec.describe Ledger::MoneyHelper do
     end
   end
 
-  describe '.display_with_percentage' do
-    subject { helper.display_with_percentage(transactions, other_transactions) }
-
-    let(:transactions) { [t(amount: 250, currency: 'USD'), t(amount: 750, currency: 'USD')] }
-
-    let(:other_transactions) { [t(amount: 1000, currency: 'USD'), t(amount: 1000, currency: 'USD')] }
-
-    it { is_expected.to eq ['+1,000.00$', 50.0] }
-
-    context 'when a block is provided' do
-      subject { helper.display_with_percentage(transactions) { Money.new(400_000, 'USD') } }
-
-      it { is_expected.to eq ['+1,000.00$', 25.0] }
-    end
-  end
-
   describe '.display_with_color' do
     subject { helper.display_with_color(value, options) }
 

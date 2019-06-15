@@ -1,4 +1,4 @@
-RSpec.describe Ledger::TransactionBuilder do
+RSpec.describe Ledger::Actions::Book::Transaction do
   subject(:builder) { described_class.new(values: values) }
 
   let(:values) { nil }

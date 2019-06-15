@@ -1,9 +1,9 @@
 module Ledger
-  module Action
+  module Actions
     # Class responsible for adding a transaction to the ledger
     class Book < Base
       def call
-        transaction = TransactionBuilder.new(values: options[:transaction]).build!
+        transaction = Transaction.new(values: options[:transaction]).build!
 
         repository.add(transaction)
       end

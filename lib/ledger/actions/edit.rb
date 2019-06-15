@@ -1,5 +1,5 @@
 module Ledger
-  module Action
+  module Actions
     # Class responsible for opening the file defined in the options with the
     # editor defined on EDITOR
     class Edit < Base
