@@ -17,7 +17,7 @@ module Ledger
 
         def build!
           CONFIG.fields.each_with_index do |(field, default_options), index|
-            read(field, index, default_options)
+            read(field, index, default_options.slice(:default, :presence))
           end
 
           transaction
@@ -28,7 +28,7 @@ module Ledger
         private
 
         def transaction
-          @transaction ||= Transaction.new
+          @transaction ||= Ledger::Transaction.new
         end
 
         def read(key, index, default: DEFAULT, presence: false)
