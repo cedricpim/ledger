@@ -26,26 +26,13 @@ if CONFIG.default?
   end
 end
 
-require_relative 'ledger/modules/has_date'
-require_relative 'ledger/modules/has_money'
-require_relative 'ledger/modules/has_validations'
+%w[actions api filters modules printers reports].each do |folder|
+  files = Dir[File.join(__dir__, 'ledger', folder, '**', '*.rb')]
 
-require_relative 'ledger/cli'
-require_relative 'ledger/encryption'
-require_relative 'ledger/filter'
-require_relative 'ledger/money_helper'
-require_relative 'ledger/networth'
-require_relative 'ledger/repository'
-require_relative 'ledger/transaction'
-require_relative 'ledger/version'
-
-%w[actions filters reports printers].each do |folder|
-  require_relative "ledger/#{folder}/base"
-
-  Dir[File.join(__dir__, 'ledger', folder, '**', '*.rb')].sort.map { |file| require file }
+  files.sort { |first, second| second.include?('base') ? 1 : first <=> second }.map { |file| require file }
 end
 
-require 'ledger/api/just_etf'
+Dir[File.join(__dir__, 'ledger', '*.rb')].map { |file| require file }
 
 # Namespace for the whole project
 module Ledger; end
