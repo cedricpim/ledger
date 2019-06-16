@@ -22,7 +22,7 @@ Dir[File.join(__dir__, 'ledger', '*.rb')].map { |file| require file }
 CONFIG = Ledger::Config.new
 
 # Set Exchange gem
-Money.default_formatting_rules
+Money.locale_backend = nil
 Money.default_bank = Money::Bank::OpenExchangeRatesBank.new.tap do |oxr|
   oxr.cache = CONFIG.exchange[:cache_file]
   oxr.app_id = CONFIG.exchange[:api_key]
