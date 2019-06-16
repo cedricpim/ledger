@@ -12,18 +12,14 @@ module Ledger
     # Separator for ISIN and number of shares
     SEPARATOR = ' - '.freeze
 
-    def investment?
-      CONFIG.investments.any? { |c| c.casecmp(category).zero? }
-    end
-
     def isin
-      return unless investment?
+      return unless Filters::Investment.new.call(self)
 
       description.split(SEPARATOR).first
     end
 
     def shares
-      return 0 unless investment?
+      return 0 unless Filters::Investment.new.call(self)
 
       _, shares = description.split(SEPARATOR)
       (shares || DEFAULT_SHARES).to_i

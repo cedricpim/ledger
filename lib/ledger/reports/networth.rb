@@ -14,8 +14,8 @@ module Ledger
         end
       end
 
-      def store
-        Store.new(options).data
+      def store(entry: nil)
+        storage.data(entry)
       end
 
       private
@@ -56,7 +56,7 @@ module Ledger
       end
 
       def investments
-        @investments ||= transactions.select(&:investment?)
+        @investments ||= Filter.new(transactions, filters: [Filters::Investment.new(options)]).call
       end
 
       def filters
@@ -64,6 +64,10 @@ module Ledger
           Filters::IncludeCategory.new(options, :networth),
           Filters::IncludeAccount.new(options, :networth)
         ]
+      end
+
+      def storage
+        @storage ||= Storage.new(options, ledger: ledger)
       end
     end
   end

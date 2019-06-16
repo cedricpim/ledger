@@ -52,15 +52,11 @@ module Ledger
       end
 
       def period_transactions
-        @period_transactions ||= Filter.new(
-          total_transactions, filters: filters + [Filters::Period.new(options)]
-        ).call
+        @period_transactions ||= Filter.new(total_transactions, filters: [Filters::Period.new(options)]).call
       end
 
       def transactions
-        @transactions ||= Filter.new(
-          period_transactions, filters: filters + [Filters::Category.new(options, category)]
-        ).call
+        @transactions ||= Filter.new(period_transactions, filters: [Filters::Category.new(options, category)]).call
       end
     end
   end

@@ -83,7 +83,7 @@ RSpec.describe Ledger::Reports::Networth, :streaming do
 
     let(:result) do
       {
-        date: '2019-01-04',
+        date: Date.new(2019, 1, 4),
         invested: Money.new(2 * 100, 'USD'),
         investment: Money.new(900 * 100, 'USD'),
         amount: Money.new(905 * 100, 'USD'),
@@ -94,5 +94,23 @@ RSpec.describe Ledger::Reports::Networth, :streaming do
     before { allow(Date).to receive(:today).and_return(date) }
 
     it { is_expected.to eq result }
+
+    context 'when an entry is provided' do
+      subject { report.store(entry: entry) }
+
+      let(:entry) { build(:networth, date: '2019-01-05', investment: '+10.00', amount: '+15.00', currency: 'USD') }
+
+      let(:result) do
+        {
+          date: Date.new(2019, 1, 5),
+          invested: Money.new(1 * 100, 'USD'),
+          investment: Money.new(10 * 100, 'USD'),
+          amount: Money.new(15 * 100, 'USD'),
+          currency: 'USD'
+        }
+      end
+
+      it { is_expected.to eq result }
+    end
   end
 end

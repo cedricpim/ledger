@@ -39,43 +39,11 @@ require_relative 'ledger/repository'
 require_relative 'ledger/transaction'
 require_relative 'ledger/version'
 
-require_relative 'ledger/actions/base'
-require_relative 'ledger/actions/book'
-require_relative 'ledger/actions/book/transaction'
-require_relative 'ledger/actions/configure'
-require_relative 'ledger/actions/convert'
-require_relative 'ledger/actions/create'
-require_relative 'ledger/actions/edit'
-require_relative 'ledger/actions/networth'
-require_relative 'ledger/actions/show'
+%w[actions filters reports printers].each do |folder|
+  require_relative "ledger/#{folder}/base"
 
-require_relative 'ledger/filters/base'
-require_relative 'ledger/filters/category'
-require_relative 'ledger/filters/include_account'
-require_relative 'ledger/filters/include_category'
-require_relative 'ledger/filters/period'
-require_relative 'ledger/filters/present_category'
-require_relative 'ledger/filters/trip'
-
-require_relative 'ledger/reports/base'
-require_relative 'ledger/reports/analysis'
-require_relative 'ledger/reports/balance'
-require_relative 'ledger/reports/comparison'
-require_relative 'ledger/reports/networth'
-require_relative 'ledger/reports/networth/store'
-require_relative 'ledger/reports/report'
-require_relative 'ledger/reports/total'
-require_relative 'ledger/reports/total/period'
-require_relative 'ledger/reports/trip'
-
-require_relative 'ledger/printers/base'
-require_relative 'ledger/printers/analysis'
-require_relative 'ledger/printers/balance'
-require_relative 'ledger/printers/comparison'
-require_relative 'ledger/printers/networth'
-require_relative 'ledger/printers/report'
-require_relative 'ledger/printers/total'
-require_relative 'ledger/printers/trip'
+  Dir[File.join(__dir__, 'ledger', folder, '**', '*.rb')].sort.map { |file| require file }
+end
 
 require 'ledger/api/just_etf'
 

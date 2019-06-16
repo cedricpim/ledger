@@ -1,4 +1,4 @@
-RSpec.describe Ledger::Reports::Networth::Store, :streaming do
+RSpec.describe Ledger::Reports::Networth::Storage, :streaming do
   subject(:report) { described_class.new(options) }
 
   let(:options) { {currency: 'USD'} }
@@ -28,19 +28,22 @@ RSpec.describe Ledger::Reports::Networth::Store, :streaming do
 
   before do
     allow(CONFIG).to receive(:exclusions).and_return(accounts: ['Ignore'], categories: ['Ignore'])
+
     quotes.each do |quote|
       allow(Ledger::API::JustETF).to receive(:new).with(isin: "ISIN#{quote.title}").and_return(quote)
     end
   end
 
   describe '#data' do
-    subject { report.data }
+    subject { report.data(entry) }
+
+    let(:entry) { nil }
 
     let(:date) { Date.new(2019, 1, 4) }
 
     let(:result) do
       {
-        date: '2019-01-04',
+        date: Date.new(2019, 1, 4),
         invested: Money.new(2 * 100, 'USD'),
         investment: Money.new(900 * 100, 'USD'),
         amount: Money.new(905 * 100, 'USD'),
@@ -57,10 +60,26 @@ RSpec.describe Ledger::Reports::Networth::Store, :streaming do
 
       let(:result) do
         {
-          date: '2019-01-30',
+          date: Date.new(2019, 1, 30),
           invested: 0,
           investment: Money.new(900 * 100, 'USD'),
           amount: Money.new(905 * 100, 'USD'),
+          currency: 'USD'
+        }
+      end
+
+      it { is_expected.to eq result }
+    end
+
+    context 'when an entry is provided' do
+      let(:entry) { build(:networth, date: '2019-01-05', investment: '+10.00', amount: '+15.00', currency: 'EUR') }
+
+      let(:result) do
+        {
+          date: Date.new(2019, 1, 5),
+          invested: Money.new(1 * 100, 'USD'),
+          investment: Money.new(11.6 * 100, 'USD'),
+          amount: Money.new(17.41 * 100, 'USD'),
           currency: 'USD'
         }
       end

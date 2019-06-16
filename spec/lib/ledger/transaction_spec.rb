@@ -21,20 +21,6 @@ RSpec.describe Ledger::Transaction do
     it { is_expected.to eq attrs.values.join(',') }
   end
 
-  describe '#investment?' do
-    subject { described_class.new(attrs).investment? }
-
-    let(:attrs) { {account: 'Account', category: 'investment'} }
-
-    it { is_expected.to eq true }
-
-    context 'when category is not an investment one' do
-      let(:attrs) { {account: 'Account', category: 'drinks'} }
-
-      it { is_expected.to eq false }
-    end
-  end
-
   describe '#isin' do
     subject { described_class.new(attrs).isin }
 

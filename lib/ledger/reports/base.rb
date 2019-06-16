@@ -30,7 +30,7 @@ module Ledger
       end
 
       def filters
-        fail NotImplementedError, 'This method must be implemented in the child class'
+        []
       end
 
       def currency_for

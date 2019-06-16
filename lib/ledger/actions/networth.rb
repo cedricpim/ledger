@@ -4,9 +4,7 @@ module Ledger
     # previous entries.
     class Networth < Base
       def call(data)
-        entries = repository.load(:networth).map do |entry|
-          entry.exchange_to(currency).tap { |clone| clone.calculate_invested!(transactions) }
-        end
+        entries = repository.load(:networth).map { |entry| Ledger::Networth.new(report.store(entry: entry)) }
 
         entries << Ledger::Networth.new(data)
 
@@ -15,12 +13,8 @@ module Ledger
 
       private
 
-      def transactions
-        @transactions ||= repository.load(:ledger)
-      end
-
-      def currency
-        options[:currency]
+      def report
+        @report ||= Ledger::Reports::Networth.new(options, ledger: ledger)
       end
     end
   end
