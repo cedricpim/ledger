@@ -3,13 +3,15 @@ module Ledger
     # Class responsible for printing the table with the general report.
     class Report < Base
       def call(data)
-        lines(data).each do |account, lines|
+        lines(data).each do |account, (*list, total)|
           title(account)
 
           table do
             main_header(from: :report)
 
-            lines.each { |line| add_row(line, CONFIG.color(:element)) }
+            list.each { |line| add_row(line, CONFIG.color(:element)) }
+
+            add_row(total, CONFIG.color(:total))
           end
         end
 

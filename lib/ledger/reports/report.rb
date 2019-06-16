@@ -4,6 +4,8 @@ module Ledger
     class Report < Base
       GLOBAL = 'Global'.freeze
 
+      TOTAL = 'Total'.freeze
+
       def data
         @data ||= transactions.group_by(&:account).map { |account, ats| [account, list(ats)] }.to_h
       end
@@ -26,7 +28,7 @@ module Ledger
       def list(transactions)
         result = transactions.group_by(&:category).map { |category, cts| statistics(title: category, cts: cts) }
 
-        result.sort_by { |elem| elem[:value] }
+        result.sort_by { |elem| elem[:value].abs }.reverse + [statistics(title: TOTAL, cts: transactions)]
       end
 
       def statistics(title:, cts:)
