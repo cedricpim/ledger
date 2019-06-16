@@ -49,7 +49,7 @@ module Ledger
           end
 
           if entity.respond_to?(:invested)
-            entity.day_investment = day_investment.exchange_to(currency)
+            entity.day_investment = day_investment&.exchange_to(currency)
             entity.invested = MoneyHelper.display(entity.day_investment, type: :ledger)
           end
         end

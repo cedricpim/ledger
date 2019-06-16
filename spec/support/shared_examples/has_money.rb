@@ -39,29 +39,35 @@ RSpec.shared_examples 'has money' do |with_investment:|
     %w[+ -].each do |signal|
       context "for signal #{signal}" do
         let(:attrs) do
-          {amount: "#{signal}10", currency: 'USD'}.tap do |obj|
-            obj[:investment] = "#{signal}5" if with_investment
+          {amount: "#{signal}10", currency: 'USD'}.tap do |attributes|
+            next unless with_investment
+
+            attributes[:invested] = '0.00'
+            attributes[:investment] = "#{signal}5"
           end
         end
         let(:result) do
-          described_class.new(amount: "#{signal}8.62", currency: 'EUR').tap do |obj|
-            obj.investment = "#{signal}4.31" if with_investment
+          {amount: "#{signal}8.62", currency: 'EUR'}.tap do |attributes|
+            next unless with_investment
+
+            attributes[:invested] = '0.00'
+            attributes[:investment] = "#{signal}4.31"
           end
         end
 
-        it { is_expected.to eq result }
+        it { is_expected.to eq described_class.new(result) }
 
         context 'for money instance' do
           subject { described_class.new(attrs).exchange_to('EUR').money }
 
-          it { is_expected.to eq result.money }
+          it { is_expected.to eq described_class.new(result).money }
         end
 
         if with_investment
           context 'for investment instance' do
             subject { described_class.new(attrs).exchange_to('EUR').investment }
 
-            it { is_expected.to eq result.investment }
+            it { is_expected.to eq described_class.new(result).investment }
           end
         end
       end
