@@ -1,41 +1,35 @@
 RSpec.describe Ledger::Cli do
   subject(:cli) { described_class.new }
 
-  let(:options_attrs) { {} }
-  let(:options) { Thor::CoreExt::HashWithIndifferentAccess.new(options_attrs) }
-  let(:parsed_options_attrs) { {} }
-  let(:parsed_options) { Thor::CoreExt::HashWithIndifferentAccess.new(parsed_options_attrs) }
-
-  before { allow(cli).to receive(:options).and_return(options) }
-
-  RSpec.shared_context 'has currency option' do
-    let(:options_attrs) { super().merge(currency: -> { CONFIG.default_currency }) }
-    let(:parsed_options_attrs) { super().merge(currency: 'USD') }
-
-    before { allow(CONFIG).to receive(:default_currency).and_return('USD') }
-  end
-
-  RSpec.shared_context 'has date options' do
+  RSpec.shared_context 'has options' do
     let(:options_attrs) do
-      super().merge(
+      {
+        currency: -> { CONFIG.default_currency },
         year: -> { Date.today.year },
         month: -> { Date.today.month },
         from: '2018/07/21',
         till: '2018/07/22',
         date: '2018/07/23'
-      )
+      }
     end
     let(:parsed_options_attrs) do
-      super().merge(
+      {
+        currency: 'USD',
         year: 2018,
         month: 7,
         from: Date.new(2018, 7, 21),
         till: Date.new(2018, 7, 22),
         date: Date.new(2018, 7, 23)
-      )
+      }
     end
+    let(:options) { Thor::CoreExt::HashWithIndifferentAccess.new(options_attrs) }
+    let(:parsed_options) { Thor::CoreExt::HashWithIndifferentAccess.new(parsed_options_attrs) }
 
-    before { allow(Date).to receive(:today).and_return(Date.new(2018, 7, 20)) }
+    before do
+      allow(CONFIG).to receive(:default_currency).and_return('USD')
+      allow(Date).to receive(:today).and_return(Date.new(2018, 7, 20))
+      allow(cli).to receive(:options).and_return(options)
+    end
   end
 
   RSpec.shared_examples 'calls action' do |klass, method|
@@ -48,6 +42,8 @@ RSpec.describe Ledger::Cli do
       cli.public_send(method)
     end
   end
+
+  include_context 'has options'
 
   describe '#commands' do
     specify do
@@ -110,9 +106,6 @@ RSpec.describe Ledger::Cli do
   end
 
   describe '#analysis' do
-    include_context 'has currency option'
-    include_context 'has date options'
-
     let(:report) { instance_double('Ledger::Reports::Analysis', ledger: 'ledger', data: 'data', global: 'global') }
     let(:printer) { instance_double('Ledger::Printers::Analysis') }
     let(:category) { 'X' }
@@ -126,11 +119,8 @@ RSpec.describe Ledger::Cli do
     end
 
     context 'when it is global' do
-      include_context 'has currency option'
-      include_context 'has date options'
-
-      let(:options_attrs) { {global: true} }
-      let(:parsed_options_attrs) { {global: true} }
+      let(:options_attrs) { super().merge(global: true) }
+      let(:parsed_options_attrs) { super().merge(global: true) }
 
       specify do
         expect(Ledger::Reports::Analysis).to receive(:new).with(parsed_options, category: category).and_return(report)
@@ -143,9 +133,6 @@ RSpec.describe Ledger::Cli do
   end
 
   describe '#balance' do
-    include_context 'has currency option'
-    include_context 'has date options'
-
     let(:report) { instance_double('Ledger::Reports::Balance', ledger: 'ledger', data: 'data') }
     let(:printer) { instance_double('Ledger::Printers::Balance') }
 
@@ -159,9 +146,6 @@ RSpec.describe Ledger::Cli do
   end
 
   describe '#compare' do
-    include_context 'has currency option'
-    include_context 'has date options'
-
     let(:report) { instance_double('Ledger::Reports::Comparison', periods: 'periods', data: 'data', totals: 'totals') }
     let(:printer) { instance_double('Ledger::Printers::Comparison') }
 
@@ -175,9 +159,6 @@ RSpec.describe Ledger::Cli do
   end
 
   describe '#report' do
-    include_context 'has currency option'
-    include_context 'has date options'
-
     let(:report) { instance_double('Ledger::Reports::Report', ledger: 'ledger', data: 'data', global: 'global') }
     let(:printer) { instance_double('Ledger::Printers::Report') }
 
@@ -190,8 +171,8 @@ RSpec.describe Ledger::Cli do
     end
 
     context 'when it is global' do
-      let(:options_attrs) { {global: true} }
-      let(:parsed_options_attrs) { {global: true} }
+      let(:options_attrs) { super().merge(global: true) }
+      let(:parsed_options_attrs) { super().merge(global: true) }
 
       specify do
         expect(Ledger::Reports::Report).to receive(:new).with(parsed_options).and_return(report)
@@ -204,9 +185,6 @@ RSpec.describe Ledger::Cli do
   end
 
   describe '#trip' do
-    include_context 'has currency option'
-    include_context 'has date options'
-
     let(:report) { instance_double('Ledger::Reports::Trip', ledger: 'ledger', data: 'data', global: 'global') }
     let(:printer) { instance_double('Ledger::Printers::Trip') }
 
@@ -219,8 +197,8 @@ RSpec.describe Ledger::Cli do
     end
 
     context 'when it is global' do
-      let(:options_attrs) { {global: true} }
-      let(:parsed_options_attrs) { {global: true} }
+      let(:options_attrs) { super().merge(global: true) }
+      let(:parsed_options_attrs) { super().merge(global: true) }
 
       specify do
         expect(Ledger::Reports::Trip).to receive(:new).with(parsed_options).and_return(report)
@@ -258,8 +236,8 @@ RSpec.describe Ledger::Cli do
     end
 
     context 'when it is set to store' do
-      let(:options_attrs) { {store: true} }
-      let(:parsed_options_attrs) { {store: true} }
+      let(:options_attrs) { super().merge(store: true) }
+      let(:parsed_options_attrs) { super().merge(store: true) }
       let(:action) { instance_double('Ledger::Actions::Networth') }
 
       specify do
