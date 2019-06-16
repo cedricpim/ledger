@@ -1,5 +1,7 @@
 RSpec.describe Ledger::Actions::Create do
-  subject(:action) { described_class.new }
+  subject(:action) { described_class.new(options) }
+
+  let(:options) { {} }
 
   describe '#call', :streaming do
     context 'when both files exist' do

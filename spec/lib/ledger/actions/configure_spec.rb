@@ -1,5 +1,7 @@
 RSpec.describe Ledger::Actions::Configure do
-  subject(:action) { described_class.new }
+  subject(:action) { described_class.new(options) }
+
+  let(:options) { {} }
 
   describe '#call' do
     context 'default configuration exists' do
