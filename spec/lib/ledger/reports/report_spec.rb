@@ -76,7 +76,7 @@ RSpec.describe Ledger::Reports::Report, :streaming do
       {
         'Global' => [
           {title: 'D', amount: 2, value: Money.new(-120 * 100, 'USD'), percentage: 48.0},
-          {title: 'C', amount: 2, value: Money.new(-80* 100, 'USD'), percentage: 32.0},
+          {title: 'C', amount: 2, value: Money.new(-80 * 100, 'USD'), percentage: 32.0},
           {title: 'E', amount: 1, value: Money.new(-50 * 100, 'USD'), percentage: 20.0},
           {title: 'Total', amount: 5, value: Money.new(-250 * 100, 'USD'), percentage: 100.0}
         ]

@@ -21,7 +21,27 @@ module Ledger
         @total = total
       end
 
+      def call(data)
+        lines(data).each do |account, (*list, total)|
+          title(account)
+
+          table do
+            main_header(from: type)
+
+            list.each { |line| add_row(line, CONFIG.color(:element)) }
+
+            add_row(total, CONFIG.color(:total))
+          end
+        end
+
+        total&.call
+      end
+
       private
+
+      def lines(data)
+        data.each_with_object({}) { |(account, list), res| res[account] = list.map { |info| line(info) } }
+      end
 
       def main_header(from:)
         add_row(CONFIG.output(from, :header), CONFIG.output(from, :options), CONFIG.color(:header))
