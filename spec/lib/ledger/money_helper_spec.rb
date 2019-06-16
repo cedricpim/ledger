@@ -37,7 +37,11 @@ RSpec.describe Ledger::MoneyHelper do
     let(:value) { Money.new(2000, 'USD') }
 
     let(:transactions) do
-      [t(amount: 25, currency: 'USD'), t(amount: 75, currency: 'USD'), t(amount: -80, currency: 'USD')]
+      [
+        build(:transaction, amount: '+25.00', currency: 'USD'),
+        build(:transaction, amount: '+75.00', currency: 'USD'),
+        build(:transaction, amount: '-80.00', currency: 'USD')
+      ]
     end
 
     it { is_expected.to eq 20.0 }
@@ -45,25 +49,19 @@ RSpec.describe Ledger::MoneyHelper do
     context 'when value is not a Money instance' do
       let(:value) { 'something' }
 
-      it { is_expected.to eq '------' }
+      it { is_expected.to eq nil }
     end
 
     context 'when total sum of transactions  is not a Money instance' do
       let(:transactions) { [] }
 
-      it { is_expected.to eq '------' }
+      it { is_expected.to eq nil }
     end
 
     context 'when value is negative' do
       let(:value) { Money.new(-2100, 'USD') }
 
       it { is_expected.to eq 26.25 }
-    end
-
-    context 'when a block is given' do
-      subject { helper.percentage(value, transactions) { Money.new(4000, 'USD') } }
-
-      it { is_expected.to eq 50.0 }
     end
   end
 
@@ -79,14 +77,14 @@ RSpec.describe Ledger::MoneyHelper do
     end
 
     context 'when value is present' do
-      let(:value) { 12 }
+      let(:value) { 12.0 }
 
-      it { is_expected.to eq ['12%', a: :b, color: :green] }
+      it { is_expected.to eq ['12.0%', a: :b, color: :green] }
 
       context 'when value is negative' do
-        let(:value) { -12 }
+        let(:value) { -12.0 }
 
-        it { is_expected.to eq ['12%', a: :b, color: :red] }
+        it { is_expected.to eq ['12.0%', a: :b, color: :red] }
       end
     end
 
@@ -95,27 +93,23 @@ RSpec.describe Ledger::MoneyHelper do
 
       it { is_expected.to eq ['-----', a: :b, color: :black] }
     end
-  end
 
-  describe '.color' do
-    subject { helper.color(value) }
+    context 'when value is Infinity' do
+      let(:value) { Float::INFINITY }
 
-    context 'when value is negative' do
-      let(:value) { -1 }
-
-      it { is_expected.to eq(color: :red) }
+      it { is_expected.to eq ['100.0%', a: :b, color: :green] }
     end
 
-    context 'when value is positive' do
-      let(:value) { 1 }
+    context 'when value is -Infinity' do
+      let(:value) { Float::INFINITY * -1 }
 
-      it { is_expected.to eq(color: :green) }
+      it { is_expected.to eq ['100.0%', a: :b, color: :red] }
     end
 
-    context 'when value is positive' do
-      let(:value) { 0 }
+    context 'when value is NaN' do
+      let(:value) { Float::NAN }
 
-      it { is_expected.to eq(color: :black) }
+      it { is_expected.to eq ['0.0%', a: :b, color: :black] }
     end
   end
 end

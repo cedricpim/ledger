@@ -29,6 +29,8 @@ module Ledger
         [display.start_with?('-', '+') ? display[1..-1] : display, options.merge(color)]
       end
 
+      private
+
       def color(value)
         key =
           case
@@ -39,8 +41,6 @@ module Ledger
 
         CONFIG.output(:color, :money, key)
       end
-
-      private
 
       def display_percentage(value)
         value =
