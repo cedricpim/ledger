@@ -6,7 +6,7 @@ module Ledger
     class Base
       attr_reader :options, :ledger
 
-      def initialize(options, ledger: nil)
+      def initialize(options = {}, ledger: nil)
         @options = options
         @ledger = ledger
       end

@@ -1,28 +1,28 @@
 RSpec.describe Ledger::Cli do
   subject(:cli) { described_class.new }
 
-  let(:parsed_options_attrs) { {} }
-  let(:parsed_options) { Thor::CoreExt::HashWithIndifferentAccess.new(parsed_options_attrs) }
   let(:options_attrs) { {} }
   let(:options) { Thor::CoreExt::HashWithIndifferentAccess.new(options_attrs) }
+  let(:parsed_options_attrs) { {} }
+  let(:parsed_options) { Thor::CoreExt::HashWithIndifferentAccess.new(parsed_options_attrs) }
+
+  before { allow(cli).to receive(:options).and_return(options) }
 
   RSpec.shared_context 'has currency option' do
-    before do
-      allow(cli).to receive(:options).and_return(options)
-      allow_any_instance_of(Ledger::Config).to receive(:default_currency).and_return('USD')
-    end
+    let(:options_attrs) { super().merge(currency: -> { CONFIG.default_currency }) }
+    let(:parsed_options_attrs) { super().merge(currency: 'USD') }
+
+    before { allow(CONFIG).to receive(:default_currency).and_return('USD') }
   end
 
-  RSpec.shared_context 'has options' do
-    include_context 'has currency option'
-
+  RSpec.shared_context 'has date options' do
     let(:options_attrs) do
       super().merge(
         year: -> { Date.today.year },
         month: -> { Date.today.month },
-        from: '21/07/2018',
-        till: '22/07/2018',
-        global: true
+        from: '2018/07/21',
+        till: '2018/07/22',
+        date: '2018/07/23'
       )
     end
     let(:parsed_options_attrs) do
@@ -31,53 +31,21 @@ RSpec.describe Ledger::Cli do
         month: 7,
         from: Date.new(2018, 7, 21),
         till: Date.new(2018, 7, 22),
-        global: true
+        date: Date.new(2018, 7, 23)
       )
     end
 
-    before { allow(Date).to receive(:today).and_return(Date.new(2018, 7, 21)) }
+    before { allow(Date).to receive(:today).and_return(Date.new(2018, 7, 20)) }
   end
 
-  RSpec.shared_examples 'printer receives' do |method, *params|
-    let(:printer) { instance_double('Ledger::Printer') }
+  RSpec.shared_examples 'calls action' do |klass, method|
+    let(:action) { instance_double(klass.to_s) }
 
     specify do
-      expect(Ledger::Printer).to receive(:new).with(parsed_options).and_return(printer)
-      if params.empty?
-        expect(printer).to receive(method)
-        cli.public_send(method)
-      else
-        expect(printer).to receive(method).with(*params)
-        cli.public_send(method, *params)
-      end
-    end
-  end
+      expect(klass).to receive(:new).with(parsed_options).and_return(action)
+      expect(action).to receive(:call)
 
-  RSpec.shared_examples 'repository receives' do |method|
-    let(:repository) { instance_double('Ledger::Repository') }
-    let(:options_attrs) { super().merge(networth: true) }
-    let(:parsed_options_attrs) { super().merge(networth: true) }
-
-    before { allow(cli).to receive(:options).and_return(options) }
-
-    specify do
-      expect(Ledger::Repository).to receive(:new).with(parsed_options).and_return(repository)
-      expect(repository).to receive(method)
-
-      cli.public_send(method.to_s.chomp('!'))
-    end
-
-    context 'when CONFIG does not have networth' do
-      let(:parsed_options_attrs) { super().tap { |h| h.delete(:networth) } }
-
-      before { allow_any_instance_of(Ledger::Config).to receive(:networth?).and_return(false) }
-
-      specify do
-        expect(Ledger::Repository).to receive(:new).with(parsed_options).and_return(repository)
-        expect(repository).to receive(method)
-
-        cli.public_send(method.to_s.chomp('!'))
-      end
+      cli.public_send(method)
     end
   end
 
@@ -89,81 +57,218 @@ RSpec.describe Ledger::Cli do
     end
   end
 
-  describe '#compare' do
-    let(:options_attrs) { {currency: -> { CONFIG.default_currency }} }
-    let(:parsed_options_attrs) { {currency: 'USD'} }
-
-    include_context 'has currency option'
-
-    it_behaves_like 'printer receives', :compare
-  end
-
   describe '#configure' do
-    specify do
-      expect(Ledger::Config).to receive(:configure)
-
-      cli.configure
-    end
+    it_behaves_like 'calls action', Ledger::Actions::Configure, :configure
   end
 
   describe '#convert' do
-    it_behaves_like 'repository receives', :convert!
+    it_behaves_like 'calls action', Ledger::Actions::Convert, :convert
   end
 
   describe '#create' do
-    it_behaves_like 'repository receives', :create!
+    it_behaves_like 'calls action', Ledger::Actions::Create, :create
   end
 
   describe '#edit' do
-    it_behaves_like 'repository receives', :edit!
+    it_behaves_like 'calls action', Ledger::Actions::Edit, :edit
+
+    context 'when networth is not enabled' do
+      let(:options_attrs) { {networth: true} }
+      let(:action) { instance_double(Ledger::Actions::Edit.to_s) }
+
+      before { allow(CONFIG).to receive(:networth?).and_return(false) }
+
+      specify do
+        expect(Ledger::Actions::Edit).to receive(:new).with({}).and_return(action)
+        expect(action).to receive(:call)
+
+        cli.edit
+      end
+    end
   end
 
   describe '#book' do
-    it_behaves_like 'repository receives', :book!
+    it_behaves_like 'calls action', Ledger::Actions::Book, :book
   end
 
   describe '#show' do
-    it_behaves_like 'repository receives', :show
-  end
+    it_behaves_like 'calls action', Ledger::Actions::Show, :show
 
-  describe '#balance' do
-    let(:options_attrs) { {date: '2018/10/28'} }
-    let(:parsed_options_attrs) { {date: Date.new(2018, 10, 28)} }
+    context 'when networth is not enabled' do
+      let(:options_attrs) { {networth: true} }
+      let(:action) { instance_double(Ledger::Actions::Show.to_s) }
 
-    before { allow(cli).to receive(:options).and_return(options) }
+      before { allow(CONFIG).to receive(:networth?).and_return(false) }
 
-    it_behaves_like 'printer receives', :balance
+      specify do
+        expect(Ledger::Actions::Show).to receive(:new).with({}).and_return(action)
+        expect(action).to receive(:call)
+
+        cli.show
+      end
+    end
   end
 
   describe '#analysis' do
-    include_context 'has options'
+    include_context 'has currency option'
+    include_context 'has date options'
 
-    it_behaves_like 'printer receives', :analysis, 'Category'
+    let(:report) { instance_double('Ledger::Reports::Analysis', ledger: 'ledger', data: 'data', global: 'global') }
+    let(:printer) { instance_double('Ledger::Printers::Analysis') }
+    let(:category) { 'X' }
+
+    specify do
+      expect(Ledger::Reports::Analysis).to receive(:new).with(parsed_options, category: category).and_return(report)
+      expect(Ledger::Printers::Analysis).to receive(:new).with(parsed_options, total: Proc).and_return(printer)
+      expect(printer).to receive(:call).with('data')
+
+      cli.analysis(category)
+    end
+
+    context 'when it is global' do
+      include_context 'has currency option'
+      include_context 'has date options'
+
+      let(:options_attrs) { {global: true} }
+      let(:parsed_options_attrs) { {global: true} }
+
+      specify do
+        expect(Ledger::Reports::Analysis).to receive(:new).with(parsed_options, category: category).and_return(report)
+        expect(Ledger::Printers::Analysis).to receive(:new).with(parsed_options, total: Proc).and_return(printer)
+        expect(printer).to receive(:call).with('global')
+
+        cli.analysis(category)
+      end
+    end
+  end
+
+  describe '#balance' do
+    include_context 'has currency option'
+    include_context 'has date options'
+
+    let(:report) { instance_double('Ledger::Reports::Balance', ledger: 'ledger', data: 'data') }
+    let(:printer) { instance_double('Ledger::Printers::Balance') }
+
+    specify do
+      expect(Ledger::Reports::Balance).to receive(:new).with(parsed_options).and_return(report)
+      expect(Ledger::Printers::Balance).to receive(:new).with(parsed_options, total: Proc).and_return(printer)
+      expect(printer).to receive(:call).with('data')
+
+      cli.balance
+    end
+  end
+
+  describe '#compare' do
+    include_context 'has currency option'
+    include_context 'has date options'
+
+    let(:report) { instance_double('Ledger::Reports::Comparison', periods: 'periods', data: 'data', totals: 'totals') }
+    let(:printer) { instance_double('Ledger::Printers::Comparison') }
+
+    specify do
+      expect(Ledger::Reports::Comparison).to receive(:new).with(parsed_options).and_return(report)
+      expect(Ledger::Printers::Comparison).to receive(:new).with(parsed_options).and_return(printer)
+      expect(printer).to receive(:call).with('periods', 'data', 'totals')
+
+      cli.compare
+    end
   end
 
   describe '#report' do
-    include_context 'has options'
+    include_context 'has currency option'
+    include_context 'has date options'
 
-    it_behaves_like 'printer receives', :report
+    let(:report) { instance_double('Ledger::Reports::Report', ledger: 'ledger', data: 'data', global: 'global') }
+    let(:printer) { instance_double('Ledger::Printers::Report') }
+
+    specify do
+      expect(Ledger::Reports::Report).to receive(:new).with(parsed_options).and_return(report)
+      expect(Ledger::Printers::Report).to receive(:new).with(parsed_options, total: Proc).and_return(printer)
+      expect(printer).to receive(:call).with('data')
+
+      cli.report
+    end
+
+    context 'when it is global' do
+      let(:options_attrs) { {global: true} }
+      let(:parsed_options_attrs) { {global: true} }
+
+      specify do
+        expect(Ledger::Reports::Report).to receive(:new).with(parsed_options).and_return(report)
+        expect(Ledger::Printers::Report).to receive(:new).with(parsed_options, total: Proc).and_return(printer)
+        expect(printer).to receive(:call).with('global')
+
+        cli.report
+      end
+    end
   end
 
   describe '#trip' do
-    let(:options_attrs) { {currency: -> { CONFIG.default_currency }} }
-    let(:parsed_options_attrs) { {currency: 'USD'} }
-
     include_context 'has currency option'
+    include_context 'has date options'
 
-    it_behaves_like 'printer receives', :trip
+    let(:report) { instance_double('Ledger::Reports::Trip', ledger: 'ledger', data: 'data', global: 'global') }
+    let(:printer) { instance_double('Ledger::Printers::Trip') }
+
+    specify do
+      expect(Ledger::Reports::Trip).to receive(:new).with(parsed_options).and_return(report)
+      expect(Ledger::Printers::Trip).to receive(:new).with(parsed_options).and_return(printer)
+      expect(printer).to receive(:call).with('data')
+
+      cli.trip
+    end
+
+    context 'when it is global' do
+      let(:options_attrs) { {global: true} }
+      let(:parsed_options_attrs) { {global: true} }
+
+      specify do
+        expect(Ledger::Reports::Trip).to receive(:new).with(parsed_options).and_return(report)
+        expect(Ledger::Printers::Trip).to receive(:new).with(parsed_options).and_return(printer)
+        expect(printer).to receive(:call).with('global')
+
+        cli.trip
+      end
+
+      context 'when a trip is also defined' do
+        let(:options_attrs) { super().merge(trip: 'T') }
+        let(:parsed_options_attrs) { super().merge(trip: 'T') }
+
+        specify do
+          expect(Ledger::Reports::Trip).to receive(:new).with(parsed_options.except('global')).and_return(report)
+          expect(Ledger::Printers::Trip).to receive(:new).with(parsed_options.except('global')).and_return(printer)
+          expect(printer).to receive(:call).with('data')
+
+          cli.trip
+        end
+      end
+    end
   end
 
   describe '#networth' do
-    it_behaves_like 'printer receives', :networth
+    let(:report) { instance_double('Ledger::Reports::Networth', ledger: 'ledger', data: 'data', store: 'store') }
+    let(:printer) { instance_double('Ledger::Printers::Networth') }
 
-    context 'when store is defined' do
+    specify do
+      expect(Ledger::Reports::Networth).to receive(:new).with(parsed_options).and_return(report)
+      expect(Ledger::Printers::Networth).to receive(:new).with(parsed_options).and_return(printer)
+      expect(printer).to receive(:call).with('data')
+
+      cli.networth
+    end
+
+    context 'when it is set to store' do
       let(:options_attrs) { {store: true} }
       let(:parsed_options_attrs) { {store: true} }
+      let(:action) { instance_double('Ledger::Actions::Networth') }
 
-      it_behaves_like 'repository receives', :networth!
+      specify do
+        expect(Ledger::Reports::Networth).to receive(:new).with(parsed_options).and_return(report)
+        expect(Ledger::Actions::Networth).to receive(:new).with(parsed_options, ledger: 'ledger').and_return(action)
+        expect(action).to receive(:call).with('store')
+
+        cli.networth
+      end
     end
   end
 
