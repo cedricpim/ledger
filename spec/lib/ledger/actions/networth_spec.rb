@@ -42,13 +42,18 @@ RSpec.describe Ledger::Actions::Networth do
     context 'when a different currency is given' do
       let(:options) { {currency: 'EUR'} }
 
-      let(:result) do
-        RSpecHelper.build_result(
-          Ledger::Networth,
-          build(:networth, currency: 'EUR', invested: '8.62', investment: '4.31', amount: '8.62', date: '2019-06-07'),
-          build(:networth, currency: 'EUR', invested: '+0.00', investment: '+900.00', amount: '+905.00', date: '2019-06-08')
-        )
+      let(:records) do
+        [
+          build(
+            :networth, currency: 'EUR', invested: '8.62', investment: '4.31', amount: '8.62', date: '2019-06-07'
+          ),
+          build(
+            :networth, currency: 'EUR', invested: '+0.00', investment: '+900.00', amount: '+905.00', date: '2019-06-08'
+          )
+        ]
       end
+
+      let(:result) { RSpecHelper.build_result(Ledger::Networth, *records) }
 
       it 'recalculates existing networths and add the new one' do
         expect { action.call(data) }.to change { networth.tap(&:rewind).read }.to(result)

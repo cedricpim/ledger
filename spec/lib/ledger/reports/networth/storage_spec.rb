@@ -3,7 +3,7 @@ RSpec.describe Ledger::Reports::Networth::Storage, :streaming do
 
   let(:options) { {currency: 'USD'} }
 
-  # rubocop:enable Metrics/LineLength
+  # rubocop:disable Metrics/LineLength
   let(:ledger_content) do
     [
       build(:transaction, category: 'Investment', amount: '-2.00', currency: 'BBD', date: '2019-01-04', description: 'ISINA - 2'),
@@ -16,7 +16,7 @@ RSpec.describe Ledger::Reports::Networth::Storage, :streaming do
       build(:transaction, account: 'A', category: 'Ignore', amount: '-50.00', currency: 'USD')
     ]
   end
-  # rubocop:disable Metrics/LineLength
+  # rubocop:enable Metrics/LineLength
 
   let(:quotes) do
     [

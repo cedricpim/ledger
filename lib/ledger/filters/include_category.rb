@@ -17,7 +17,7 @@ module Ledger
       private
 
       def categories
-        @categories ||= CONFIG.exclusions(of: type).transform_values { |values| values.map(&:downcase) }[:categories]
+        @categories ||= CONFIG.exclusions(type: type).transform_values { |values| values.map(&:downcase) }[:categories]
       end
     end
   end

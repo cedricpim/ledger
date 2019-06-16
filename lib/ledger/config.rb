@@ -59,8 +59,8 @@ module Ledger
       CONFIG.output(:default)
     end
 
-    def exclusions(of:)
-      Hash(config.dig(of, :exclude)).tap do |exclusions|
+    def exclusions(type:)
+      Hash(config.dig(type, :exclude)).tap do |exclusions|
         exclusions[:categories] ||= []
         exclusions[:accounts] ||= []
       end

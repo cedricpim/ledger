@@ -24,7 +24,7 @@ RSpec.describe Ledger::Reports::Report, :streaming do
       {
         'A' => [
           {title: 'C', amount: 2, value: Money.new(-160 * 100, 'BBD'), percentage: 32.0},
-          {title: 'D', amount: 1, value: Money.new(-20 * 100, 'USD'), percentage: 8.0},
+          {title: 'D', amount: 1, value: Money.new(-20 * 100, 'USD'), percentage: 8.0}
         ],
         'B' => [
           {title: 'D', amount: 1, value: Money.new(-100 * 100, 'USD'), percentage: 40.0},
@@ -42,7 +42,7 @@ RSpec.describe Ledger::Reports::Report, :streaming do
         super().merge(
           'A' => [
             {title: 'C', amount: 2, value: Money.new(-80 * 100, 'USD'), percentage: 32.0},
-            {title: 'D', amount: 1, value: Money.new(-20 * 100, 'USD'), percentage: 8.0},
+            {title: 'D', amount: 1, value: Money.new(-20 * 100, 'USD'), percentage: 8.0}
           ]
         )
       end
@@ -63,7 +63,7 @@ RSpec.describe Ledger::Reports::Report, :streaming do
         {
           'A' => [
             {title: 'C', amount: 1, value: Money.new(-20 * 100, 'USD'), percentage: 10.53},
-            {title: 'D', amount: 1, value: Money.new(-20 * 100, 'USD'), percentage: 10.53},
+            {title: 'D', amount: 1, value: Money.new(-20 * 100, 'USD'), percentage: 10.53}
           ],
           'B' => [
             {title: 'D', amount: 1, value: Money.new(-100 * 100, 'USD'), percentage: 52.63},

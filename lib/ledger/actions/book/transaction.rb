@@ -1,59 +1,61 @@
 module Ledger
   module Actions
-    # Class holding all the logic to build a new transaction. Since a transaction
-    # is composed by many attributes, readline library is used to read each of the
-    # inputs and build the transaction. A couple of improvements have been added
-    # such as default attributes and auto-complete.
-    class Book::Transaction
-      DEFAULT = ''.freeze
-      ALLOWED_DATE_SEPARATORS = %r{-|/|\.}
+    class Book
+      # Class holding all the logic to build a new transaction. Since a transaction
+      # is composed by many attributes, readline library is used to read each of the
+      # inputs and build the transaction. A couple of improvements have been added
+      # such as default attributes and auto-complete.
+      class Transaction
+        DEFAULT = ''.freeze
+        ALLOWED_DATE_SEPARATORS = %r{-|/|\.}.freeze
 
-      attr_reader :transaction_values
+        attr_reader :values
 
-      def initialize(values: [])
-        @transaction_values = Array(values)
-      end
-
-      def build!
-        CONFIG.fields.each_with_index do |(field, default_options), index|
-          read(field, index, default_options)
+        def initialize(values: [])
+          @values = Array(values)
         end
 
-        transaction
-      rescue Exception => e # rubocop:disable Lint/RescueException
-        puts e.message or exit
-      end
+        def build!
+          CONFIG.fields.each_with_index do |(field, default_options), index|
+            read(field, index, default_options)
+          end
 
-      private
+          transaction
+        rescue Exception => e # rubocop:disable Lint/RescueException
+          puts e.message or exit
+        end
 
-      def transaction
-        @transaction ||= Transaction.new
-      end
+        private
 
-      def read(key, index, default: DEFAULT, presence: false, values: [])
-        title = key.to_s.capitalize
+        def transaction
+          @transaction ||= Transaction.new
+        end
 
-        value = transaction_values[index] || handle_input(key, title, default, values)
+        def read(key, index, default: DEFAULT, presence: false)
+          title = key.to_s.capitalize
 
-        puts "#{title} must be present" or exit if presence && value.empty?
+          value = values[index] || handle_input(key, title, default)
 
-        transaction.public_send(:"#{key}=", value)
-      end
+          puts "#{title} must be present" or exit if presence && value.empty?
 
-      def handle_input(key, title, default, values)
-        value = Readline.readline("#{title} [#{default}] ", true).strip
-        process_input(key, default, value)
-      end
+          transaction.public_send(:"#{key}=", value)
+        end
 
-      def process_input(key, default, value)
-        return default if value.empty?
-        return value if key != :date
+        def handle_input(key, title, default)
+          value = Readline.readline("#{title} [#{default}] ", true).strip
+          process_input(key, default, value)
+        end
 
-        value = Array.new(3) do |i|
-          value.split(ALLOWED_DATE_SEPARATORS)[i] || default.split(ALLOWED_DATE_SEPARATORS)[i]
-        end.join('-')
+        def process_input(key, default, value)
+          return default if value.empty?
+          return value if key != :date
 
-        Date.parse(value) && value
+          value = Array.new(3) do |i|
+            value.split(ALLOWED_DATE_SEPARATORS)[i] || default.split(ALLOWED_DATE_SEPARATORS)[i]
+          end.join('-')
+
+          Date.parse(value) && value
+        end
       end
     end
   end

@@ -133,7 +133,7 @@ RSpec.describe Ledger::Config do
   end
 
   describe '#exclusions' do
-    subject { config.exclusions(of: :report) }
+    subject { config.exclusions(type: :report) }
 
     let(:structure) { {accounts: ['Ignore'], categories: ['Ignore2']} }
 

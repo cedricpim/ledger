@@ -27,11 +27,7 @@ module Ledger
       end
 
       def prepare_total(data)
-        line(data) do |values|
-          values.map.with_index do |value, index|
-            [MoneyHelper.display(value), CONFIG.output(:totals, :total)]
-          end
-        end
+        line(data) { |values| values.map { |value| [MoneyHelper.display(value), CONFIG.output(:totals, :total)] } }
       end
 
       def line(values:, percentage:, &block)

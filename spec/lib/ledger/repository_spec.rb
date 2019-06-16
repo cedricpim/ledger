@@ -149,7 +149,7 @@ RSpec.describe Ledger::Repository do
   describe '#open' do
     subject(:open) { repository.open(resource, &block) }
 
-    let(:block) { proc { } }
+    let(:block) { proc {} }
     let(:resource) { :ledger }
     let(:encryption) { instance_double('Ledger::Encryption', resource: resource) }
 

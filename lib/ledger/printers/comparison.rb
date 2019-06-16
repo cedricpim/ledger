@@ -56,7 +56,7 @@ module Ledger
       end
 
       def table_width(headers)
-        headers.sum { |_elem, width:, **options| width + 1 }
+        headers.sum { |_elem, width:, **_options| width + 1 }
       end
 
       def widths(data, totals)

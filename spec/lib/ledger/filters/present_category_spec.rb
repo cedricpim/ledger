@@ -11,13 +11,13 @@ RSpec.describe Ledger::Filters::PresentCategory do
     it { is_expected.to eq true }
 
     context 'when categories in options does not contain the category' do
-      let(:options) { {categories: ['A', 'B']} }
+      let(:options) { {categories: %w[A B]} }
 
       it { is_expected.to eq true }
     end
 
     context 'when categories in options contains the category' do
-      let(:options) { {categories: ['A', 'X']} }
+      let(:options) { {categories: %w[A X]} }
 
       it { is_expected.to eq false }
     end

@@ -6,17 +6,17 @@ module Ledger
     # data is invalid/missing.
     module HasValidations
       def initialize(options = {})
-        fail Repository::LineError, 'There was an invalid line while parsing the CSV' if options.keys.include?(nil)
+        raise Repository::LineError, 'There was an invalid line while parsing the CSV' if options.keys.include?(nil)
 
         super
       end
 
       def validate!
-        fail Repository::LineError, 'There was an invalid line while parsing the CSV' unless valid?
+        raise Repository::LineError, 'There was an invalid line while parsing the CSV' unless valid?
       end
 
       def valid?
-        fail NotImplementedError, 'This method needs to be implemented in the class'
+        raise NotImplementedError, 'This method needs to be implemented in the class'
       end
     end
   end

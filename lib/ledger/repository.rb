@@ -23,7 +23,7 @@ module Ledger
     end
 
     def add(*entries, resource: :ledger, reset: false)
-      open(resource) do |file|
+      self.open(resource) do |file|
         file.seek(0, reset ? IO::SEEK_SET : IO::SEEK_END)
         file.puts(headers(resource)) if reset
         entries.flatten.compact.each { |entry| file.puts(entry.to_file) }
@@ -33,7 +33,7 @@ module Ledger
     end
 
     def load(resource)
-      open(resource) { |file| parse(file, resource: resource) }
+      self.open(resource) { |file| parse(file, resource: resource) }
     end
 
     def open(resource, &block)
@@ -43,7 +43,7 @@ module Ledger
     private
 
     def headers(type)
-      ENTITIES[type].members.map(&:capitalize).join(",")
+      ENTITIES[type].members.map(&:capitalize).join(',')
     end
 
     # @note index starts at 1, since the first line is the header

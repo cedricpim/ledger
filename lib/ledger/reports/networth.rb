@@ -7,11 +7,12 @@ module Ledger
       CASH = 'Cash'.freeze
 
       def data
-        @data ||= if transactions.any?
-          valuations.map { |title, value| statistics(title: title, value: value) } + [cash] + [total]
-        else
-          []
-        end
+        @data ||=
+          if transactions.any?
+            valuations.map { |title, value| statistics(title: title, value: value) } + [cash] + [total]
+          else
+            []
+          end
       end
 
       def store(entry: nil)

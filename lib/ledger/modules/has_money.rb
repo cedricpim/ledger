@@ -7,6 +7,8 @@ module Ledger
     module HasMoney
       attr_writer :money, :valuation, :day_investment
 
+      MAPPED_FIELDS = {amount: :money, investment: :valuation, invested: :day_investment}.freeze
+
       def money
         @money ||= Money.new(BigDecimal(amount.to_s) * currency_info.subunit_to_unit, currency_info)
       rescue ArgumentError, TypeError
@@ -39,19 +41,14 @@ module Ledger
 
       def exchange_to(currency)
         dup.tap do |entity|
-          entity.money = money.exchange_to(currency)
-          entity.amount = MoneyHelper.display(entity.money, type: :ledger)
+          MAPPED_FIELDS.each do |field, representation|
+            next unless entity.respond_to?(field)
+
+            entity.public_send(:"#{representation}=", public_send(representation).exchange_to(currency))
+            entity.public_send(:"#{field}=", MoneyHelper.display(entity.public_send(representation), type: :ledger))
+          end
+
           entity.currency = entity.money.currency.iso_code
-
-          if entity.respond_to?(:investment)
-            entity.valuation = valuation.exchange_to(currency)
-            entity.investment = MoneyHelper.display(entity.valuation, type: :ledger)
-          end
-
-          if entity.respond_to?(:invested)
-            entity.day_investment = day_investment&.exchange_to(currency)
-            entity.invested = MoneyHelper.display(entity.day_investment, type: :ledger)
-          end
         end
       end
 
@@ -64,7 +61,7 @@ module Ledger
         when :amount     then MoneyHelper.display(money, type: :ledger)
         when :investment then MoneyHelper.display(valuation, type: :ledger)
         when :invested   then MoneyHelper.display(day_investment, type: :ledger)
-        when :currency   then money && money.currency.iso_code
+        when :currency   then money && money&.currency&.iso_code
         else value
         end
       end
