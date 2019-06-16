@@ -11,9 +11,9 @@ module Ledger
 
         title(TITLE)
 
-        table { add_colored_row(period, type: :header) } if period
+        table { add_row(period, type: :header) } if period
 
-        table { add_colored_row(total, type: :header) } if total
+        table { add_row(total, type: :header) } if total
       end
 
       private

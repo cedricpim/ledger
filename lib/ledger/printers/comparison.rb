@@ -27,11 +27,11 @@ module Ledger
         title(TITLE, width: table_width(headers))
 
         table do
-          add_colored_row(headers, type: :header)
+          add_row(headers, type: :header)
 
-          data.each { |line| add_colored_row(line) }
+          data.each { |line| add_row(line) }
 
-          add_colored_row(totals)
+          add_row(totals)
         end
       end
 

@@ -11,7 +11,7 @@ module Ledger
         table do
           main_header(from: :balance)
 
-          data.map { |info| line(info) }.each { |line| add_colored_row(line) if line }
+          data.map { |info| line(info) }.each { |line| add_row(line) if line }
         end
 
         total.call

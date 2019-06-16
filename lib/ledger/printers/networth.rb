@@ -13,9 +13,9 @@ module Ledger
 
           *list, total = data.map { |info| line(info) }
 
-          list.each { |line| add_row(line, CONFIG.color(:element)) }
+          list.each { |line| add_row(line) }
 
-          add_row(total, CONFIG.color(:total))
+          add_row(total, type: :total)
         end
       end
 
