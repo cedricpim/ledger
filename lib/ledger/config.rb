@@ -40,10 +40,6 @@ module Ledger
       @fields ||= config.fetch(:fields)
     end
 
-    def transaction_fields
-      fields.keys
-    end
-
     def encryption
       @encryption ||= config.fetch(:encryption, {})
     end

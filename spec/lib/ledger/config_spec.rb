@@ -74,14 +74,6 @@ RSpec.describe Ledger::Config do
     it { is_expected.to eq result }
   end
 
-  describe '#transaction_fields' do
-    subject { config.transaction_fields }
-
-    let(:keys) { %i[account date category description venue amount currency travel] }
-
-    it { is_expected.to eq keys }
-  end
-
   describe '#encryption' do
     subject { config.encryption }
 
