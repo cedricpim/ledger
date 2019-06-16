@@ -56,4 +56,34 @@ RSpec.describe Ledger::Transaction do
       it { is_expected.to eq 1 }
     end
   end
+
+  describe '#valid?' do
+    subject { entry.valid? }
+
+    let(:entry) { build(:transaction) }
+
+    it { is_expected.to be_truthy }
+
+    %w[date amount].each do |field|
+      context "when #{field} is not parseable" do
+        before { entry.public_send(:"#{field}=", 'not parseable') }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+
+    %w[account category].each do |field|
+      context "when #{field} is nil" do
+        before { entry.public_send(:"#{field}=", nil) }
+
+        it { is_expected.to be_falsey }
+      end
+
+      context "when #{field} is empty" do
+        before { entry.public_send(:"#{field}=", '') }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+  end
 end
