@@ -18,12 +18,12 @@ RSpec.describe Ledger::Actions::Book::Transaction do
       before do
         expect(Readline).to receive(:readline).and_return(
           transaction.account,
-          transaction.date.to_s,
+          transaction.date,
           transaction.category,
           '',
           transaction.quantity,
           '',
-          transaction.amount.to_s,
+          transaction.amount,
           transaction.currency,
           ''
         )
