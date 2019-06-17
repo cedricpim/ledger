@@ -7,7 +7,7 @@ FactoryBot.define do
     venue { 'Venue' }
     amount { '+10.00' }
     currency { 'USD' }
-    travel { '' }
+    trip { '' }
   end
 
   after(:build) do |transaction, _evaluator|

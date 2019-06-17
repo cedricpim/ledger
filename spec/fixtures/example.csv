@@ -1,3 +1,3 @@
-Account,Date,Category,Description,Venue,Amount,Currency,Travel
-Main,2018-06-23,Category B,Initial Balance,,+15.50,USD,Travel D
+Account,Date,Category,Description,Venue,Amount,Currency,Trip
+Main,2018-06-23,Category B,Initial Balance,,+15.50,USD,Trip D
 Euro,2018-07-23,Category A,Description C,Venue E,-10.00,EUR,

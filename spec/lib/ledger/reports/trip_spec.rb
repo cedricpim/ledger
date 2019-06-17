@@ -5,13 +5,13 @@ RSpec.describe Ledger::Reports::Trip, :streaming do
 
   let(:ledger_content) do
     [
-      build(:transaction, category: 'C', amount: '-120.00', currency: 'BBD', travel: 'X'),
-      build(:transaction, category: 'C', amount: '-20.00', currency: 'USD', travel: 'X'),
-      build(:transaction, category: 'D', amount: '-140.00', currency: 'USD', travel: 'Y'),
+      build(:transaction, category: 'C', amount: '-120.00', currency: 'BBD', trip: 'X'),
+      build(:transaction, category: 'C', amount: '-20.00', currency: 'USD', trip: 'X'),
+      build(:transaction, category: 'D', amount: '-140.00', currency: 'USD', trip: 'Y'),
       build(:transaction, category: 'E', amount: '-50.00', currency: 'USD'),
-      build(:transaction, category: 'D', amount: '-100.00', currency: 'USD', travel: 'Y'),
-      build(:transaction, account: 'Ignore', category: 'D', amount: '-150.00', currency: 'USD', travel: 'X'),
-      build(:transaction, category: 'Ignore', amount: '-50.00', currency: 'USD', travel: 'Y')
+      build(:transaction, category: 'D', amount: '-100.00', currency: 'USD', trip: 'Y'),
+      build(:transaction, account: 'Ignore', category: 'D', amount: '-150.00', currency: 'USD', trip: 'X'),
+      build(:transaction, category: 'Ignore', amount: '-50.00', currency: 'USD', trip: 'Y')
     ]
   end
 

@@ -52,7 +52,7 @@ RSpec.describe Ledger::Config do
       [
         'Business', 'Electronics', 'Insurances', 'Taxes', 'Entertainment', 'Rentals',
         'Restaurants', 'Coffee', 'Public Transport', 'Groceries', 'Taxi', 'Fees & Charges',
-        'Beers', 'Education', 'Travel', 'Personal Care', 'Mobile Phone'
+        'Beers', 'Education', 'Trip', 'Personal Care', 'Mobile Phone'
       ]
     end
 
@@ -64,7 +64,7 @@ RSpec.describe Ledger::Config do
         currency: {default: 'EUR', presence: true, values: %w[EUR USD]},
         date: {default: '2018-07-22', presence: true},
         description: {default: '', presence: false},
-        travel: {default: '', presence: false},
+        trip: {default: '', presence: false},
         venue: {default: '', presence: false}
       }
     end

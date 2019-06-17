@@ -14,7 +14,7 @@ RSpec.describe Ledger::Transaction do
         venue: 'Venue',
         amount: '-10.00',
         currency: 'USD',
-        travel: 'Travel'
+        trip: 'Trip'
       }
     end
 

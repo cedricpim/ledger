@@ -4,7 +4,7 @@ RSpec.describe Ledger::Actions::Book do
   let(:options) { {} }
 
   describe '#call', :streaming do
-    let(:transaction) { build(:transaction, travel: '') }
+    let(:transaction) { build(:transaction, trip: '') }
     let(:options) { {transaction: transaction.to_h.values} }
 
     let(:headers) { RSpecHelper.headers(Ledger::Transaction) }

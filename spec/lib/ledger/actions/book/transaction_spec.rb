@@ -3,7 +3,7 @@ RSpec.describe Ledger::Actions::Book::Transaction do
 
   let(:values) { nil }
 
-  let(:transaction) { build(:transaction, travel: '') }
+  let(:transaction) { build(:transaction, trip: '') }
 
   describe '#build!' do
     subject { builder.build! }
@@ -28,7 +28,7 @@ RSpec.describe Ledger::Actions::Book::Transaction do
         )
       end
 
-      it { is_expected.to eq build(:transaction, description: '', venue: '', travel: '') }
+      it { is_expected.to eq build(:transaction, description: '', venue: '', trip: '') }
     end
   end
 end

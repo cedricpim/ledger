@@ -6,19 +6,19 @@ RSpec.describe Ledger::Filters::Trip do
   describe '#call' do
     subject { filter.call(entry) }
 
-    let(:travel) { 'Country' }
-    let(:entry) { build(:transaction, travel: travel) }
+    let(:trip) { 'Country' }
+    let(:entry) { build(:transaction, trip: trip) }
 
     it { is_expected.to eq true }
 
-    context 'when travel is nil' do
-      let(:travel) { nil }
+    context 'when trip is nil' do
+      let(:trip) { nil }
 
       it { is_expected.to eq false }
     end
 
-    context 'when travel is empty' do
-      let(:travel) { '' }
+    context 'when trip is empty' do
+      let(:trip) { '' }
 
       it { is_expected.to eq false }
     end
@@ -28,8 +28,8 @@ RSpec.describe Ledger::Filters::Trip do
 
       it { is_expected.to eq false }
 
-      context 'when travel includes the option trip' do
-        let(:travel) { '[2019.05] City - Awesome' }
+      context 'when trip includes the option trip' do
+        let(:trip) { '[2019.05] City - Awesome' }
 
         it { is_expected.to eq true }
       end

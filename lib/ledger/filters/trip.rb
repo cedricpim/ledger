@@ -1,10 +1,10 @@
 module Ledger
   module Filters
     # Class responsible for checking if a given entry should be filtered out or
-    # not, based in the travel attribute.
+    # not, based in the trip attribute.
     class Trip < Base
       def call(entry)
-        !entry.travel.nil? && !entry.travel.empty? && (trip.nil? || entry.travel.match?(/#{trip}/i))
+        !entry.trip.nil? && !entry.trip.empty? && (trip.nil? || entry.trip.match?(/#{trip}/i))
       end
 
       private

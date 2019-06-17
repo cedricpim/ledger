@@ -12,7 +12,7 @@ module Ledger
       end
 
       def global
-        @global ||= build(GLOBAL, group: :travel, sort: :title, reverse: false)
+        @global ||= build(GLOBAL, group: :trip, sort: :title, reverse: false)
       end
 
       private

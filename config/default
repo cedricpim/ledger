@@ -47,7 +47,7 @@
       - Fees & Charges
       - Beers
       - Education
-      - Travel
+      - Trip
       - Personal Care
       - Mobile Phone
   :description:
@@ -65,7 +65,7 @@
     :values:
       - EUR
       - USD
-  :travel:
+  :trip:
     :default: ''
     :presence: false
 
