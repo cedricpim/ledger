@@ -24,16 +24,20 @@ require 'vcr'
 # Ensure that we will always use the same exchange rate file in specs and use
 # the fallback configuration file
 module RSpecConfig
+  LEDGER = File.join('example.csv').freeze
+
+  NETWORTH = File.join('networth.csv').freeze
+
   def initialize(file: nil)
     super(file: file || Ledger::Config::FALLBACK_CONFIG)
   end
 
   def ledger
-    File.join('spec', 'fixtures', 'example.csv')
+    LEDGER
   end
 
   def networth
-    File.join('spec', 'fixtures', 'example-networth.csv')
+    NETWORTH
   end
 
   def exchange

@@ -18,13 +18,13 @@ RSpec.describe Ledger::Config do
   describe '#ledger' do
     subject { config.ledger }
 
-    it { is_expected.to eq 'spec/fixtures/example.csv' }
+    it { is_expected.to eq RSpecConfig::LEDGER }
   end
 
   describe '#networth' do
     subject { config.networth }
 
-    it { is_expected.to eq 'spec/fixtures/example-networth.csv' }
+    it { is_expected.to eq RSpecConfig::NETWORTH }
   end
 
   describe '#investments' do
