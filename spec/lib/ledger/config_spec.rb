@@ -48,24 +48,16 @@ RSpec.describe Ledger::Config do
   describe '#fields' do
     subject { config.fields }
 
-    let(:categories) do
-      [
-        'Business', 'Electronics', 'Insurances', 'Taxes', 'Entertainment', 'Rentals',
-        'Restaurants', 'Coffee', 'Public Transport', 'Groceries', 'Taxi', 'Fees & Charges',
-        'Beers', 'Education', 'Trip', 'Personal Care', 'Mobile Phone'
-      ]
-    end
-
     let(:result) do
       {
-        account: {default: 'Main', presence: true},
-        amount: {default: '', presence: true},
-        category: {default: '', presence: true, values: categories},
-        currency: {default: 'EUR', presence: true, values: %w[EUR USD]},
+        account: {default: 'Account', presence: true},
+        amount: {presence: true},
+        category: {presence: true},
+        currency: {default: 'USD', presence: true},
         date: {default: '2018-07-22', presence: true},
-        description: {default: '', presence: false},
-        trip: {default: '', presence: false},
-        venue: {default: '', presence: false}
+        description: {presence: false},
+        trip: {presence: false},
+        venue: {presence: false}
       }
     end
 
@@ -117,12 +109,12 @@ RSpec.describe Ledger::Config do
   describe '#default_currency' do
     subject { config.default_currency }
 
-    it { is_expected.to eq 'EUR' }
+    it { is_expected.to eq 'USD' }
 
     context 'when there are no default for currency' do
-      before { expect(config).to receive(:config).and_return(fields: {currency: {values: %w[USD]}}) }
+      before { expect(config).to receive(:config).and_return(fields: {currency: {values: %w[EUR]}}) }
 
-      it { is_expected.to eq 'USD' }
+      it { is_expected.to eq 'EUR' }
     end
   end
 

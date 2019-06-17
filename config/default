@@ -24,49 +24,23 @@
 #   - values: List<"value"> - List of values available on TAB completion
 :fields:
   :account:
-    :default: 'Main'
+    :default: 'Account'
     :presence: true
   :date:
     :default: "<%= Date.today %>"
     :presence: true
   :category:
-    :default: ''
     :presence: true
-    :values:
-      - Business
-      - Electronics
-      - Insurances
-      - Taxes
-      - Entertainment
-      - Rentals
-      - Restaurants
-      - Coffee
-      - Public Transport
-      - Groceries
-      - Taxi
-      - Fees & Charges
-      - Beers
-      - Education
-      - Trip
-      - Personal Care
-      - Mobile Phone
   :description:
-    :default: ''
     :presence: false
   :venue:
-    :default: ''
     :presence: false
   :amount:
-    :default: ''
     :presence: true
   :currency:
-    :default: 'EUR'
+    :default: 'USD'
     :presence: true
-    :values:
-      - EUR
-      - USD
   :trip:
-    :default: ''
     :presence: false
 
 # Configure values to be always excluded from reports
@@ -193,23 +167,18 @@
           :align: 'center'
     # Options for how to display the fields in the totals section
     :totals:
-      :expense:
-        :width: 11
-        :align: 'center'
       :income:
-        :width: 11
-        :align: 'center'
+        :width: 17
+        :align: "right"
+      :expense:
+        :width: 17
+        :align: "left"
       :total:
-        :width: 10
-        :align: 'center'
-        :span: 2
+        :width: 35
+        :align: "center"
       :percentage:
-        :period:
-          :width: 8
-          :align: 'right'
-        :total:
-          :width: 4
-          :align: 'right'
+        :width: 8
+        :align: "right"
   :fields:
     # For more information on the configuration values, please read:
     # http://www.rubydoc.info/gems/money/Money/Formatting
