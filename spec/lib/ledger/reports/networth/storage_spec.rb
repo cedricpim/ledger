@@ -6,11 +6,11 @@ RSpec.describe Ledger::Reports::Networth::Storage, :streaming do
   # rubocop:disable Metrics/LineLength
   let(:ledger_content) do
     [
-      build(:transaction, category: 'Investment', amount: '-2.00', currency: 'BBD', date: '2019-01-04', description: 'ISINA - 2'),
-      build(:transaction, category: 'Investment', amount: '-1.00', currency: 'USD', date: '2019-01-02', description: 'ISINA'),
-      build(:transaction, category: 'Investment', amount: '-1.00', currency: 'USD', date: '2019-01-05', description: 'ISINB - 10'),
-      build(:transaction, category: 'Investment', amount: '-1.00', currency: 'USD', date: '2019-01-03', description: 'ISINC - 2'),
-      build(:transaction, category: 'Investment', amount: '-1.00', currency: 'USD', date: '2019-01-04', description: 'ISINC - 2'),
+      build(:transaction, category: 'Investment', amount: '-2.00', currency: 'BBD', date: '2019-01-04', description: 'ISINA', quantity: '2'),
+      build(:transaction, category: 'Investment', amount: '-1.00', currency: 'USD', date: '2019-01-02', description: 'ISINA', quantity: '1'),
+      build(:transaction, category: 'Investment', amount: '-1.00', currency: 'USD', date: '2019-01-05', description: 'ISINB', quantity: '10'),
+      build(:transaction, category: 'Investment', amount: '-1.00', currency: 'USD', date: '2019-01-03', description: 'ISINC', quantity: '2'),
+      build(:transaction, category: 'Investment', amount: '-1.00', currency: 'USD', date: '2019-01-04', description: 'ISINC', quantity: '2'),
       build(:transaction, category: 'Something', amount: '+10.00', currency: 'USD', date: '2019-01-04', description: 'Else'),
       build(:transaction, account: 'Ignore', category: 'C', amount: '-50.00', currency: 'USD'),
       build(:transaction, account: 'A', category: 'Ignore', amount: '-50.00', currency: 'USD')

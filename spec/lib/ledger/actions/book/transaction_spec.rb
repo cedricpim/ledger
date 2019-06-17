@@ -21,6 +21,7 @@ RSpec.describe Ledger::Actions::Book::Transaction do
           transaction.date.to_s,
           transaction.category,
           '',
+          transaction.quantity,
           '',
           transaction.amount.to_s,
           transaction.currency,

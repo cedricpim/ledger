@@ -4,6 +4,7 @@ FactoryBot.define do
     date { Date.today.to_s }
     category { 'Category' }
     sequence(:description) { |seq| "Description ##{seq}" }
+    quantity { '1' }
     venue { 'Venue' }
     amount { '+10.00' }
     currency { 'USD' }

@@ -51,13 +51,14 @@ RSpec.describe Ledger::Config do
     let(:result) do
       {
         account: {default: 'Account', presence: true},
-        amount: {presence: true},
-        category: {presence: true},
-        currency: {default: 'USD', presence: true},
         date: {default: '2018-07-22', presence: true},
+        category: {presence: true},
         description: {presence: false},
-        trip: {presence: false},
-        venue: {presence: false}
+        quantity: {presence: false},
+        venue: {presence: false},
+        amount: {presence: true},
+        currency: {default: 'USD', presence: true},
+        trip: {presence: false}
       }
     end
 

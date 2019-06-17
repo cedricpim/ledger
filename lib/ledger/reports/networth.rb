@@ -53,7 +53,9 @@ module Ledger
       end
 
       def investments_with_shares
-        investments.each_with_object(Hash.new(0)) { |investment, res| res[investment.isin] += investment.shares }
+        investments.each_with_object(Hash.new(0)) do |investment, acc|
+          acc[investment.description] += investment.quantity.to_i
+        end
       end
 
       def investments
