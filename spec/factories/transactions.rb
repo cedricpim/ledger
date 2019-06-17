@@ -3,10 +3,18 @@ FactoryBot.define do
     account { 'Account' }
     date { Date.today.to_s }
     category { 'Category' }
-    sequence(:description) { |s| "Description ##{s}" }
+    sequence(:description) { |seq| "Description ##{seq}" }
     venue { 'Venue' }
     amount { '+10.00' }
     currency { 'USD' }
     travel { '' }
+  end
+
+  after(:build) do |transaction, _evaluator|
+    value = transaction.amount
+    next if value.nil? || (value.is_a?(String) && value.start_with?(/-|\+/))
+
+    value = value.to_s
+    transaction.amount = value.start_with?('-') ? value : "+#{value}"
   end
 end
