@@ -4,6 +4,8 @@ module Ledger
     # not, based in the category attribute and the categories exclusion options
     class PresentCategory < Base
       def call(entry)
+        return true unless entry.respond_to?(:category)
+
         !categories.include?(entry.category.downcase)
       end
 

@@ -4,12 +4,27 @@ module Ledger
     # options provided
     class Show < Base
       def call
-        repository.load(resource).each do |entity|
-          system("echo \"#{entity.to_file}\" >> #{output.path}")
-        end
+        entries.each { |entry| system("echo \"#{entry.to_file}\" >> #{output.path}") }
       end
 
       private
+
+      def filters
+        [
+          Filters::Period.new(options),
+          Filters::PresentCategory.new(options)
+        ]
+      end
+
+      def entries
+        Filter.new(repository.load(resource), filters: filters, currency: currency).call
+      end
+
+      def currency
+        return unless options[:currency] && !options[:currency].empty?
+
+        options[:currency]
+      end
 
       def output
         @output ||= File.new(options[:output], 'a')

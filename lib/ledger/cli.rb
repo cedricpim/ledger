@@ -60,6 +60,7 @@ module Ledger
     method_option :month, type: :numeric, aliases: '-m'
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
+    method_option :categories, type: :array, aliases: '-C'
     method_option :currency, default: -> { CONFIG.default_currency }, type: :string, aliases: '-c'
     method_option :output, type: :string, default: -> { '/dev/stdout' }, aliases: '-o'
     method_option :networth, type: :boolean, default: false, aliases: '-n'

@@ -20,6 +20,12 @@ RSpec.describe Ledger::Filters::PresentCategory do
       let(:options) { {categories: %w[A X]} }
 
       it { is_expected.to eq false }
+
+      context 'when entry does not respond to category' do
+        let(:entry) { build(:networth) }
+
+        it { is_expected.to eq true }
+      end
     end
   end
 end
