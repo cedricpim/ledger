@@ -5,6 +5,8 @@ module Ledger
     class Balance < Base
       TITLE = 'Balance'.freeze
 
+      # Receives data to be formatted in the following structure:
+      # [{title: Account, value: Money}, {title: Account, value: nil}, ...]
       def call(data)
         title(TITLE)
 

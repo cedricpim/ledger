@@ -3,10 +3,17 @@ module Ledger
     # Class responsible for printing the table with an analysis of a provided
     # trip.
     class Trip < Base
+      attr_reader :global
+
+      def initialize(total: nil, global:)
+        super(total: total)
+        @global = global
+      end
+
       private
 
       def type
-        options[:global] ? :globaltrip : :trip
+        global ? :globaltrip : :trip
       end
 
       def line(info)

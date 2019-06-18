@@ -14,10 +14,9 @@ module Ledger
       # Space used to separate title and amount
       WHITESPACE = ' '.freeze
 
-      attr_reader :options, :total
+      attr_reader :total
 
-      def initialize(options, total: nil)
-        @options = options
+      def initialize(total: nil)
         @total = total
       end
 

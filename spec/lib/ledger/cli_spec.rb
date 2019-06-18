@@ -112,7 +112,7 @@ RSpec.describe Ledger::Cli do
 
     specify do
       expect(Ledger::Reports::Analysis).to receive(:new).with(parsed_options, category: category).and_return(report)
-      expect(Ledger::Printers::Analysis).to receive(:new).with(parsed_options, total: Proc).and_return(printer)
+      expect(Ledger::Printers::Analysis).to receive(:new).with(total: Proc).and_return(printer)
       expect(printer).to receive(:call).with('data')
 
       cli.analysis(category)
@@ -124,7 +124,7 @@ RSpec.describe Ledger::Cli do
 
       specify do
         expect(Ledger::Reports::Analysis).to receive(:new).with(parsed_options, category: category).and_return(report)
-        expect(Ledger::Printers::Analysis).to receive(:new).with(parsed_options, total: Proc).and_return(printer)
+        expect(Ledger::Printers::Analysis).to receive(:new).with(total: Proc).and_return(printer)
         expect(printer).to receive(:call).with('global')
 
         cli.analysis(category)
@@ -138,7 +138,7 @@ RSpec.describe Ledger::Cli do
 
     specify do
       expect(Ledger::Reports::Balance).to receive(:new).with(parsed_options).and_return(report)
-      expect(Ledger::Printers::Balance).to receive(:new).with(parsed_options, total: Proc).and_return(printer)
+      expect(Ledger::Printers::Balance).to receive(:new).with(total: Proc).and_return(printer)
       expect(printer).to receive(:call).with('data')
 
       cli.balance
@@ -151,7 +151,7 @@ RSpec.describe Ledger::Cli do
 
     specify do
       expect(Ledger::Reports::Comparison).to receive(:new).with(parsed_options).and_return(report)
-      expect(Ledger::Printers::Comparison).to receive(:new).with(parsed_options).and_return(printer)
+      expect(Ledger::Printers::Comparison).to receive(:new).and_return(printer)
       expect(printer).to receive(:call).with('periods', 'data', 'totals')
 
       cli.compare
@@ -164,7 +164,7 @@ RSpec.describe Ledger::Cli do
 
     specify do
       expect(Ledger::Reports::Report).to receive(:new).with(parsed_options).and_return(report)
-      expect(Ledger::Printers::Report).to receive(:new).with(parsed_options, total: Proc).and_return(printer)
+      expect(Ledger::Printers::Report).to receive(:new).with(total: Proc).and_return(printer)
       expect(printer).to receive(:call).with('data')
 
       cli.report
@@ -176,7 +176,7 @@ RSpec.describe Ledger::Cli do
 
       specify do
         expect(Ledger::Reports::Report).to receive(:new).with(parsed_options).and_return(report)
-        expect(Ledger::Printers::Report).to receive(:new).with(parsed_options, total: Proc).and_return(printer)
+        expect(Ledger::Printers::Report).to receive(:new).with(total: Proc).and_return(printer)
         expect(printer).to receive(:call).with('global')
 
         cli.report
@@ -190,7 +190,7 @@ RSpec.describe Ledger::Cli do
 
     specify do
       expect(Ledger::Reports::Trip).to receive(:new).with(parsed_options).and_return(report)
-      expect(Ledger::Printers::Trip).to receive(:new).with(parsed_options).and_return(printer)
+      expect(Ledger::Printers::Trip).to receive(:new).with(global: nil).and_return(printer)
       expect(printer).to receive(:call).with('data')
 
       cli.trip
@@ -202,7 +202,7 @@ RSpec.describe Ledger::Cli do
 
       specify do
         expect(Ledger::Reports::Trip).to receive(:new).with(parsed_options).and_return(report)
-        expect(Ledger::Printers::Trip).to receive(:new).with(parsed_options).and_return(printer)
+        expect(Ledger::Printers::Trip).to receive(:new).with(global: true).and_return(printer)
         expect(printer).to receive(:call).with('global')
 
         cli.trip
@@ -214,7 +214,7 @@ RSpec.describe Ledger::Cli do
 
         specify do
           expect(Ledger::Reports::Trip).to receive(:new).with(parsed_options.except('global')).and_return(report)
-          expect(Ledger::Printers::Trip).to receive(:new).with(parsed_options.except('global')).and_return(printer)
+          expect(Ledger::Printers::Trip).to receive(:new).with(global: nil).and_return(printer)
           expect(printer).to receive(:call).with('data')
 
           cli.trip
@@ -229,7 +229,7 @@ RSpec.describe Ledger::Cli do
 
     specify do
       expect(Ledger::Reports::Networth).to receive(:new).with(parsed_options).and_return(report)
-      expect(Ledger::Printers::Networth).to receive(:new).with(parsed_options).and_return(printer)
+      expect(Ledger::Printers::Networth).to receive(:new).and_return(printer)
       expect(printer).to receive(:call).with('data')
 
       cli.networth

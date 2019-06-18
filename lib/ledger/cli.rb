@@ -81,7 +81,7 @@ module Ledger
       total = total(report.ledger, with_period: true)
 
       data = data(report, global: parsed_options[:global])
-      Printers::Analysis.new(parsed_options, total: total).call(data)
+      Printers::Analysis.new(total: total).call(data)
     end
 
     desc 'balance', COMMANDS[:balance]
@@ -92,7 +92,7 @@ module Ledger
       report = Reports::Balance.new(parsed_options)
       total = total(report.ledger, with_period: false)
 
-      Printers::Balance.new(parsed_options, total: total).call(report.data)
+      Printers::Balance.new(total: total).call(report.data)
     end
 
     desc 'compare', COMMANDS[:compare]
@@ -102,7 +102,7 @@ module Ledger
     def compare
       report = Reports::Comparison.new(parsed_options)
 
-      Printers::Comparison.new(parsed_options).call(report.periods, report.data, report.totals)
+      Printers::Comparison.new.call(report.periods, report.data, report.totals)
     end
 
     desc 'report', COMMANDS[:report]
@@ -119,7 +119,7 @@ module Ledger
       total = total(report.ledger, with_period: true)
 
       data = data(report, global: parsed_options[:global])
-      Printers::Report.new(parsed_options, total: total).call(data)
+      Printers::Report.new(total: total).call(data)
     end
 
     desc 'trip', COMMANDS[:trip]
@@ -131,7 +131,7 @@ module Ledger
       report = Reports::Trip.new(parsed_options)
 
       data = data(report, global: parsed_options[:global])
-      Printers::Trip.new(parsed_options).call(data)
+      Printers::Trip.new(global: parsed_options[:global]).call(data)
     end
 
     desc 'networth', COMMANDS[:networth]
@@ -144,7 +144,7 @@ module Ledger
       if parsed_options[:store]
         Actions::Networth.new(parsed_options, ledger: report.ledger).call(report.store)
       else
-        Printers::Networth.new(parsed_options).call(report.data)
+        Printers::Networth.new.call(report.data)
       end
     end
 

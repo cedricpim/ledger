@@ -5,6 +5,12 @@ module Ledger
     class Total < Base
       TITLE = 'Totals'.freeze
 
+      attr_reader :with_period
+
+      def initialize(with_period:)
+        @with_period = with_period
+      end
+
       def call(period, total)
         period = with_period && prepare_period(period)
         total = CONFIG.show_totals? && prepare_total(total)
@@ -39,13 +45,7 @@ module Ledger
       def percentage(value:)
         return unless with_period
 
-        # TODO: move after refactoring
-        options = CONFIG.output(:totals, :percentage).select { |key, _value| %i[width align].include?(key) }
-        MoneyHelper.display_with_color(value, options)
-      end
-
-      def with_period
-        options[:with_period]
+        MoneyHelper.display_with_color(value, CONFIG.output(:totals, :percentage))
       end
     end
   end
