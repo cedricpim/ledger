@@ -13,7 +13,8 @@ require 'xdg'
 %w[actions api filters modules printers reports].each do |folder|
   files = Dir[File.join(__dir__, 'ledger', folder, '**', '*.rb')]
 
-  files.sort { |fst, snd| snd.include?('base') ? 1 : fst <=> snd }.map { |file| require file }
+  # Reverse is requires for when there are nested classes
+  files.partition { |filepath| File.basename(filepath) == 'base.rb' }.map(&:reverse).flatten.each { |file| require file }
 end
 
 Dir[File.join(__dir__, 'ledger', '*.rb')].map { |file| require file }
