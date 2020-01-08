@@ -22,12 +22,12 @@ Gem::Specification.new do |s| # rubocop:disable Metrics/BlockLength
 
   s.add_dependency 'bigdecimal', '~> 1.4'
   s.add_dependency 'command_line_reporter', '~> 4.0'
-  s.add_dependency 'faraday', '~> 0.15.3'
+  s.add_dependency 'faraday', '~> 0.17.3'
   s.add_dependency 'money', '~> 6.13'
   s.add_dependency 'money-open-exchange-rates', '~> 1.2'
   s.add_dependency 'nokogiri', '~> 1.10'
   s.add_dependency 'openssl', '~> 2.1'
-  s.add_dependency 'thor', '~> 0.20'
+  s.add_dependency 'thor', '~> 1.0.1'
   s.add_dependency 'xdg', '~> 2.2'
 
   s.add_development_dependency 'factory_bot'
