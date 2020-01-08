@@ -21,9 +21,9 @@ Gem::Specification.new do |s| # rubocop:disable Metrics/BlockLength
   s.required_ruby_version = '>= 2.5'
 
   s.add_dependency 'bigdecimal', '~> 1.4'
-  s.add_dependency 'command_line_reporter', '~> 4.0'
+  s.add_dependency 'command_line_reporter', '~> 4.0.1'
   s.add_dependency 'faraday', '~> 0.17.3'
-  s.add_dependency 'money', '~> 6.13'
+  s.add_dependency 'money', '~> 6.13.7'
   s.add_dependency 'money-open-exchange-rates', '~> 1.3.0'
   s.add_dependency 'nokogiri', '~> 1.10.7'
   s.add_dependency 'openssl', '~> 2.1.2'
