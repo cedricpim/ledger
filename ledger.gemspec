@@ -20,7 +20,7 @@ Gem::Specification.new do |s| # rubocop:disable Metrics/BlockLength
   s.required_rubygems_version = '>= 1.8.23'
   s.required_ruby_version = '>= 2.5'
 
-  s.add_dependency 'bigdecimal', '~> 1.4'
+  s.add_dependency 'bigdecimal', '~> 2.0.0'
   s.add_dependency 'command_line_reporter', '~> 4.0.1'
   s.add_dependency 'faraday', '~> 0.17.3'
   s.add_dependency 'money', '~> 6.13.7'
