@@ -61,8 +61,8 @@ module Ledger
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
     method_option :categories, type: :array, aliases: '-C'
-    method_option :currency, default: -> { CONFIG.default_currency }, type: :string, aliases: '-c'
-    method_option :output, type: :string, default: -> { '/dev/stdout' }, aliases: '-o'
+    method_option :currency, default: -> { CONFIG.default_currency }, type: :string, aliases: '-c', check_default_type: false
+    method_option :output, type: :string, default: '/dev/stdout', aliases: '-o'
     method_option :networth, type: :boolean, default: false, aliases: '-n'
     def show
       Actions::Show.new(parsed_options).call
@@ -70,12 +70,12 @@ module Ledger
 
     desc 'analysis [CATEGORY]', COMMANDS[:analysis]
     map 'a' => :analysis
-    method_option :year, type: :numeric, default: -> { Date.today.year }, aliases: '-y'
-    method_option :month, type: :numeric, default: -> { Date.today.month }, aliases: '-m'
+    method_option :year, type: :numeric, default: -> { Date.today.year }, aliases: '-y', check_default_type: false
+    method_option :month, type: :numeric, default: -> { Date.today.month }, aliases: '-m', check_default_type: false
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
     method_option :global, type: :boolean, default: true, aliases: '-g'
-    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
+    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c', check_default_type: false
     def analysis(category)
       report = Reports::Analysis.new(parsed_options, category: category)
       total = total(report.ledger, with_period: true)
@@ -98,7 +98,7 @@ module Ledger
     desc 'compare', COMMANDS[:compare]
     map 'c' => :compare
     method_option :months, type: :numeric, default: 1, aliases: '-m'
-    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
+    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c', check_default_type: false
     def compare
       report = Reports::Comparison.new(parsed_options)
 
@@ -107,13 +107,13 @@ module Ledger
 
     desc 'report', COMMANDS[:report]
     map 'r' => :report
-    method_option :year, type: :numeric, default: -> { Date.today.year }, aliases: '-y'
-    method_option :month, type: :numeric, default: -> { Date.today.month }, aliases: '-m'
+    method_option :year, type: :numeric, default: -> { Date.today.year }, aliases: '-y', check_default_type: false
+    method_option :month, type: :numeric, default: -> { Date.today.month }, aliases: '-m', check_default_type: false
     method_option :from, type: :string, aliases: '-f'
     method_option :till, type: :string, aliases: '-t'
     method_option :categories, type: :array, aliases: '-C'
     method_option :global, type: :boolean, default: true, aliases: '-g'
-    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
+    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c', check_default_type: false
     def report
       report = Reports::Report.new(parsed_options)
       total = total(report.ledger, with_period: true)
@@ -126,7 +126,7 @@ module Ledger
     map 't' => :trip
     method_option :trip, type: :string, aliases: '-t'
     method_option :global, type: :boolean, default: true, aliases: '-g'
-    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
+    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c', check_default_type: false
     def trip
       report = Reports::Trip.new(parsed_options)
 
@@ -137,7 +137,7 @@ module Ledger
     desc 'networth', COMMANDS[:networth]
     map 'n' => :networth
     method_option :store, type: :boolean, default: false, aliases: '-s'
-    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c'
+    method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c', check_default_type: false
     def networth
       report = Reports::Networth.new(parsed_options)
 
