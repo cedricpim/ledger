@@ -1,9 +1,9 @@
 # Location for the ledger file holding all the information
-:ledger: "<%= XDG['CONFIG'] %>/ledger/ledger.csv"
+:ledger: "<%= XDG::Config.new.home %>/ledger/ledger.csv"
 
 # Networth related options
 :networth:
-  :file: "<%= XDG['CONFIG'] %>/ledger/networth.csv"
+  :file: "<%= XDG::Config.new.home %>/ledger/networth.csv"
   :investments:
     - 'Investment'
   :exclude:

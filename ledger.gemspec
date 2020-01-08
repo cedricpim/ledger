@@ -28,7 +28,7 @@ Gem::Specification.new do |s| # rubocop:disable Metrics/BlockLength
   s.add_dependency 'nokogiri', '~> 1.10'
   s.add_dependency 'openssl', '~> 2.1'
   s.add_dependency 'thor', '~> 1.0.1'
-  s.add_dependency 'xdg', '~> 2.2'
+  s.add_dependency 'xdg', '~> 4.0.0'
 
   s.add_development_dependency 'factory_bot'
   s.add_development_dependency 'guard'
