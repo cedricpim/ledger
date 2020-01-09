@@ -18,7 +18,7 @@ Gem::Specification.new do |s| # rubocop:disable Metrics/BlockLength
   s.require_paths = ['lib']
 
   s.required_rubygems_version = '>= 1.8.23'
-  s.required_ruby_version = '>= 2.5'
+  s.required_ruby_version = '>= 2.7'
 
   s.add_dependency 'bigdecimal', '~> 2.0.0'
   s.add_dependency 'command_line_reporter', '~> 4.0.1'

@@ -1,3 +1,5 @@
+require 'ledger/reports/total'
+
 module Ledger
   module Reports
     class Total
