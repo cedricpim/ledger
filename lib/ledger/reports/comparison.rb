@@ -51,7 +51,7 @@ module Ledger
         compare(category) do |prev_value, value|
           next if prev_value.zero? || value.zero?
 
-          ((1 - value / prev_value).abs * (value > prev_value ? 1 : -1) * 100).round(2)
+          ((1 - value / prev_value).abs * (value > prev_value ? 1 : -1) * 100).to_f.round(2)
         end
       end
 

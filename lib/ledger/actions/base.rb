@@ -4,11 +4,10 @@ module Ledger
   module Actions
     # Base class that contains behaviour shared by Action classes
     class Base
-      attr_reader :options, :ledger
+      attr_reader :options
 
-      def initialize(options, ledger: nil)
+      def initialize(options = {})
         @options = options
-        @ledger = ledger
       end
 
       private
@@ -19,6 +18,10 @@ module Ledger
 
       def resource
         options[:networth] ? :networth : :ledger
+      end
+
+      def ledger
+        options[:ledger]
       end
     end
   end

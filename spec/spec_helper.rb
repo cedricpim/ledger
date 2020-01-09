@@ -51,11 +51,6 @@ require 'ledger' # Load application
 
 Dir['./spec/support/**/*.rb'].sort.each { |f| require f }
 
-# Allow easy instantiation of a Ledger::Transaction on specs
-def t(**attrs)
-  Ledger::Transaction.new(attrs)
-end
-
 VCR.configure do |config|
   config.cassette_library_dir = 'spec/cassettes'
   config.hook_into :faraday
@@ -109,6 +104,12 @@ RSpec.configure do |config|
 
     stub_encryption_for(:ledger)
     stub_encryption_for(:networth)
+
+    def original(type)
+      lines = public_send(type).tap(&:rewind).read
+      public_send(type).rewind
+      lines
+    end
   end
 
   # rspec-expectations config goes here. You can use an alternate

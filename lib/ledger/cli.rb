@@ -77,7 +77,7 @@ module Ledger
     method_option :global, type: :boolean, default: true, aliases: '-g'
     method_option :currency, type: :string, default: -> { CONFIG.default_currency }, aliases: '-c', check_default_type: false
     def analysis(category)
-      report = Reports::Analysis.new(parsed_options, category: category)
+      report = Reports::Analysis.new(parsed_options.merge(category: category))
       total = total(report.ledger, with_period: true)
 
       data = data(report, global: parsed_options[:global])
@@ -142,7 +142,7 @@ module Ledger
       report = Reports::Networth.new(parsed_options)
 
       if parsed_options[:store]
-        Actions::Networth.new(parsed_options, ledger: report.ledger).call(report.store)
+        Actions::Networth.new(parsed_options.merge(ledger: report.ledger)).call(report.store)
       else
         Printers::Networth.new.call(report.data)
       end
@@ -161,7 +161,7 @@ module Ledger
     end
 
     def total(ledger, with_period:)
-      report = Reports::Total.new(parsed_options, ledger: ledger)
+      report = Reports::Total.new(parsed_options.merge(ledger: ledger))
 
       proc { Printers::Total.new(with_period: with_period).call(report.period, report.total) }
     end

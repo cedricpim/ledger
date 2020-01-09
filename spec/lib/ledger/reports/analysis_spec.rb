@@ -1,5 +1,5 @@
 RSpec.describe Ledger::Reports::Analysis, :streaming do
-  subject(:report) { described_class.new(options, category: category) }
+  subject(:report) { described_class.new(options.merge(category: category)) }
 
   let(:options) { {} }
   let(:category) { 'C' }

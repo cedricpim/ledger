@@ -30,7 +30,7 @@ module Ledger
       end
 
       def statistics(title:, value:)
-        {title: title, value: value, percentage: (value / networth * 100).round(2)}
+        {title: title, value: value, percentage: (value / networth * 100).to_f.round(2)}
       end
 
       def networth
@@ -70,7 +70,7 @@ module Ledger
       end
 
       def storage
-        @storage ||= Storage.new(options, ledger: ledger)
+        @storage ||= Storage.new(options.merge(ledger: ledger))
       end
     end
   end

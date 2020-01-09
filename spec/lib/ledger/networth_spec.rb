@@ -4,7 +4,7 @@ RSpec.describe Ledger::Networth do
   let(:attrs) { {} }
 
   it_behaves_like 'has date'
-  it_behaves_like 'has money', with_investment: true
+  it_behaves_like 'has money', true
 
   describe '#to_file' do
     subject { networth_entry.to_file }

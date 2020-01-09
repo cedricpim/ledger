@@ -6,13 +6,12 @@ module Ledger
     class Base
       attr_reader :options
 
-      def initialize(options, ledger: nil)
+      def initialize(options = {})
         @options = options
-        @ledger = ledger
       end
 
       def ledger
-        @ledger ||= repository.load(:ledger).sort_by(&:parsed_date)
+        @ledger ||= options[:ledger] || repository.load(:ledger).sort_by(&:parsed_date)
       end
 
       private

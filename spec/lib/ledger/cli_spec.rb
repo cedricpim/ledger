@@ -111,7 +111,7 @@ RSpec.describe Ledger::Cli do
     let(:category) { 'X' }
 
     specify do
-      expect(Ledger::Reports::Analysis).to receive(:new).with(parsed_options, category: category).and_return(report)
+      expect(Ledger::Reports::Analysis).to receive(:new).with(parsed_options.merge(category: category)).and_return(report)
       expect(Ledger::Printers::Analysis).to receive(:new).with(total: Proc).and_return(printer)
       expect(printer).to receive(:call).with('data')
 
@@ -123,7 +123,7 @@ RSpec.describe Ledger::Cli do
       let(:parsed_options_attrs) { super().merge(global: true) }
 
       specify do
-        expect(Ledger::Reports::Analysis).to receive(:new).with(parsed_options, category: category).and_return(report)
+        expect(Ledger::Reports::Analysis).to receive(:new).with(parsed_options.merge(category: category)).and_return(report)
         expect(Ledger::Printers::Analysis).to receive(:new).with(total: Proc).and_return(printer)
         expect(printer).to receive(:call).with('global')
 
@@ -242,7 +242,7 @@ RSpec.describe Ledger::Cli do
 
       specify do
         expect(Ledger::Reports::Networth).to receive(:new).with(parsed_options).and_return(report)
-        expect(Ledger::Actions::Networth).to receive(:new).with(parsed_options, ledger: 'ledger').and_return(action)
+        expect(Ledger::Actions::Networth).to receive(:new).with(parsed_options.merge(ledger: 'ledger')).and_return(action)
         expect(action).to receive(:call).with('store')
 
         cli.networth

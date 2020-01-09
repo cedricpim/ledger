@@ -81,7 +81,11 @@ RSpec.describe Ledger::Repository do
     end
 
     context 'when there is an error with CSV being malformed' do
-      before { ledger.write('²') }
+      before do
+        ledger.seek(0, IO::SEEK_END)
+        ledger.write('"')
+        ledger.rewind
+      end
 
       specify do
         expect { load.to_a }.to raise_error(OpenSSL::Cipher::CipherError)

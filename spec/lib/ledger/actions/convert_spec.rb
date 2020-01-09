@@ -11,7 +11,7 @@ RSpec.describe Ledger::Actions::Convert do
     let(:result) { RSpecHelper.build_result(Ledger::Transaction, *base, transaction.exchange_to(:USD)) }
 
     it 'converts transactions that differ from main account currency' do
-      expect { action.call }.to change { ledger.tap(&:rewind).read }.to(result)
+      expect { action.call }.to change { original(:ledger) }.to(result)
     end
   end
 end

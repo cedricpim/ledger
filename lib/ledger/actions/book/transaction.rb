@@ -31,12 +31,12 @@ module Ledger
           @transaction ||= Ledger::Transaction.new
         end
 
-        def read(key, index, default: DEFAULT, presence: false)
+        def read(key, index, options = {})
           title = key.to_s.capitalize
 
-          value = values[index] || handle_input(key, title, default)
+          value = values[index] || handle_input(key, title, options.fetch(:default, DEFAULT))
 
-          puts "#{title} must be present" or exit if presence && value.empty?
+          puts "#{title} must be present" or exit if options.fetch(:presence, false) && value.empty?
 
           transaction.public_send(:"#{key}=", value)
         end

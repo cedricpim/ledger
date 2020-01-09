@@ -1,4 +1,4 @@
-RSpec.shared_examples 'has money' do |with_investment:|
+RSpec.shared_examples 'has money' do |with_investment|
   describe '#money' do
     subject { described_class.new(attrs).money }
 

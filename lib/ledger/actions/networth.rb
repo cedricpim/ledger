@@ -14,7 +14,7 @@ module Ledger
       private
 
       def report
-        @report ||= Ledger::Reports::Networth.new(options, ledger: ledger)
+        @report ||= Ledger::Reports::Networth.new(options.merge(ledger: ledger))
       end
     end
   end

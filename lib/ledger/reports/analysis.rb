@@ -7,9 +7,9 @@ module Ledger
 
       attr_reader :category
 
-      def initialize(options, ledger: nil, category:)
-        super(options, ledger: ledger)
-        @category = category.upcase
+      def initialize(options)
+        super(options)
+        @category = options.fetch(:category).upcase
       end
 
       def data
