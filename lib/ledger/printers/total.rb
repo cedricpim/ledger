@@ -25,7 +25,7 @@ module Ledger
       private
 
       def prepare_period(data)
-        line(data) do |values|
+        line(**data) do |values|
           values.flat_map do |element|
             element.map { |key, value| MoneyHelper.display_with_color(value, CONFIG.output(:totals, key)) }
           end
