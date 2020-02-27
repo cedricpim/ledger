@@ -44,6 +44,8 @@
     :presence: true
   :trip:
     :presence: false
+  :id:
+    :presence: false
 
 # Configure values to be always excluded from reports
 :report:

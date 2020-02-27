@@ -9,6 +9,7 @@ FactoryBot.define do
     amount { '+10.00' }
     currency { 'USD' }
     trip { '' }
+    id { '' }
   end
 
   after(:build) do |transaction, _evaluator|

@@ -9,7 +9,7 @@ RSpec.describe Ledger::Networth do
   describe '#to_file' do
     subject { networth_entry.to_file }
 
-    let(:attrs) { {date: '21/07/2018', invested: '+3.00', investment: '-5.00', amount: '-10.00', currency: 'USD'} }
+    let(:attrs) { {date: '21/07/2018', invested: '+3.00', investment: '-5.00', amount: '-10.00', currency: 'USD', id: ''} }
 
     it { is_expected.to eq attrs.values.join(',') }
   end

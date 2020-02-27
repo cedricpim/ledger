@@ -58,7 +58,8 @@ RSpec.describe Ledger::Config do
         venue: {presence: false},
         amount: {presence: true},
         currency: {default: 'USD', presence: true},
-        trip: {presence: false}
+        trip: {presence: false},
+        id: {presence: false}
       }
     end
 

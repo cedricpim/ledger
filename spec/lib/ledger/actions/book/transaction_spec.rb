@@ -25,6 +25,7 @@ RSpec.describe Ledger::Actions::Book::Transaction do
           '',
           transaction.amount,
           transaction.currency,
+          '',
           ''
         )
       end

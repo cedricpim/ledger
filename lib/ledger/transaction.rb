@@ -3,7 +3,7 @@ module Ledger
   # related to printing the information to different sources.
   # The class is modeled by the fields defined on the configuration file.
   Transaction = Struct.new(
-    :account, :date, :category, :description, :quantity, :venue, :amount, :currency, :trip, keyword_init: true
+    :account, :date, :category, :description, :quantity, :venue, :amount, :currency, :trip, :id, keyword_init: true
   ) do
     include Modules::HasDate
     include Modules::HasMoney

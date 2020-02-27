@@ -5,6 +5,7 @@ FactoryBot.define do
     investment { '+20.00' }
     amount { '+25.00' }
     currency { 'USD' }
+    id { '' }
 
     after(:build) do |networth, _evaluator|
       %w[invested investment amount].each do |field|
