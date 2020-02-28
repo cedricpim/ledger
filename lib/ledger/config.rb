@@ -4,7 +4,7 @@ module Ledger
   # Class responsible for handling the configuration file and access its
   # fields.
   class Config
-    DEFAULT_CONFIG = File.join(XDG::Config.new.home, 'ledger', 'config').freeze
+    DEFAULT_CONFIG = File.join(XDG::Config.new.home, 'ledger', 'ledger.conf').freeze
     FALLBACK_CONFIG = File.join(File.expand_path('../../', __dir__), 'config', 'default').freeze
 
     attr_reader :config
